@@ -10,9 +10,26 @@ $(function () {
 								strokeWidth: 2,
 								dashstyle: 'solid'
 						}
+				},{
+						id: 'second',
+						type: 'ema',
+						params: {
+								period: 1 * 24 * 3600 * 1000,
+								periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
+						},
+						styles: {
+								strokeWidth: 2,
+								stroke: 'green',
+								dashstyle: 'solid'
+						}
 				}],
 				series: [{
 						id: 'first',
+						pointStart: Date.UTC(2013, 0, 1),
+						pointInterval: 24 * 3600 * 1000,  //one day
+						data: [16, 17, 17, 10, 17, 18, 17, 17, 17]
+				},{
+						id: 'second',
 						pointStart: Date.UTC(2013, 0, 1),
 						pointInterval: 24 * 3600 * 1000,  //one day
 						data: [16, 17, 17, 10, 17, 18, 17, 17, 17]
@@ -20,9 +37,6 @@ $(function () {
 		};
 		
 		var chart = new Highcharts.StockChart(options);
-
-		
-		
 
   $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
   		// Create the chart

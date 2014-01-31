@@ -44,16 +44,14 @@
 							  SMA = [];
 					 
 					 for(var i = 1; i < yValLen; i++ ){
-					    if(period > range) {
-					    		range = this.utils.accumulateAverage(points, xVal, yVal, i);					// add actual point
-					    } else {
-					    		SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period));	// we calculate new point, 
-					    																																					// and remove points out of range
-					    		range = this.utils.accumulateAverage(points, xVal, yVal, i); 					
-					    }
+					 	
+					    if(period <= range) {
+					    	SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period));
+              }
+
+              range = this.utils.accumulateAverage(points, xVal, yVal, i);	
 					 }
 					 SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period));
-					 
 					 return SMA;
 				}, 
 				getGraph: function(chart, series, options, values) {
@@ -89,7 +87,7 @@
 										range = points[pLen - 1][0] - points[0][0]; 
 								return range;
 						},
-						populateAverage: function(points, xVal, yVal, i, period, SMA){
+						populateAverage: function(points, xVal, yVal, i, period){
 								var pLen = points.length,
 										smaY = this.sumArray(points) / pLen,
 										smaX = xVal[i-1];
@@ -108,6 +106,6 @@
 										return [null, prev[1] + cur[1]];
 								})[1];
 						}
-				},
+				}
 		}
 })(Highcharts)
