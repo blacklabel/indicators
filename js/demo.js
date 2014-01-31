@@ -5,7 +5,11 @@ $(function () {
 				},
 				indicators: [{
 						id: 'first',
-						type: 'sma'
+						type: 'sma',
+						styles: {
+								strokeWidth: 2,
+								dashstyle: 'solid'
+						}
 				}],
 				series: [{
 						id: 'first',
@@ -20,16 +24,26 @@ $(function () {
 		
 		
 
-		$.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
-				// Create the chart
+  $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
+  		// Create the chart
 				$('#container-advanced').highcharts('StockChart', {
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
 								params: {
-										period: 3 * 30 * 24 * 3600 * 1000	
+										period: 15 * 24 * 3600 * 1000	
 								}
 						}],
+						rangeSelector: {
+							selected: 1
+						},
+            plotOptions: {
+                series: {
+                    dataGrouping: { 
+                        enabled: false
+                    }
+                }
+            },
 						series: [{
 								cropThreshold: 0,
 								id: 'AAPL',

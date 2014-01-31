@@ -39,8 +39,97 @@
 						console.error(name);
 				}
 		}
+		
+		function forceRedraw(s){
+				if(s.indicators) {
+						each(s.indicators, function(el, i) {
+								el.isDirty = true;
+						});
+						s.indicators = null;
+				}
+		}
+		
+		/***
+		
+		Wrappers:
+		
+		***/
+		
+		
+		/*
+		*  Remove corresponding indicators for series
+		*/
+		HC.wrap(HC.Series.prototype, 'update', function(proceed, redraw, animation) {
+				var tempIndics = [],
+						s = this;
+						
+				if(s.indicators) {
+						each(s.indicators, function(el, i) {
+								tempIndics.push(merge({}, el.options));
+						});
+				}
+				proceed.call(this, redraw, animation);
 				
-		HC.Indicator = Indicator = function () {
+				s = this;
+				each(tempIndics, function(el, i){
+						s.chart.addIndicator(el);
+				});
+		});
+		
+		
+		/*
+		*  Remove corresponding indicators for series
+		*/
+		HC.wrap(HC.Series.prototype, 'remove', function(proceed, redraw, animation) {
+				var s = this;
+				if(s.indicators) {
+						each(s.indicators, function(el, i) {
+								el.destroy();
+						});
+						s.indicators = null;
+				}
+				proceed.call(this, redraw, animation);
+		});
+		
+		/*
+		*  Force redraw for indicator with new data
+		*/
+		HC.wrap(HC.Series.prototype, 'setData', function(proceed, redraw, animation) {
+				forceRedraw(this);
+				proceed.call(this, redraw, animation);
+		});
+		
+		/*
+		*  Force redraw for indicator when new point is added
+		*/
+		HC.wrap(HC.Series.prototype, 'addPoint', function(proceed, options, redraw, shift, animation) {
+				forceRedraw(this);
+				proceed.call(this, options, redraw, shift, animation);
+		});
+		
+		/*
+		*  Force redraw for indicator with new point options, like value
+		*/
+		HC.wrap(HC.Point.prototype, 'update', function(proceed, options, redraw) {
+				forceRedraw(this.series);
+				proceed.call(this, options, redraw);
+		});
+		
+		/*
+		*  Force redraw for indicator when one of points is removed
+		*/
+		HC.wrap(HC.Point.prototype, 'remove', function(proceed, redraw, animation) {
+				forceRedraw(this.series);
+				proceed.call(this, options, redraw);
+		});
+		
+		/***
+		
+		Indicator Class:
+		
+		***/
+				
+		Indicator = Indicator = function () {
 			this.init.apply(this, arguments);
 		};
 		
@@ -56,6 +145,10 @@
 				this.chart = chart;
 				this.options = options;
 				this.series = chart.get(options.id);
+				if(!this.series.indicators) {
+						this.series.indicators = [];
+				}
+				this.series.indicators.push(this);
 			},
 			
 			/*
@@ -71,16 +164,17 @@
 						series = this.series;
 					
 				if (!group) {
-						group = indicator.group = renderer.g();
+						indicator.group = group = renderer.g().add();
 				}
 				
 				if(!series) {
 						error('Series not found');
 						return false;
 				} else if(!graph) {
-						this.graph = graph = Indicator[options.type].getGraph(chart, series, options);
+						this.values = Indicator[options.type].getValues(chart, series, options);
+						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
 				}
-				graph.add(/* group */);
+				graph.add(group);
 			},
 			
 			/*
@@ -91,12 +185,20 @@
 						chart = this.chart,
 						series = this.series,
 						group = this.group,
-						graph = this.graph;
+						graph = this.graph,
+						isDirty = this.isDirty;
 						
-				if(graph)
+				if(graph) {
 						graph.destroy();
+				}
 				
-				this.graph = graph = Indicator[options.type].getGraph(chart, series, options);
+				if(this.values && !isDirty) {
+						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+				} else {
+						this.values = Indicator[options.type].getValues(chart, series, options);
+						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+				}
+				
 				graph.add();
 			},
 			

@@ -25,74 +25,54 @@
 		}]
 		
 		***/
-		HC.Indicator.sma = {
+		
+		var merge = HC.merge;
+		
+		Indicator.sma = {
 				getDefaultOptions: function(){
 						return {
-								period: 4 * 24 * 3600 * 1000 // 5 days
+								period: 4 * 24 * 3600 * 1000 // 4 days
 						};
 				},
 				getValues: function(chart, series, options) {
 						var range = 0,
-							  xVal = series.processedXData,
-							  yVal = series.processedYData,
-							  yValLen = yVal.length,
+							  xVal = series.xData,
+							  yVal = series.yData,
+							  yValLen = yVal ? yVal.length : 0,
 							  points = [[xVal[0], yVal[0]]],
-							  lastPointX = xVal[0],
+							  period = options.params.period,
 							  SMA = [];
-							 
-					 
-					 var sum = function(array) {
-					 	 	var s = 0;
-					 	 	for(var i in array) {
-					 	 			s+= array[i][1];
-					 	 	}
-					 	 	return s;
-					 };
-					 
-					 var accumulateAverage = function(i){
-							var pLen = points.push([xVal[i], yVal[i]]);
-									lastPointX = xVal[i];
-									range = points[pLen - 1][0] - points[0][0]; 
-					 };
-					 
-					 var populateAverage = function(i) {
-					 	  var pLen = points.length,
-					 	  		smaY = sum(points) / pLen,
-					 	  		smaX = xVal[i-1];
-					 	  		
-					 	  SMA.push( [smaX, smaY] );
-							range = points[pLen - 1][0] - points[1][0]; 
-							while(points[points.length-1][0] - points[0][0] >= options.params.period) {
-									points.shift(); 				// remove points until range < period
-							}
-					 };
 					 
 					 for(var i = 1; i < yValLen; i++ ){
-					    if(options.params.period > range) {
-					    		accumulateAverage(i);		// add actual point
+					    if(period > range) {
+					    		range = this.utils.accumulateAverage(points, xVal, yVal, i);					// add actual point
 					    } else {
-					    		populateAverage(i);		  // we calculate new point, and remove first points
-					    		accumulateAverage(i); 	// add actual point
+					    		SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period));	// we calculate new point, 
+					    																																					// and remove points out of range
+					    		range = this.utils.accumulateAverage(points, xVal, yVal, i); 					
 					    }
 					 }
-					 populateAverage(yValLen);
+					 SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period));
 					 
 					 return SMA;
 				}, 
-				getGraph: function(chart, series, options) {
+				getGraph: function(chart, series, options, values) {
 					 var path = [],
-					 		 attrs = {
-									 'stroke-width': 2,
-									 stroke: 'red'
-							 },
+					 		 attrs = {},
 							 xAxis = series.xAxis,
 							 yAxis = series.yAxis,
-							 sma = this.getValues(chart, series, options),
+							 sma = values,
 							 smaLen = sma.length,
 							 smaX,
 							 smaY;
 							 
-						path.push('M', xAxis.toPixels(sma[0][0]), yAxis.toPixels(sma[0][1])); 
+					 attrs = merge({
+							 'stroke-width': 2,
+							 stroke: 'red',
+							 dashstyle: 'Dash'
+					 },  options.styles);	 
+					 
+					 path.push('M', xAxis.toPixels(sma[0][0]), yAxis.toPixels(sma[0][1])); 
 							 
 					 for(var i = 1; i < smaLen; i++){
 					 	 	smaX = sma[i][0];
@@ -102,7 +82,32 @@
 					 }
 							 
 					 return chart.renderer.path(path).attr(attrs);
-				}
+				},
+				utils: {
+						accumulateAverage: function(points, xVal, yVal, i){ 
+								var pLen = points.push([xVal[i], yVal[i]]);
+										range = points[pLen - 1][0] - points[0][0]; 
+								return range;
+						},
+						populateAverage: function(points, xVal, yVal, i, period, SMA){
+								var pLen = points.length,
+										smaY = this.sumArray(points) / pLen,
+										smaX = xVal[i-1];
+										
+								while(points[points.length-1][0] - points[0][0] >= period) {
+										points.shift(); 				// remove points until range < period
+								}
+								
+								pLen = points.length;
+								range = points[pLen - 1][0] - points[1][0]; 
+								return [smaX, smaY];
+						},
+						sumArray: function(array){
+							  // reduce VS loop => reduce
+								return array.reduce(function(prev, cur) {
+										return [null, prev[1] + cur[1]];
+								})[1];
+						}
+				},
 		}
-		
 })(Highcharts)
