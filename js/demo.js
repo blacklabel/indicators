@@ -14,7 +14,7 @@ $(function () {
 						id: 'second',
 						type: 'ema',
 						params: {
-								period: 1 * 24 * 3600 * 1000,
+								period: 4 * 24 * 3600 * 1000,
 								periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
 						},
 						styles: {
@@ -46,6 +46,18 @@ $(function () {
 								type: 'sma',
 								params: {
 										period: 15 * 24 * 3600 * 1000	
+								}
+						},{
+								id: 'AAPL',
+								type: 'ema',
+								params: {
+										period: 15 * 24 * 3600 * 1000,
+										periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
+								},
+								styles: {
+										strokeWidth: 2,
+										stroke: 'green',
+										dashstyle: 'solid'
 								}
 						}],
 						rangeSelector: {

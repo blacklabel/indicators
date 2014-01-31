@@ -19,7 +19,7 @@
                 unit = options.params.periodUnit,
                 period = options.params.period,
                 periodUnited = utils.periodTransform(period,unit),
-                EMApercent = 0.33, //((2 / (periodUnited + 1))),
+                EMApercent = (2 / (periodUnited + 1)),
                 calEMA = 0,
                 EMA = [],
                 point,i;
