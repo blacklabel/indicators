@@ -24,7 +24,7 @@
                 xValue = xVal[0],
                 EMA = [],
                 point,i,index,points,yValue;
-                
+
            //switch index for OHLC / Candlestick / Arearange
            if(HC.isArray(yVal[0])) {
               index = params.index ? params.index : 0;
@@ -38,14 +38,14 @@
 
            for(i = 1; i < yValLen; i++){
               if(period <= range) {
-                  point = utils.populateAverage(points, xVal, yVal, i, period, EMApercent, calEMA, index);
+                  point = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);
                   calEMA = point[1]; 
                   EMA.push(point);
               }
               range = utils.accumulateAverage(points, xVal, yVal, i, index);      
            }
 
-           EMA.push(utils.populateAverage(points, xVal, yVal, i, period, EMApercent, calEMA, index));
+           EMA.push(utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index));
 
            return EMA;
         }, 
@@ -112,7 +112,7 @@
 
                 return range;
             },
-            populateAverage: function(points, xVal, yVal, i, period, EMApercent, calEMA, index){
+            populateAverage: function(points, xVal, yVal, i, EMApercent, calEMA, index){
                 var pLen = points.length,
                     x = xVal[i-1],
                     yValuePrev = index < 0 ? yVal[i-2] : yVal[i-2][index],
