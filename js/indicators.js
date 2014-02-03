@@ -49,7 +49,13 @@
 				}
 		}
 
-		
+		HC.isArray = function(obj) {
+			return Object.prototype.toString.call(obj) === '[object Array]';
+		}
+
+		HC.isObject = function(obj) {
+			return typeof obj === 'object';
+		}
 
 		
 		/***

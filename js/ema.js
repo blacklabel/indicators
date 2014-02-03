@@ -24,9 +24,9 @@
                 xValue = xVal[0],
                 EMA = [],
                 point,i,index,points,yValue;
-
+                
            //switch index for OHLC / Candlestick / Arearange
-           if(Object.prototype.toString.call(yVal[0]) === '[object Array]') {
+           if(HC.isArray(yVal[0])) {
               index = params.index ? params.index : 0;
               yValue = yVal[0][index];
            } else {
