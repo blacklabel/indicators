@@ -48,6 +48,9 @@
 						s.indicators = null;
 				}
 		}
+
+		
+
 		
 		/***
 		

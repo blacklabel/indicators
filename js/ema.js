@@ -10,32 +10,43 @@
             };
         },
         getValues: function(chart, series, options) {
-            var range = 0,
+
+            var utils = this.utils,
+                params = options.params,
+                unit = params.periodUnit,
+                period = params.period,
                 xVal = series.xData,
                 yVal = series.yData,
                 yValLen = yVal ? yVal.length : 0,
-                points = [[xVal[0], yVal[0]]],
-                utils = this.utils,
-                unit = options.params.periodUnit,
-                period = options.params.period,
                 periodUnited = utils.periodTransform(period,unit),
                 EMApercent = (2 / (periodUnited + 1)),
-                calEMA = 0,
+                calEMA = range = 0,
+                xValue = xVal[0],
                 EMA = [],
-                point,i;
+                point,i,index,points,yValue;
 
+           //switch index for OHLC / Candlestick / Arearange
+           if(Object.prototype.toString.call(yVal[0]) === '[object Array]') {
+              index = params.index ? params.index : 0;
+              yValue = yVal[0][index];
+           } else {
+              index = -1;
+              yValue = yVal[0];
+           }
 
-           for(i = 1; i < yValLen; i++ ){
+           points = [[xValue, yValue]];
+
+           for(i = 1; i < yValLen; i++){
               if(period <= range) {
-                  point = utils.populateAverage(points, xVal, yVal, i, period, EMApercent,calEMA);
+                  point = utils.populateAverage(points, xVal, yVal, i, period, EMApercent, calEMA, index);
                   calEMA = point[1]; 
                   EMA.push(point);
               }
-              range = utils.accumulateAverage(points, xVal, yVal, i);      
+              range = utils.accumulateAverage(points, xVal, yVal, i, index);      
            }
-           
-           EMA.push(utils.populateAverage(points, xVal, yVal, i, period, EMApercent,calEMA));
-           
+
+           EMA.push(utils.populateAverage(points, xVal, yVal, i, period, EMApercent, calEMA, index));
+
            return EMA;
         }, 
         getGraph: function(chart, series, options, values) {
@@ -93,18 +104,23 @@
 
                 return period;
             },
-            accumulateAverage: function(points, xVal, yVal, i){ 
-                var pLen = points.push([xVal[i], yVal[i]]);
+            accumulateAverage: function(points, xVal, yVal, i, index){ 
+                var xValue = xVal[i],
+                    yValue = index < 0 ? yVal[i] : yVal[i][index],
+                    pLen =  points.push([xValue, yValue]);
                     range = points[pLen - 1][0] - points[0][0]; 
+
                 return range;
             },
-            populateAverage: function(points, xVal, yVal, i, period, EMApercent,calEMA){
+            populateAverage: function(points, xVal, yVal, i, period, EMApercent, calEMA, index){
                 var pLen = points.length,
                     x = xVal[i-1],
-                    prevPoint = calEMA === 0 ? yVal[i-2] : calEMA,
-                    y;
+                    yValuePrev = index < 0 ? yVal[i-2] : yVal[i-2][index],
+                    yValue = index < 0 ? yVal[i-1] : yVal[i-1][index],
+                    prevPoint,y;
 
-                y = ((yVal[i-1] * EMApercent) + (prevPoint * (1 - EMApercent)));
+                prevPoint = calEMA === 0 ? yValuePrev : calEMA;
+                y = ((yValue * EMApercent) + (prevPoint * (1 - EMApercent)));
 
                 return [x, y];
             }

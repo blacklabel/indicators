@@ -1,4 +1,8 @@
 $(function () {
+
+/*
+ * 1. DEFAULT CHART
+ */
 		var options = {
 				chart: {
 						renderTo: 'container-simple'
@@ -38,9 +42,11 @@ $(function () {
 		
 		var chart = new Highcharts.StockChart(options);
 
-  $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
-  		// Create the chart
-				$('#container-advanced').highcharts('StockChart', {
+
+/*
+ * 2.1 ADVANCED CHART
+ */
+ var adv_options = {
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
@@ -52,7 +58,8 @@ $(function () {
 								type: 'ema',
 								params: {
 										period: 15 * 24 * 3600 * 1000,
-										periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
+										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
+										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
 								},
 								styles: {
 										strokeWidth: 2,
@@ -74,12 +81,63 @@ $(function () {
 								cropThreshold: 0,
 								id: 'AAPL',
 								name: 'AAPL',
-								data: data,
+								data: [],
 								tooltip: {
 									valueDecimals: 2
 								}
 						}]
-				});
-		});
+				};
+
+
+
+$.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
+
+			adv_options.series[0].type = 'line';
+  		adv_options.series[0].data = data;
+
+				$('#container-advanced').highcharts('StockChart', $.extend({},adv_options));
+});
+
+/*
+ * 2.2 ADVANCED CHART - OHLC
+ */
+
+$.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlc.json&callback=?', function(data) {
+
+			adv_options.indicators[1].params.index = 2;
+			adv_options.series[0].type = 'ohlc';
+  		adv_options.series[0].data = data;
+
+			$('#container-ohlc').highcharts('StockChart', $.extend({},adv_options));
+});
+
+/*
+ * 2.3 ADVANCED CHART - CANDLESTICK
+ */
+
+ $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlc.json&callback=?', function(data) {
+
+  		adv_options.indicators[0].params.index = 1;
+			adv_options.series[0].type = 'candlestick';
+  		adv_options.series[0].data = data;
+
+			$('#container-candlestick').highcharts('StockChart', $.extend({},adv_options));
+});
+
+
+/*
+ * 2.4 ADVANCED CHART - AREARANGE
+ */
+
+  $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=range.json&callback=?', function(data) {
+
+  		adv_options.indicators[1].params.index = 1;
+			adv_options.series[0].type = 'arearange';
+  		adv_options.series[0].data = data;
+
+			$('#container-arearange').highcharts('StockChart', $.extend({},adv_options));
+});
+
+
 
 });

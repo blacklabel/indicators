@@ -4,18 +4,27 @@
 	<title>Indicators demo</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script type="text/javascript" src="http://code.highcharts.com/stock/highstock.src.js"></script>
+  <script src="http://code.highcharts.com/stock/highcharts-more.js"></script>
 	<script type="text/javascript" src="js/indicators.js"></script>
 	<script type="text/javascript" src="js/sma.js"></script>
   <script type="text/javascript" src="js/ema.js"></script>
 	<script type="text/javascript" src="js/demo.js"></script>
 
 </head>
+<style>
+  .chart {
+    width:45%;
+    float:left;
+  }
+</style>
 <body>
 
 
-<div id="container-advanced"></div>
-
-<div id="container-simple"></div>
+<div id="container-advanced" class="chart"></div>
+<div id="container-simple" class="chart"></div>
+<div id="container-ohlc" class="chart"></div>
+<div id="container-arearange" class="chart"></div>
+<div id="container-candlestick" class="chart"></div>
 	
 </body>
 </html>

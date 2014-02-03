@@ -35,23 +35,39 @@
 						};
 				},
 				getValues: function(chart, series, options) {
-						var range = 0,
-							  xVal = series.xData,
-							  yVal = series.yData,
-							  yValLen = yVal ? yVal.length : 0,
-							  points = [[xVal[0], yVal[0]]],
-							  period = options.params.period,
-							  SMA = [];
+						var utils = this.utils,
+                params = options.params,
+                unit = params.periodUnit,
+                period = params.period,
+                xVal = series.xData,
+                yVal = series.yData,
+                yValLen = yVal ? yVal.length : 0,
+                range = 0,
+                xValue = xVal[0],
+                SMA = [],
+                point,i,index,points,yValue;
+
+            //switch index for OHLC / Candlestick / Arearange
+           if(Object.prototype.toString.call(yVal[0]) === '[object Array]') {
+              index = params.index ? params.index : 0;
+              yValue = yVal[0][index];
+           } else {
+              index = -1;
+              yValue = yVal[0];
+           }
+
+           points = [[xValue, yValue]];
 					 
 					 for(var i = 1; i < yValLen; i++ ){
 					 	
 					    if(period <= range) {
-					    	SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period));
+					    	SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period, index));
               }
 
-              range = this.utils.accumulateAverage(points, xVal, yVal, i);	
+              range = this.utils.accumulateAverage(points, xVal, yVal, i, index);	
 					 }
-					 SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period));
+					 SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period, index));
+
 					 return SMA;
 				}, 
 				getGraph: function(chart, series, options, values) {
@@ -82,12 +98,15 @@
 					 return chart.renderer.path(path).attr(attrs);
 				},
 				utils: {
-						accumulateAverage: function(points, xVal, yVal, i){ 
-								var pLen = points.push([xVal[i], yVal[i]]);
-										range = points[pLen - 1][0] - points[0][0]; 
-								return range;
+						accumulateAverage: function(points, xVal, yVal, i, index){ 
+								var xValue = xVal[i],
+                    yValue = index < 0 ? yVal[i] : yVal[i][index],
+                    pLen =  points.push([xValue, yValue]);
+                    range = points[pLen - 1][0] - points[0][0]; 
+
+                return range;
 						},
-						populateAverage: function(points, xVal, yVal, i, period){
+						populateAverage: function(points, xVal, yVal, i, period, index){
 								var pLen = points.length,
 										smaY = this.sumArray(points) / pLen,
 										smaX = xVal[i-1];
@@ -98,6 +117,7 @@
 								
 								pLen = points.length;
 								range = points[pLen - 1][0] - points[1][0]; 
+								
 								return [smaX, smaY];
 						},
 						sumArray: function(array){
