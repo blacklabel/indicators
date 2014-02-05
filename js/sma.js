@@ -26,7 +26,8 @@
 		
 		***/
 		
-		var merge = HC.merge;
+		var merge = HC.merge,
+				isArray = HC.isArray;
 		
 		Indicator.sma = {
 				getDefaultOptions: function(){
@@ -37,7 +38,6 @@
 				getValues: function(chart, series, options) {
 						var utils = this.utils,
                 params = options.params,
-                unit = params.periodUnit,
                 period = params.period,
                 xVal = series.xData,
                 yVal = series.yData,
@@ -48,7 +48,7 @@
                 point,i,index,points,yValue;
 
            //switch index for OHLC / Candlestick / Arearange
-           if(HC.isArray(yVal[0])) {
+           if(isArray(yVal[0])) {
               index = params.index ? params.index : 0;
               yValue = yVal[0][index];
            } else {
@@ -78,7 +78,8 @@
 							 sma = values,
 							 smaLen = sma.length,
 							 smaX,
-							 smaY;
+							 smaY,
+               i;
 							 
 					 attrs = merge({
 							 'stroke-width': 2,
@@ -88,7 +89,7 @@
 					 
 					 path.push('M', xAxis.toPixels(sma[0][0]), yAxis.toPixels(sma[0][1])); 
 							 
-					 for(var i = 1; i < smaLen; i++){
+					 for(i = 0; i < smaLen; i++){
 					 	 	smaX = sma[i][0];
 					 	 	smaY = sma[i][1];
 					 	 	

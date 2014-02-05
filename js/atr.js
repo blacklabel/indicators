@@ -1,6 +1,5 @@
 (function (HC) {
-
-  /***
+    /***
     
     Each indicator requires mothods:
     
@@ -26,81 +25,81 @@
     }]
     
     ***/
-
+    
     var merge = HC.merge,
         isArray = HC.isArray,
         UNDEFINED;
     
-    Indicator.ema = {
+    Indicator.atr = {
         getDefaultOptions: function(){
             return {
                 period: 4 * 24 * 3600 * 1000 // 4 days
             };
         },
         getValues: function(chart, series, options) {
-
             var utils = this.utils,
                 params = options.params,
-                unit = params.periodUnit,
                 period = params.period,
+                unit = params.periodUnit,
                 xVal = series.xData,
                 yVal = series.yData,
                 yValLen = yVal ? yVal.length : 0,
-                periodUnited = utils.periodTransform(period,unit),
-                EMApercent = (2 / (periodUnited + 1)),
-                calEMA = range = 0,
                 xValue = xVal[0],
-                EMA = [],
+                yValue = yVal[0],
+                periodUnited = utils.periodTransform(period,unit),
+                range = prevATR = TR = 0,
+                ATR = [],
                 point,i,index,points,yValue;
 
-           //switch index for OHLC / Candlestick / Arearange
-           if(isArray(yVal[0])) {
-              index  = params.index ? params.index : 0;
-              yValue = yVal[0][index];
-           } else {
-              index  = -1;
-              yValue = yVal[0];
-           }
-
-           points = [[xValue, yValue]];
+            points = [[xValue, yValue]];
+           
+            if(!isArray(yVal[0]) || yVal[0].length != 4) {
+              return;
+            }
 
            for(i = 1; i < yValLen; i++){
-              if(period <= range) {
-                  point = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);
-                  calEMA = point[1]; 
-                  EMA.push(point);
+
+              if(period < range) {
+                  point = utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR);
+                  prevATR = point[1];
+                  ATR.push(point);
+              } else if (period === range) {
+                  prevATR = TR / (i-1);
+                  ATR.push([xVal[i-1],prevATR]);
+              } else {
+                TR += utils.getTR(yVal[i-1],yVal[i-2]);
               }
-              range = utils.accumulateAverage(points, xVal, yVal, i, index);      
+              range = utils.accumulateAverage(points, xVal, yVal, i);
            }
 
-           EMA.push(utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index));
+           ATR.push(utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR));
 
-           return EMA;
+           return ATR;
         }, 
         getGraph: function(chart, series, options, values) {
-           var path   = [],
-               attrs  = {},
-               xAxis  = series.xAxis,
-               yAxis  = series.yAxis,
-               ema    = values,
-               emaLen = ema.length,
-               emaX,
-               emaY,
+           var path = [],
+               attrs = {},
+               xAxis = series.xAxis,
+               yAxis = series.yAxis,
+               atr = values,
+               atrLen = atr.length,
+               atrX,
+               atrY,
                i;
-               
+
            attrs = merge({
                'stroke-width': 2,
                stroke: 'red',
                dashstyle: 'Dash'
            },  options.styles);  
            
-           path.push('M', xAxis.toPixels(ema[0][0]), yAxis.toPixels(ema[0][1])); 
+           path.push('M', xAxis.toPixels(atr[0][0]), yAxis.toPixels(atr[0][1])); 
                
-           for(i = 0; i < emaLen; i++){
-              emaX = ema[i][0];
-              emaY = ema[i][1];
-              
-              path.push('L', xAxis.toPixels(emaX), yAxis.toPixels(emaY));
+           for(i = 0; i < atrLen; i++) {
+              atrX = atr[i][0];
+              atrY = atr[i][1];
+              console.log(atrY);
+              path.push('L', xAxis.toPixels(atrX), yAxis.toPixels(atrY));
            }
 
            return chart.renderer.path(path).attr(attrs);
@@ -133,25 +132,32 @@
 
                 return period;
             },
-            accumulateAverage: function(points, xVal, yVal, i, index){ 
+            accumulateAverage: function(points, xVal, yVal, i){ 
                 var xValue = xVal[i],
-                    yValue = index < 0 ? yVal[i] : yVal[i][index],
-                    pLen   = points.push([xValue, yValue]);
-                    range  = points[pLen - 1][0] - points[0][0]; 
+                    yValue = yVal[i],
+                    pLen =  points.push([xValue, yValue]);
+                    range = points[pLen - 1][0] - points[0][0]; 
 
                 return range;
             },
-            populateAverage: function(points, xVal, yVal, i, EMApercent, calEMA, index){
-                var pLen       = points.length,
-                    x          = xVal[i-1],
-                    yValuePrev = index < 0 ? yVal[i-2] : yVal[i-2][index],
-                    yValue     = index < 0 ? yVal[i-1] : yVal[i-1][index],
-                    prevPoint,y;
+            populateAverage: function(points, xVal, yVal, i, period, prevATR){
+                var pLen = points.length,
+                    x = xVal[i-1],
+                    TR = this.getTR(yVal[i-1],yVal[i-2]),
+                    y;
 
-                prevPoint = calEMA === 0 ? yValuePrev : calEMA;
-                y = ((yValue * EMApercent) + (prevPoint * (1 - EMApercent)));
-
+                y = (((prevATR * (period - 1)) + TR) / period);
                 return [x, y];
+            },
+            getTR: function(currentPoint, prevPoint) {
+              var pointY = currentPoint,
+                  prevY = prevPoint,
+                  HL = pointY[1] - pointY[2],
+                  HCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[1] - prevY[3]),
+                  LCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[2] - prevY[3]),
+                  TR = Math.max(HL,HCp,LCp);
+
+              return TR;
             }
         }
     }

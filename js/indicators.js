@@ -181,9 +181,13 @@
 						return false;
 				} else if(!graph) {
 						this.values = Indicator[options.type].getValues(chart, series, options);
-						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+						
+						if(this.values !== UNDEFINED) {
+							//console.log(this.values);
+							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+							graph.add(group);
+						}
 				}
-				graph.add(group);
 			},
 			
 			/*
