@@ -167,15 +167,15 @@
 				var indicator = this,
 						chart = this.chart,
 						renderer = chart.renderer,
-						group = this.group,
 						graph = this.graph,
+						group = this.group,
 						options = this.options,
 						series = this.series;
 					
 				if (!group) {
 						indicator.group = group = renderer.g().add();
+						indicator.group.clip(chart.indicators.clipPath)
 				}
-				
 				if(!series) {
 						error('Series not found');
 						return false;
@@ -196,8 +196,8 @@
 				var options = this.options,
 						chart = this.chart,
 						series = this.series,
-						group = this.group,
 						graph = this.graph,
+						group = this.group,
 						isDirty = this.isDirty;
 						
 				if(graph) {
@@ -206,12 +206,12 @@
 				
 				if(this.values && !isDirty) {
 						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
-						graph.add();
+						graph.add(group);
 				} else {
 						this.values = Indicator[options.type].getValues(chart, series, options);
 						if(this.values) {
 							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
-							graph.add();
+							graph.add(group);
 						}
 				}
 				
@@ -307,8 +307,8 @@
         group.attr({
         		zIndex: 7
         });
-        group.add();
         group.clip(clipPath);
+        group.add();
         
         if(!chart.indicators) chart.indicators = {};
         
