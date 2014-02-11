@@ -182,8 +182,7 @@
 				} else if(!graph) {
 						this.values = Indicator[options.type].getValues(chart, series, options);
 						
-						if(this.values !== UNDEFINED) {
-							//console.log(this.values);
+						if(this.values) {
 							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
 							graph.add(group);
 						}
@@ -207,12 +206,15 @@
 				
 				if(this.values && !isDirty) {
 						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+						graph.add();
 				} else {
 						this.values = Indicator[options.type].getValues(chart, series, options);
-						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+						if(this.values) {
+							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+							graph.add();
+						}
 				}
 				
-				graph.add();
 			},
 			
 			/*

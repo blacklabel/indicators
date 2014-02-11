@@ -98,7 +98,6 @@
            for(i = 0; i < atrLen; i++) {
               atrX = atr[i][0];
               atrY = atr[i][1];
-              console.log(atrY);
               path.push('L', xAxis.toPixels(atrX), yAxis.toPixels(atrY));
            }
 
