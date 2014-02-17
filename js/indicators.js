@@ -30,6 +30,7 @@
 		
 		var UNDEFINED,
 				Chart = HC.Chart,
+				Axis = HC.Axis,
 				extend = HC.extend,
 				each = HC.each,
 				merge = HC.merge;
@@ -85,6 +86,7 @@
 				});
 		});
 		
+
 		
 		/*
 		*  Remove corresponding indicators for series
@@ -132,6 +134,15 @@
 				proceed.call(this, options, redraw);
 		});
 		
+
+		/*
+		*		Set flag for navigator yAxis
+		*/
+    HC.wrap(HC.Scroller.prototype, 'init', function (proceed) {
+    	proceed.call(this);
+      this.yAxis.isNavigator = true;
+    });
+
 		/***
 		
 		Indicator Class:
@@ -171,7 +182,7 @@
 						graph = this.graph,
 						options = this.options,
 						series = this.series;
-					
+
 				if (!group) {
 						indicator.group = group = renderer.g().add();
 				}
@@ -181,7 +192,6 @@
 						return false;
 				} else if(!graph) {
 						this.values = Indicator[options.type].getValues(chart, series, options);
-						
 						if(this.values) {
 							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
 							graph.add(group);
@@ -288,6 +298,92 @@
 				}
 		});
 		
+		// Add yAxis as pane
+		extend(Axis.prototype, {
+			addAxisPane: function(chart, userOptions) {
+            var defaultOptions = {
+            	  title:{
+            	  	text:'ATR'
+            	  },
+            	  labels:{
+            	  	x: -8,
+									y: -2
+            	  },
+                offset: -25,
+                height: 250,
+                top: 0,
+                min: 0,
+                max: 100
+            }
+            
+            var chYxis = chart.yAxis,
+                len = chYxis.length,
+                top = chYxis[0].top,
+                topDiff = len > 2 ? chYxis[1].top - chYxis[0].top - chYxis[0].options.height : top,
+                options = merge(defaultOptions,userOptions),
+                i = sum = 0,
+                hp = [],
+                lastTop;
+            
+            //calculate height
+            for (i = 0; i < len; i++) {
+                if(!chYxis[i].isNavigator) 
+                     sum += chYxis[i].height;
+            };
+            
+            //update all axis
+            for (i = 0; i < len; i++) {
+                var yAxis = chYxis[i];
+                
+                if(!yAxis.isNavigator) {
+
+                    var yAxisHeight = yAxis.height,
+                        paneHeight = options.height,
+                        hPercent = paneHeight / sum,
+                        diffHeight, newHeight;
+                    
+                    if(hPercent > 0.5) {
+                    	paneHeight = (yAxisHeight / 2);
+                    	hPercent = paneHeight / sum;
+                    }
+
+                    diffHeight = sum * hPercent * (yAxisHeight / sum), 
+                    newHeight = yAxisHeight - diffHeight - (topDiff / (len - 1));
+                    options.height = paneHeight;
+
+                    if(i > 0) {
+                        var prevP = chYxis[i-1].isNavigator ? chYxis[i-2] : chYxis[i-1], 
+                            prevH = prevP.options.height,
+                            prevOldH = prevP.height;
+                        
+                        top = prevP.options.top + prevH + topDiff;
+                    } 
+                    
+                    lastTop = top + newHeight + topDiff;
+                    chYxis[i].update({
+                        top: top,
+                        height: newHeight
+                    },false);
+                }
+            }
+            
+            //add new axis
+            options.top = lastTop;
+            chart.addAxis(options);
+
+            return (chart.yAxis.length - 1);
+			},
+			minInArray: function(arr) {
+				return arr.reduce(function (p, v) {
+			    return ( p < v ? p : v );
+			  })[1];
+			},
+			maxInArray: function(arr) {
+				return arr.reduce(function (p, v) {
+			    return ( p > v ? p : v );
+			  })[1];
+			}
+		});
 		
 		// Initialize on chart load
 		Chart.prototype.callbacks.push(function (chart) {
@@ -330,8 +426,11 @@
        }
         
 				// update indicators after chart redraw
+			 chart.redrawIndicators();
 			 Highcharts.addEvent(chart, 'redraw', function () {
-						chart.redrawIndicators();
+					chart.redrawIndicators();
 			 });
 		});
+
+
 })(Highcharts);

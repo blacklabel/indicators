@@ -35,7 +35,7 @@ $(function () {
 				}]
 		};
 		
-		var chart = new Highcharts.StockChart(options);
+		//var chart = new Highcharts.StockChart(options);
 
 
 /*
@@ -84,14 +84,14 @@ $(function () {
 				};
 
 
-
+/* demo
 $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
 
 			adv_options.series[0].type = 'line';
   		adv_options.series[0].data = data;
 
 			$('#container-advanced').highcharts('StockChart', $.extend({},adv_options));
-});
+});*/
 
 /*
  * 2.2 ADVANCED CHART - OHLC
@@ -133,7 +133,7 @@ $.get('csv/csvtest.csv',function(data) {
 								type: 'atr',
 								params: {
 										period: 13 * 24 * 3600 * 1000,
-										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
+										periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
 								},
 								styles: {
 										strokeWidth: 2,
@@ -141,6 +141,8 @@ $.get('csv/csvtest.csv',function(data) {
 										dashstyle: 'solid'
 								}
 	});
+
+	//adv_options.indicators.reverse();
 
   // Split the lines
     var lines = data.split('\n'),

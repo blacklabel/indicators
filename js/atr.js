@@ -28,6 +28,9 @@
     
     var merge = HC.merge,
         isArray = HC.isArray,
+        addAxisPane = HC.Axis.prototype.addAxisPane,
+        minInArray = HC.Axis.prototype.minInArray,
+        maxInArray = HC.Axis.prototype.maxInArray,
         UNDEFINED;
     
     Indicator.atr = {
@@ -80,12 +83,26 @@
            var path = [],
                attrs = {},
                xAxis = series.xAxis,
-               yAxis = series.yAxis,
                atr = values,
                atrLen = atr.length,
+               userOptions,
+               yAxis,
+               index,
                atrX,
                atrY,
                i;
+
+           userOptions = {
+            min: 0,
+            max: maxInArray(values)
+           }
+           
+           if(options.yAxis === UNDEFINED) {
+             index = addAxisPane(chart,userOptions); 
+             options.yAxis = chart.yAxis[index];
+           }
+
+           yAxis = options.yAxis;
 
            attrs = merge({
                'stroke-width': 2,
