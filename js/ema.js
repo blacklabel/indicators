@@ -51,6 +51,8 @@
                 calEMA = range = 0,
                 xValue = xVal[0],
                 EMA = [],
+                xData = [],
+                yData = [],
                 point,i,index,points,yValue;
 
            //switch index for OHLC / Candlestick / Arearange
@@ -66,16 +68,26 @@
 
            for(i = 1; i < yValLen; i++){
               if(period <= range) {
-                  point = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);
-                  calEMA = point[1]; 
-                  EMA.push(point);
+									EMAPoint = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);
+									EMA.push(EMAPoint);
+									xData.push(EMAPoint[0]);
+									yData.push(EMAPoint[1]);
+                  calEMA = EMAPoint[1]; 
               }
               range = utils.accumulateAverage(points, xVal, yVal, i, index);      
            }
+           
+					 EMAPoint = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);
+					 EMA.push(EMAPoint);
+					 xData.push(EMAPoint[0]);
+					 yData.push(EMAPoint[1]);
+					 
 
-           EMA.push(utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index));
-
-           return EMA;
+           return {
+           	 values: EMA,
+           	 xData: xData,
+           	 yData: yData
+           };
         }, 
         getGraph: function(chart, series, options, values) {
            var path   = [],
