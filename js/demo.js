@@ -27,6 +27,9 @@ $(function () {
 								dashstyle: 'solid'
 						}
 				}],
+				tooltip:{
+					enabledIndicators: true
+				},
 				series: [{
 						id: 'first',
 						pointStart: Date.UTC(2013, 0, 1),
@@ -72,6 +75,9 @@ $(function () {
                     }
                 }
             },
+            tooltip:{
+							enabledIndicators: true
+						},
 						series: [{
 								cropThreshold: 0,
 								id: 'AAPL',

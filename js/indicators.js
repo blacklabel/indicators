@@ -58,6 +58,10 @@
 			return typeof obj === 'object';
 		}
 
+		HC.splat = function (obj) {
+			return HC.isArray(obj) ? obj : [obj];
+		}
+
 		
 		/***
 		
@@ -142,6 +146,48 @@
     	proceed.call(this);
       this.yAxis.isNavigator = true;
     });
+
+    /*
+		*		Tooltip formatter content
+		*/
+		HC.wrap(HC.Tooltip.prototype, 'defaultFormatter',function (proceed, options, redraw) {
+
+			var points 		 = this.points || HC.splat(this),
+					series 		 = points[0].series,
+					chart 		 = series.chart,
+					tooltipOptions = chart.tooltip.options,
+					indicators = series.indicators,
+					x 			   = this.x,
+					s;
+
+			// build the header
+			s = [series.tooltipHeaderFormatter(points[0])];
+
+			// build the values
+			each(points, function (item) {
+					series = item.series;
+					s.push((series.tooltipFormatter && series.tooltipFormatter(item)) ||
+					item.point.tooltipFormatter(series.tooltipOptions.pointFormat));
+			});
+
+			if(tooltipOptions.enabledIndicators) {
+				// build the values of indicators
+				$.each(indicators,function(i,ind){
+					if(typeof(ind.values) === 'undefined') 
+						return;
+
+					$.each(ind.values,function(j,val){
+						if(val[0] === x) 
+							s.push(ind.options.type.toLowerCase() + ': ' + HC.numberFormat(val[1],2) + '<br/>');
+					});
+				});
+			}
+
+			// build the footer
+			s.push(tooltipOptions.footerFormat || '');
+			return s.join('');
+
+		});
 
 		/***
 		
