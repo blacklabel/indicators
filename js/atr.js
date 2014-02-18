@@ -52,8 +52,6 @@
                 periodUnited = utils.periodTransform(period,unit),
                 range = prevATR = TR = 0,
                 ATR = [],
-                xData = [],
-                yData = [],
                 point,i,index,points,yValue;
 
             points = [[xValue, yValue]];
@@ -68,8 +66,6 @@
                   point = utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR);
                   prevATR = point[1];
                   ATR.push(point);
-                  xData.push(point[0]);
-                  yData.push(point[1]);
               } else if (period === range) {
                   prevATR = TR / (i-1);
                   ATR.push([xVal[i-1],prevATR]);
@@ -78,16 +74,10 @@
               }
               range = utils.accumulateAverage(points, xVal, yVal, i);
            }
-           point = utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR);
-           xData.push(point[0]);
-           yData.push(point[1]);
-           ATR.push(point);
 
-           return {
-           	 values: ATR,
-           	 xData: xData,
-           	 yData: yData
-           };
+           ATR.push(utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR));
+
+           return ATR;
         }, 
         getGraph: function(chart, series, options, values) {
            var path = [],

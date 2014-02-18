@@ -45,10 +45,7 @@
                 range = 0,
                 xValue = xVal[0],
                 SMA = [],
-                xData = [],
-                yData = [],
-                point,i,index,points,yValue,
-                SMApPoint;
+                point,i,index,points,yValue;
 
            //switch index for OHLC / Candlestick / Arearange
            if(isArray(yVal[0])) {
@@ -64,24 +61,14 @@
 					 for(var i = 1; i < yValLen; i++ ){
 					 	
 					    if(period <= range) {
-					    	 SMAPoint = this.utils.populateAverage(points, xVal, yVal, i, period, index);
-								 SMA.push(SMAPoint);
-								 xData.push(SMAPoint[0]);
-								 yData.push(SMAPoint[1]);	
+					    	SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period, index));
               }
 
               range = this.utils.accumulateAverage(points, xVal, yVal, i, index);	
 					 }
-					 SMAPoint = this.utils.populateAverage(points, xVal, yVal, i, period, index);
-					 SMA.push(SMAPoint);
-					 xData.push(SMAPoint[0]);
-					 yData.push(SMAPoint[1]);
-					 
-					 return {
-					 	 values: SMA,
-					 	 xData: xData,
-					 	 yData: yData
-					 };
+					 SMA.push(this.utils.populateAverage(points, xVal, yVal, i, period, index));
+
+					 return SMA;
 				}, 
 				getGraph: function(chart, series, options, values) {
 					 var path = [],
