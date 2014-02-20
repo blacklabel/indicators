@@ -177,8 +177,10 @@
 						return;
 
 					$.each(ind.values,function(j,val){
+
 						if(val[0] === x) 
-							s.push(ind.options.type.toLowerCase() + ': ' + HC.numberFormat(val[1],2) + '<br/>');
+							s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],2) + '<br/>');
+						
 					});
 				});
 			}
