@@ -245,7 +245,8 @@
 							this.xData = arrayValues.xData;
 							this.yData = arrayValues.yData;
 							extremes = this.getXExtremes();
-							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values.slice(extremes.min, extremes.max));
+							this.currentPoints = this.values.slice(extremes.min, extremes.max);
+							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.currentPoints);
 							graph.add(group);
 						}
 				}
@@ -270,7 +271,8 @@
 				
 				if(this.values && !isDirty) {
 						extremes = this.getXExtremes();
-						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values.slice(extremes.min, extremes.max));
+						this.currentPoints = this.values.slice(extremes.min, extremes.max);
+						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.currentPoints);
 						// shouldn't be attr({ d: path }); ?
 						graph.add(group);
 				} else {
@@ -280,7 +282,8 @@
 							this.xData = arrayValues.xData;
 							this.yData = arrayValues.yData;
 							extremes = this.getXExtremes();
-							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values.slice(extremes.min, extremes.max));
+							this.currentPoints = this.values.slice(extremes.min, extremes.max);
+							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.currentPoints);
 							graph.add(group);
 						}
 				}
