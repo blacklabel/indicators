@@ -387,6 +387,15 @@
 				 * Redraw all indicators, method used in chart events
 				 */
 				redrawIndicators: function () {
+						var chart = this,
+								clipPath = chart.indicators.clipPath;
+        
+						clipPath.attr({
+								x: chart.plotLeft,
+								y: chart.plotTop,
+								width: chart.plotWidth,
+								height: chart.plotHeight
+						});   
 						each(this.indicators.allItems, function (indicator) {
 									indicator.redraw();
 						});
