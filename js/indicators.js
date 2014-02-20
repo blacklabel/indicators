@@ -233,7 +233,7 @@
 						extremes;
 						
 				if (!group) {
-						indicator.group = group = renderer.g().add();
+						indicator.group = group = renderer.g().add(chart.indicators.group);
 						indicator.group.clip(chart.indicators.clipPath);
 				}
 				if(!series) {
@@ -509,7 +509,7 @@
         clipPath = chart.renderer.clipRect(clipBox);   
         group = chart.renderer.g("indicators");
         group.attr({
-        		zIndex: 7
+        		zIndex: 2
         });
         group.clip(clipPath);
         group.add();
