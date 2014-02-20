@@ -296,8 +296,8 @@
 						xMin = xAxis.min,
 						xMax = xAxis.max,
 						i = 0,
-						min,
-						max;
+						min = 0,
+						max = 0;
 				
 				while(i < len){
 					if(xData[i] >= xMin) {
@@ -314,7 +314,7 @@
 					i--;
 				}
 				min = min < 3 ? 0 : min - 2;
-				max = max > len - 4 ? len : max + 3;
+				max = max > len - 4 ? len + 1 : max + 3;
 				
 				return {
 						min: min,
