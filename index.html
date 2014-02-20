@@ -5,6 +5,7 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script type="text/javascript" src="http://code.highcharts.com/stock/highstock.src.js"></script>
   <script src="http://code.highcharts.com/stock/highcharts-more.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script type="text/javascript" src="js/indicators.js"></script>
 	<script type="text/javascript" src="js/sma.js"></script>
   <script type="text/javascript" src="js/ema.js"></script>
@@ -14,11 +15,12 @@
 </head>
 <style>
   .chart { float:left; width:45%; }
+  .chart-entire { float:left; height:500px; width:100%; }
 </style>
 <body>
   <div id="container-advanced" class="chart"></div>
   <div id="container-simple" class="chart"></div>
-  <div id="container-candlestick-atr"></div>
+  <div id="container-candlestick-atr" chart="chart-entire"></div>
   <div id="container-ohlc" class="chart"></div>
   <div id="container-arearange" class="chart"></div>
   <div id="container-candlestick" class="chart"></div>
