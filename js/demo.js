@@ -139,17 +139,22 @@ $.get('csv/csvtest.csv',function(data) {
 								params: {
 										period: 13 * 24 * 3600 * 1000,
 										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond,
-										yAxis: {
+										/*yAxis: {
 											title: {
 												text:'My ATR title'
 											}
-										}	
+										}	*/
 								},
 								styles: {
 										strokeWidth: 2,
 										stroke: 'orange',
 										dashstyle: 'solid'
-								}
+								},
+								yAxis: {
+											title: {
+												text:'My ATR title'
+											}
+								}	
 	});
 
   // Split the lines

@@ -111,14 +111,14 @@
                 }
                }
 
-           userOptions = merge(defaultOptions, options.params.yAxis);
+           userOptions = merge(defaultOptions, options.yAxis);
            
-           if(options.yAxis === UNDEFINED) {
+           if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
-             options.yAxis = chart.yAxis[index];
+             options.Axis = chart.yAxis[index];
            }
 
-           yAxis = options.yAxis;
+           yAxis = options.Axis;
 
            attrs = merge({
                'stroke-width': 2,
