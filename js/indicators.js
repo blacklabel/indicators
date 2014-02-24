@@ -409,12 +409,8 @@
 		// Add yAxis as pane
 		extend(Axis.prototype, {
 			addAxisPane: function(chart, userOptions) {
-				console.log('addAxisPane');
 
             var defaultOptions = {
-            	  title:{
-            	  	text:'ATR'
-            	  },
             	  labels:{
             	  	x: -8,
 									y: -2

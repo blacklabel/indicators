@@ -27,7 +27,7 @@
     
     ***/
 
-    var merge = HC.merge,
+    var merge   = HC.merge,
         isArray = HC.isArray,
         UNDEFINED;
     

@@ -95,6 +95,7 @@
                xAxis = series.xAxis,
                atr = values,
                atrLen = atr.length,
+               defaultOptions,
                userOptions,
                yAxis,
                index,
@@ -102,10 +103,15 @@
                atrY,
                i;
 
-           userOptions = {
-            min: 0,
-            max: maxInArray(values)
-           }
+               defaultOptions = {
+                min: 0,
+                max: maxInArray(values),
+                title: {
+                  text: 'ATR'
+                }
+               }
+
+           userOptions = merge(defaultOptions, options.params.yAxis);
            
            if(options.yAxis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
