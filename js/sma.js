@@ -62,6 +62,8 @@
            points = [[xValue, yValue]];
 					 
 					 for(var i = 1; i < yValLen; i++ ){
+              
+              range = this.utils.accumulateAverage(points, xVal, yVal, i, index); 
 					 	
 					    if(period <= range) {
 					    	 SMAPoint = this.utils.populateAverage(points, xVal, yVal, i, period, index);
@@ -70,7 +72,6 @@
 								 yData.push(SMAPoint[1]);	
               }
 
-              range = this.utils.accumulateAverage(points, xVal, yVal, i, index);	
 					 }
 					 SMAPoint = this.utils.populateAverage(points, xVal, yVal, i, period, index);
 					 SMA.push(SMAPoint);

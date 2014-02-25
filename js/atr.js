@@ -63,6 +63,8 @@
             }
 
            for(i = 1; i < yValLen; i++){
+              
+              range = utils.accumulateAverage(points, xVal, yVal, i);
 
               if(period < range) {
                   point = utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR);
@@ -76,7 +78,6 @@
               } else {
                 TR += utils.getTR(yVal[i-1],yVal[i-2]);
               }
-              range = utils.accumulateAverage(points, xVal, yVal, i);
            }
            point = utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR);
            xData.push(point[0]);

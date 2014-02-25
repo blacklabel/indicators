@@ -10,6 +10,10 @@ $(function () {
 				indicators: [{
 						id: 'first',
 						type: 'sma',
+						params: {
+							period: 5 * 24 * 3600 * 1000,
+							periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
+						},
 						styles: {
 								strokeWidth: 2,
 								dashstyle: 'solid'
@@ -18,7 +22,7 @@ $(function () {
 						id: 'first',
 						type: 'ema',
 						params: {
-							period: 4 * 24 * 3600 * 1000,
+							period: 5 * 24 * 3600 * 1000,
 							periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
 						},
 						styles: {
@@ -49,13 +53,13 @@ $(function () {
 								id: 'AAPL',
 								type: 'sma',
 								params: {
-										period: 15 * 24 * 3600 * 1000	
+										period: 14 * 24 * 3600 * 1000	
 								}
 						},{
 								id: 'AAPL',
 								type: 'ema',
 								params: {
-										period: 15 * 24 * 3600 * 1000,
+										period: 14 * 24 * 3600 * 1000,
 										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
 										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
 								},
@@ -130,20 +134,13 @@ $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json
 
 $.get('csv/csvtest.csv',function(data) { 
 
-	
-
 	adv_options.series[0].type = 'candlestick';
 	adv_options.indicators.push({
 								id: 'AAPL',
 								type: 'atr',
 								params: {
-										period: 13 * 24 * 3600 * 1000,
-										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond,
-										/*yAxis: {
-											title: {
-												text:'My ATR title'
-											}
-										}	*/
+										period: 14 * 24 * 3600 * 1000,
+										periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond,
 								},
 								styles: {
 										strokeWidth: 2,
@@ -151,6 +148,7 @@ $.get('csv/csvtest.csv',function(data) {
 										dashstyle: 'solid'
 								},
 								yAxis: {
+									lineWidth:2,
 											title: {
 												text:'My ATR title'
 											}

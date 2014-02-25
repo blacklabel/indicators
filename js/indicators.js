@@ -412,10 +412,9 @@
 
             var defaultOptions = {
             	  labels:{
-            	  	x: -8,
+            	  	x: 20,
 									y: -2
             	  },
-                offset: -25,
                 height: 250,
                 top: 0,
                 min: 0,

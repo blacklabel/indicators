@@ -50,6 +50,7 @@
                 EMApercent = (2 / (periodUnited + 1)),
                 calEMA = range = 0,
                 xValue = xVal[0],
+                yValue = yVal[0],
                 EMA = [],
                 xData = [],
                 yData = [],
@@ -61,12 +62,12 @@
               yValue = yVal[0][index];
            } else {
               index  = -1;
-              yValue = yVal[0];
            }
 
            points = [[xValue, yValue]];
 
            for(i = 1; i < yValLen; i++){
+              range = utils.accumulateAverage(points, xVal, yVal, i, index);      
               if(period <= range) {
 									EMAPoint = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);
 									EMA.push(EMAPoint);
@@ -74,7 +75,6 @@
 									yData.push(EMAPoint[1]);
                   calEMA = EMAPoint[1]; 
               }
-              range = utils.accumulateAverage(points, xVal, yVal, i, index);      
            }
            
 					 EMAPoint = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);
