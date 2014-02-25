@@ -411,6 +411,11 @@
 			addAxisPane: function(chart, userOptions) {
 
             var defaultOptions = {
+	            	labels:{
+	            		x: 20,
+	            		y: -2
+	            	},
+            		offset:0,
                 height: 250,
                 top: 0,
                 min: 0,

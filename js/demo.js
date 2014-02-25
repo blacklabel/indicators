@@ -69,6 +69,11 @@ $(function () {
 										dashstyle: 'solid'
 								}
 						}],
+						yAxis:{
+							title:{
+								text: 'aaa'
+							}
+						},
 						rangeSelector: {
 							selected: 1
 						},
