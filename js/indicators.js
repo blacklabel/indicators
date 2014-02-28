@@ -33,7 +33,9 @@
 				Axis = HC.Axis,
 				extend = HC.extend,
 				each = HC.each,
-				merge = HC.merge;
+				merge = HC.merge,
+        mathMax = Math.max;
+
 		
 		function error(name) {
 				if(window.console){
@@ -208,10 +210,21 @@
 				// set default params, when not specified in params
 				if(!Indicator[options.type]) error("Indicator not found!");
 				options.params = merge({}, Indicator[options.type].getDefaultOptions(), options.params);
-				
+	
 				this.chart = chart;
 				this.options = options;
 				this.series = chart.get(options.id);
+
+				var cropShoulder = this.series.cropShoulder,
+						maxPeriod;
+	
+				if(this.options.params.period > cropShoulder || cropShoulder === UNDEFINED) {
+					maxPeriod = this.options.params.period;
+					extend(this.series, {
+						cropShoulder: maxPeriod
+					});
+				}
+
 				if(!this.series.indicators) {
 						this.series.indicators = [];
 				}
@@ -495,6 +508,7 @@
 		Chart.prototype.callbacks.push(function (chart) {
         var options = chart.options.indicators,
         		optionsLen = options ? options.length : 0,
+        		i = 0,
         		clipPath,
 						group,
 						clipBox = {
@@ -527,7 +541,7 @@
         // add clip path to indicators
         chart.indicators.clipPath = clipPath;
         
-       for(var i = 0; i < optionsLen; i++) {
+       for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i]);
        }
         

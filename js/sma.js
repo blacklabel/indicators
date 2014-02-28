@@ -32,7 +32,7 @@
 		Indicator.sma = {
 				getDefaultOptions: function(){
 						return {
-								period: 4 * 24 * 3600 * 1000 // 4 days
+								period: 4
 						};
 				},
 				getValues: function(chart, series, options) {
@@ -44,19 +44,21 @@
                 yValLen = yVal ? yVal.length : 0,
                 range = 0,
                 xValue = xVal[0],
+                yValue = yVal[0],
                 SMA = [],
                 xData = [],
                 yData = [],
-                point,i,index,points,yValue,
+                index = -1,
+                point,i,points,yValue,
                 SMApPoint;
+
+                console.log('SMA series');
+            console.log(series);
 
            //switch index for OHLC / Candlestick / Arearange
            if(isArray(yVal[0])) {
               index = params.index ? params.index : 0;
               yValue = yVal[0][index];
-           } else {
-              index = -1;
-              yValue = yVal[0];
            }
 
            points = [[xValue, yValue]];
@@ -71,8 +73,8 @@
 								 xData.push(SMAPoint[0]);
 								 yData.push(SMAPoint[1]);	
               }
-
 					 }
+           
 					 SMAPoint = this.utils.populateAverage(points, xVal, yVal, i, period, index);
 					 SMA.push(SMAPoint);
 					 xData.push(SMAPoint[0]);
