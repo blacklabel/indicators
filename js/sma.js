@@ -57,7 +57,6 @@
               index = params.index ? params.index : 0;
               yValue = yVal[0][index];
            }
-
            // starting point
            points = [[xValue, yValue]];
 					 

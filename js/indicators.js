@@ -287,7 +287,7 @@
 					}
 					this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
 					graph.add(group);
-					}
+				}
 			},	
 			
 			/*
@@ -501,6 +501,9 @@
 			 Highcharts.addEvent(chart, 'redraw', function () {
 					chart.redrawIndicators();
 			 });
+			 chart.series[0].isDirty= true;
+			 chart.series[0].isDirtyData= true;
+			 chart.redraw();
 		});
 
 

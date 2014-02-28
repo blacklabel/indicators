@@ -53,7 +53,7 @@ $(function () {
 						 chart: {
 								events: {
 									load: function() {
-											console.log(this.series[0].processedXData.length,this.series[0].processedYData); 
+											console.log(this.series[0].data,this.series[0].processedYData); 
 									}
 								}
 						 },
@@ -121,7 +121,62 @@ $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json
  */
 
 $.get('csv/csvtest.csv',function(data) { 
-
+var adv_options = {
+						 chart: {
+								events: {
+									load: function() {
+											console.log(this.series[0].data,this.series[0].processedYData); 
+									}
+								}
+						 },
+						indicators: [{
+								id: 'AAPL',
+								type: 'sma',
+								params: {
+										period: 5,
+								}
+						},{
+								id: 'AAPL',
+								type: 'ema',
+								params: {
+										period: 5,
+										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
+										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
+								},
+								styles: {
+										strokeWidth: 2,
+										stroke: 'green',
+										dashstyle: 'solid'
+								}
+						}],
+						yAxis:{
+							title:{
+								text: 'aaa'
+							}
+						},
+						rangeSelector: {
+							selected: 0
+						},
+            plotOptions: {
+                series: {
+                    dataGrouping: { 
+                        enabled: false
+                    }
+                }
+            },
+            tooltip:{
+							enabledIndicators: true
+						},
+						series: [{
+								cropThreshold: 0,
+								id: 'AAPL',
+								name: 'AAPL',
+								data: [],
+								tooltip: {
+									valueDecimals: 2
+								}
+						}]
+				};
 	adv_options.series[0].type = 'candlestick';
 	adv_options.indicators.push({
 								id: 'AAPL',
