@@ -255,12 +255,10 @@
 				} else if(!graph) {
 						arrayValues = Indicator[options.type].getValues(chart, series, options);
 						if(arrayValues) {
-							this.values = arrayValues.values;
+							this.values = this.currentPoints = arrayValues.values;
 							this.xData = arrayValues.xData;
 							this.yData = arrayValues.yData;
-							extremes = this.getXExtremes();
-							this.currentPoints = this.values.slice(extremes.min, extremes.max);
-							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.currentPoints);
+							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
 							graph.add(group);
 						}
 				}
@@ -279,65 +277,18 @@
 						arrayValues,
 						extremes;
 						
-				if(graph) {
-						graph.destroy();
-				}
-				
-				if(this.values && !isDirty) {
-						extremes = this.getXExtremes();
-						this.currentPoints = this.values.slice(extremes.min, extremes.max);
-						this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.currentPoints);
-						// shouldn't be attr({ d: path }); ?
-						graph.add(group);
-				} else {
-						arrayValues = Indicator[options.type].getValues(chart, series, options);
-						if(arrayValues) {
-							this.values = arrayValues.values;
-							this.xData = arrayValues.xData;
-							this.yData = arrayValues.yData;
-							extremes = this.getXExtremes();
-							this.currentPoints = this.values.slice(extremes.min, extremes.max);
-							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.currentPoints);
-							graph.add(group);
-						}
-				}
+				arrayValues = Indicator[options.type].getValues(chart, series, options);
+				if(arrayValues) {
+					this.values = this.currentPoints = arrayValues.values;
+					this.xData = arrayValues.xData;
+					this.yData = arrayValues.yData;
+					if(graph) {
+							graph.destroy();
+					}
+					this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+					graph.add(group);
+					}
 			},	
-			
-			/*
-			* Get x-extremes for indicator to draw path only within plotting area
-			*/
-			getXExtremes: function(){
-				var xData = this.xData,
-						xAxis = this.xAxis || this.series.xAxis,
-						len = xData.length,
-						xMin = xAxis.min,
-						xMax = xAxis.max,
-						i = 0,
-						min = 0,
-						max = 0;
-				
-				while(i < len){
-					if(xData[i] >= xMin) {
-						min = i;
-						i = len;
-					}
-					i++;
-				}
-				while(i > 0){
-					if(xData[i] <= xMax) {
-						max = i;
-						i = 0;
-					}
-					i--;
-				}
-				min = min < 3 ? 0 : min - 2;
-				max = max > len - 4 ? len + 1 : max + 3;
-				
-				return {
-						min: min,
-						max: max
-				}
-			},
 			
 			/*
 			* Destroy the indicator

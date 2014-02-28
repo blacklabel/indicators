@@ -32,28 +32,25 @@
 		Indicator.sma = {
 				getDefaultOptions: function(){
 						return {
-								period: 4
+								period: 5
 						};
 				},
 				getValues: function(chart, series, options) {
 						var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = series.xData,
-                yVal = series.yData,
+                xVal = series.processedXData,
+                yVal = series.processedYData,
                 yValLen = yVal ? yVal.length : 0,
-                range = 0,
+                range = 1,
                 xValue = xVal[0],
                 yValue = yVal[0],
                 SMA = [],
                 xData = [],
                 yData = [],
                 index = -1,
-                point,i,points,yValue,
-                SMApPoint;
-
-                console.log('SMA series');
-            console.log(series);
+                point,i,points,
+                SMAPoint;
 
            //switch index for OHLC / Candlestick / Arearange
            if(isArray(yVal[0])) {
@@ -61,21 +58,26 @@
               yValue = yVal[0][index];
            }
 
+           // starting point
            points = [[xValue, yValue]];
 					 
-					 for(var i = 1; i < yValLen; i++ ){
-              
-              range = this.utils.accumulateAverage(points, xVal, yVal, i, index); 
-					 	
-					    if(period <= range) {
-					    	 SMAPoint = this.utils.populateAverage(points, xVal, yVal, i, period, index);
-								 SMA.push(SMAPoint);
-								 xData.push(SMAPoint[0]);
-								 yData.push(SMAPoint[1]);	
-              }
+           // accumulate first N-points
+           while(range != period){
+							 utils.accumulateAverage(points, xVal, yVal, range, index); 
+							 range ++; 
+           }
+           
+           // calculate value one-by-one for each perdio in visible data
+					 for(i = range; i < yValLen; i++ ){
+							 SMAPoint = utils.populateAverage(points, xVal, yVal, i, period, index);
+							 SMA.push(SMAPoint);
+							 xData.push(SMAPoint[0]);
+							 yData.push(SMAPoint[1]);	
+							 
+							 utils.accumulateAverage(points, xVal, yVal, i, index); 
 					 }
            
-					 SMAPoint = this.utils.populateAverage(points, xVal, yVal, i, period, index);
+					 SMAPoint = utils.populateAverage(points, xVal, yVal, i, period, index);
 					 SMA.push(SMAPoint);
 					 xData.push(SMAPoint[0]);
 					 yData.push(SMAPoint[1]);
@@ -119,21 +121,13 @@
 								var xValue = xVal[i],
                     yValue = index < 0 ? yVal[i] : yVal[i][index],
                     pLen =  points.push([xValue, yValue]);
-                    range = points[pLen - 1][0] - points[0][0]; 
-
-                return range;
 						},
 						populateAverage: function(points, xVal, yVal, i, period, index){
 								var pLen = points.length,
 										smaY = this.sumArray(points) / pLen,
 										smaX = xVal[i-1];
 										
-								while(points[points.length-1][0] - points[0][0] >= period) {
-										points.shift(); 				// remove points until range < period
-								}
-								
-								pLen = points.length;
-								range = points[pLen - 1][0] - points[0][0]; 
+								points.shift(); 				// remove point until range < period
 
 								return [smaX, smaY];
 						},
@@ -144,5 +138,5 @@
 								})[1];
 						}
 				}
-		}
-})(Highcharts)
+		};
+})(Highcharts);

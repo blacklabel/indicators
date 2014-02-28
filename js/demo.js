@@ -50,6 +50,13 @@ $(function () {
  * 2.1 ADVANCED CHART
  */
  var adv_options = {
+						 chart: {
+								events: {
+									load: function() {
+											console.log(this.series[0].processedXData.length,this.series[0].processedYData); 
+									}
+								}
+						 },
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
@@ -76,7 +83,7 @@ $(function () {
 							}
 						},
 						rangeSelector: {
-							selected: 1
+							selected: 0
 						},
             plotOptions: {
                 series: {
