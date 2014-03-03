@@ -70,7 +70,7 @@
                utils.accumulateAverage(points, xVal, yVal, range, index); 
                range ++; 
            }
-
+console.log(period, EMApercent);
            // calculate value one-by-one for each perdio in visible data
            for(i = range; i < yValLen; i++){
 									EMAPoint = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);

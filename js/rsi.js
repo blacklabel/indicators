@@ -65,27 +65,26 @@
            }
            
            // accumulate first N-points
-           while(range != period){
+           while(range < period){
            	 	change = parseFloat((yVal[range][3] - yVal[range - 1][3]).toFixed(4));
            	 	gain.push(change > 0 ? change : 0);
-           	 	loss.push(change < 0 ? change : 0);
+           	 	loss.push(change < 0 ? Math.abs(change) : 0);
            	 	range ++;
            }
            
-           for(i = range; i < yValLen; i++ ){
+           for(i = period - 1; i < yValLen; i++ ){
            	 	 var len;
            	 	 
            	 	 change = parseFloat((yVal[i][3] - yVal[i - 1][3]).toFixed(4));
 							 gain.push(change > 0 ? change : 0);
-							 len = loss.push(change < 0 ? change : 0) - 1; // better than loss.length
+							 len = loss.push(change < 0 ? Math.abs(change) : 0) - 1; // better than loss.length
            	 	 
            	 	 // EMA for loss and gains
-           	 	 avgGain = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(gain) / len]], 2, EMApercent, calEMAGain, 0);
-           	 	 avgLoss = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(loss) / len]], 2, EMApercent, calEMALoss, 0);
+           	 	 avgGain = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(gain) / len] ], 2, EMApercent, calEMAGain, 0);
+           	 	 avgLoss = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(loss) / len] ], 2, EMApercent, calEMALoss, 0);
            	    
            	 	 // relative strengh
 							 RS = avgGain[1] / avgLoss[1];
-							 
 							 // calculate RSI value
 							 RSIPoint = 100 - (100 / (1 + RS));
 							 
@@ -123,6 +122,16 @@
 
 					 defaultOptions = {
 							 min: 0,
+							 tickInterval: 25,
+							 plotLines: [{
+							 		value: options.params.overbought,
+							 		color: 'orange',
+							 		width: 1
+							 }, {
+							 	  value: options.params.oversold,
+							 		color: 'orange',
+							 		width: 1
+							 }],
 							 max: 100,
 							 title: {
 							 	 	text: 'RSI'
