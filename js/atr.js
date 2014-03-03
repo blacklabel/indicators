@@ -33,7 +33,7 @@
         maxInArray = HC.Axis.prototype.maxInArray,
         UNDEFINED;
     
-    Indicator.atr = {
+    Indicator.prototype.atr = {
         getDefaultOptions: function(){
             return {
                 period: 4 * 24 * 3600 * 1000 // 4 days

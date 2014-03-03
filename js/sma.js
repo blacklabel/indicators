@@ -29,7 +29,7 @@
 		var merge = HC.merge,
 				isArray = HC.isArray;
 		
-		Indicator.sma = {
+		Indicator.prototype.sma = {
 				getDefaultOptions: function(){
 						return {
 								period: 5
@@ -80,7 +80,6 @@
 					 SMA.push(SMAPoint);
 					 xData.push(SMAPoint[0]);
 					 yData.push(SMAPoint[1]);
-					 
 					 return {
 					 	 values: SMA,
 					 	 xData: xData,

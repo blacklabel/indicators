@@ -31,7 +31,7 @@
         isArray = HC.isArray,
         UNDEFINED;
     
-    Indicator.ema = {
+    Indicator.prototype.ema = {
         getDefaultOptions: function(){
             return {
                 period: 4 * 24 * 3600 * 1000 // 4 days
@@ -82,7 +82,6 @@
 					 xData.push(EMAPoint[0]);
 					 yData.push(EMAPoint[1]);
 					 
-
            return {
            	 values: EMA,
            	 xData: xData,

@@ -42,7 +42,7 @@ $(function () {
 		};
 		
 		var chart = new Highcharts.StockChart(options,function(chart){
-			console.log(chart.series[0].processedXData.length);
+			//console.log(chart.series[0].processedXData.length);
 		});
 
 
@@ -53,7 +53,7 @@ $(function () {
 						 chart: {
 								events: {
 									load: function() {
-											console.log(this.series[0].data,this.series[0].processedYData); 
+											//console.log(this.series[0].data,this.series[0].processedYData); 
 									}
 								}
 						 },
@@ -125,7 +125,7 @@ var adv_options = {
 						 chart: {
 								events: {
 									load: function() {
-											console.log(this.series[0].data,this.series[0].processedYData); 
+											//console.log(this.series[0].data,this.series[0].processedYData); 
 									}
 								}
 						 },
@@ -178,7 +178,7 @@ var adv_options = {
 						}]
 				};
 	adv_options.series[0].type = 'candlestick';
-	adv_options.indicators.push({
+	/*adv_options.indicators.push({
 								id: 'AAPL',
 								type: 'atr',
 								params: {
@@ -195,6 +195,26 @@ var adv_options = {
 												text:'My ATR title'
 											}
 								}	
+	});	*/
+	adv_options.indicators.push({
+								id: 'AAPL',
+								type: 'rsi',
+								params: {
+										period: 14,
+										overbought: 70,
+										oversold: 30
+								},
+								styles: {
+										strokeWidth: 2,
+										stroke: 'black',
+										dashstyle: 'solid'
+								},
+								yAxis: {
+										lineWidth:2,
+										title: {
+											text:'My RSI title'
+										}
+								}	
 	});
 
   // Split the lines
@@ -210,7 +230,7 @@ var adv_options = {
   });
   
 	$('#container-candlestick-atr').highcharts('StockChart', $.extend({},adv_options),function(chart){
-			console.log(chart.series[0].processedXData.length);
+			//console.log(chart.series[0].processedXData.length);
 	});
 });
 

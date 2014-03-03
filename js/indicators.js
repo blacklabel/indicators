@@ -208,8 +208,8 @@
 			*/
 			init: function (chart, options) {
 				// set default params, when not specified in params
-				if(!Indicator[options.type]) error("Indicator not found!");
-				options.params = merge({}, Indicator[options.type].getDefaultOptions(), options.params);
+				if(!Indicator.prototype[options.type]) error("Indicator: " + options.type + " not found!");
+				options.params = merge({}, Indicator.prototype[options.type].getDefaultOptions(), options.params);
 	
 				this.chart = chart;
 				this.options = options;
@@ -253,12 +253,12 @@
 						error('Series not found');
 						return false;
 				} else if(!graph) {
-						arrayValues = Indicator[options.type].getValues(chart, series, options);
+						arrayValues = Indicator.prototype[options.type].getValues(chart, series, options);
 						if(arrayValues) {
 							this.values = this.currentPoints = arrayValues.values;
 							this.xData = arrayValues.xData;
 							this.yData = arrayValues.yData;
-							this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+							this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 							graph.add(group);
 						}
 				}
@@ -277,7 +277,7 @@
 						arrayValues,
 						extremes;
 						
-				arrayValues = Indicator[options.type].getValues(chart, series, options);
+				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options);
 				if(arrayValues) {
 					this.values = this.currentPoints = arrayValues.values;
 					this.xData = arrayValues.xData;
@@ -285,7 +285,7 @@
 					if(graph) {
 							graph.destroy();
 					}
-					this.graph = graph = Indicator[options.type].getGraph(chart, series, options, this.values);
+					this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 					graph.add(group);
 				}
 			},	
