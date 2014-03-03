@@ -41,22 +41,13 @@ $(function () {
 				}]
 		};
 		
-		var chart = new Highcharts.StockChart(options,function(chart){
-			console.log(chart.series[0].processedXData.length);
-		});
+		var chart = new Highcharts.StockChart(options);
 
 
 /*
  * 2.1 ADVANCED CHART
  */
  var adv_options = {
-						 chart: {
-								events: {
-									load: function() {
-											console.log(this.series[0].data,this.series[0].processedYData); 
-									}
-								}
-						 },
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
@@ -122,13 +113,6 @@ $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json
 
 $.get('csv/csvtest.csv',function(data) { 
 var adv_options = {
-						 chart: {
-								events: {
-									load: function() {
-											console.log(this.series[0].data,this.series[0].processedYData); 
-									}
-								}
-						 },
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
@@ -139,8 +123,7 @@ var adv_options = {
 								id: 'AAPL',
 								type: 'ema',
 								params: {
-										period: 5,
-										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
+										period: 14,
 										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
 								},
 								styles: {
@@ -209,9 +192,7 @@ var adv_options = {
         time += (24 * 3600 * 1000);
   });
   
-	$('#container-candlestick-atr').highcharts('StockChart', $.extend({},adv_options),function(chart){
-			console.log(chart.series[0].processedXData.length);
-	});
+	$('#container-candlestick-atr').highcharts('StockChart', $.extend({},adv_options));
 });
 
 

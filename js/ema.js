@@ -34,7 +34,7 @@
     Indicator.ema = {
         getDefaultOptions: function(){
             return {
-                period: 4 * 24 * 3600 * 1000 // 4 days
+                period: 5
             };
         },
         getValues: function(chart, series, options) {
@@ -125,8 +125,9 @@
         utils: {
             accumulateAverage: function(points, xVal, yVal, i, index){ 
                 var xValue = xVal[i],
-                    yValue = index < 0 ? yVal[i] : yVal[i][index],
-                    pLen   = points.push([xValue, yValue]);
+                    yValue = index < 0 ? yVal[i] : yVal[i][index];
+                    
+                points.push([xValue, yValue]);
             },
             populateAverage: function(points, xVal, yVal, i, EMApercent, calEMA, index){
                 var pLen       = points.length,

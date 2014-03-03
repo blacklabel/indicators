@@ -36,21 +36,20 @@
     Indicator.atr = {
         getDefaultOptions: function(){
             return {
-                period: 4 * 24 * 3600 * 1000 // 4 days
+                period: 5
             };
         },
         getValues: function(chart, series, options) {
             var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                unit = params.periodUnit,
-                xVal = series.xData,
-                yVal = series.yData,
+                xVal = series.processedXData,
+                yVal = series.processedYData,
                 yValLen = yVal ? yVal.length : 0,
                 xValue = xVal[0],
                 yValue = yVal[0],
-                periodUnited = utils.periodTransform(period,unit),
-                range = prevATR = TR = 0,
+                range = 1,
+                prevATR = TR = 0,
                 ATR = [],
                 xData = [],
                 yData = [],
@@ -62,24 +61,27 @@
               return;
             }
 
-           for(i = 1; i < yValLen; i++){
+            for(i = 1; i < yValLen; i++){
               
-              range = utils.accumulateAverage(points, xVal, yVal, i);
+              utils.accumulateAverage(points, xVal, yVal, i);
 
               if(period < range) {
-                  point = utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR);
+                  point = utils.populateAverage(points, xVal, yVal, i, period, prevATR);
                   prevATR = point[1];
                   ATR.push(point);
                   xData.push(point[0]);
                   yData.push(point[1]);
               } else if (period === range) {
                   prevATR = TR / (i-1);
-                  ATR.push([xVal[i-1],prevATR]);
+                  ATR.push([xVal[i-1],prevATR]); 
+                  range ++;
               } else {
-                TR += utils.getTR(yVal[i-1],yVal[i-2]);
+                  TR += utils.getTR(yVal[i-1],yVal[i-2]);
+                  range ++; 
               }
-           }
-           point = utils.populateAverage(points, xVal, yVal, i, periodUnited, prevATR);
+            }
+
+           point = utils.populateAverage(points, xVal, yVal, i, period, prevATR);
            xData.push(point[0]);
            yData.push(point[1]);
            ATR.push(point);
@@ -138,33 +140,6 @@
            return chart.renderer.path(path).attr(attrs);
         },
         utils: {
-            periodTransform: function(period,unit) {
-              switch(unit) {
-                  case 'second':
-                    period = period / 1000;
-                    break;
-                  case 'minute':
-                    period = period / (60000);
-                    break;
-                  case 'hour':
-                    period = period / (3600000);
-                    break;
-                  case 'day':
-                    period = period / (86400000);
-                    break;
-                  case 'week':
-                    period = period / (604800000);
-                    break;
-                  case 'month':
-                    period = period / (2678400000);
-                    break;
-                  case 'year':
-                    period = period / (31536000000);
-                    break;
-                };
-
-                return period;
-            },
             accumulateAverage: function(points, xVal, yVal, i){ 
                 var xValue = xVal[i],
                     yValue = yVal[i],
