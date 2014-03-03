@@ -21,7 +21,7 @@ $(function () {
 						id: 'first',
 						type: 'ema',
 						params: {
-							period: 10,
+							period: 5,
 							periodUnit: 'day' // year, month, week, day, hour, minute, second, millisecond	
 						},
 						styles: {
