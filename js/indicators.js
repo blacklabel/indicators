@@ -375,11 +375,12 @@
 			addAxisPane: function(chart, userOptions) {
 
             var defaultOptions = {
-	            	labels:{
-	            		x: 20,
+	            	labels: {
+	            		align: 'left',
+	            		x: 2,
 	            		y: -2
 	            	},
-            		offset:0,
+            		offset: 0,
                 height: 250,
                 top: 0,
                 min: 0,
@@ -389,12 +390,11 @@
             var chYxis = chart.yAxis,
                 len = chYxis.length,
                 top = chYxis[0].top,
-                topDiff = len > 2 ? chYxis[1].top - chYxis[0].top - chYxis[0].options.height : top,
+                topDiff = top,
                 options = merge(defaultOptions,userOptions),
                 i = sum = 0,
                 hp = [],
                 lastTop;
-            
             //calculate height
             for (i = 0; i < len; i++) {
                 if(!chYxis[i].isNavigator) 

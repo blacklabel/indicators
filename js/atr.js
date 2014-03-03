@@ -142,11 +142,9 @@
         utils: {
             accumulateAverage: function(points, xVal, yVal, i){ 
                 var xValue = xVal[i],
-                    yValue = yVal[i],
-                    pLen =  points.push([xValue, yValue]);
-                    range = points[pLen - 1][0] - points[0][0]; 
-
-                return range;
+                    yValue = yVal[i];
+                    
+                points.push([xValue, yValue]);
             },
             populateAverage: function(points, xVal, yVal, i, period, prevATR){
                 var pLen = points.length,

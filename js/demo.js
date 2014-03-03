@@ -161,11 +161,11 @@ var adv_options = {
 						}]
 				};
 	adv_options.series[0].type = 'candlestick';
-	/*adv_options.indicators.push({
+	adv_options.indicators.push({
 								id: 'AAPL',
 								type: 'atr',
 								params: {
-										period: 14,
+										period: 14
 								},
 								styles: {
 										strokeWidth: 2,
@@ -178,7 +178,7 @@ var adv_options = {
 												text:'My ATR title'
 											}
 								}	
-	});	*/
+	});	
 	adv_options.indicators.push({
 								id: 'AAPL',
 								type: 'rsi',
