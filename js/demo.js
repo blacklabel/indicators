@@ -60,22 +60,15 @@ $(function () {
 								}	
 						}],
 						yAxis:{
-							title:{
-								text: 'aaa'
-							}
+								title:{
+									text: 'aaa'
+								}
 						},
 						rangeSelector: {
-							selected: 0
+								selected: 0
 						},
-            plotOptions: {
-                series: {
-                    dataGrouping: { 
-                        enabled: false
-                    }
-                }
-            },
             tooltip:{
-							enabledIndicators: true
+								enabledIndicators: true
 						},
 						series: [{
 								cropThreshold: 0,
@@ -91,7 +84,7 @@ $(function () {
 $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.json&callback=?', function(data) {
 //$.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
 
-			adv_options.series[0].type = 'ohlc';
+			adv_options.series[0].type = 'candlestick';
   		adv_options.series[0].data = data;
 
 			$('#container-advanced').highcharts('StockChart', adv_options);
