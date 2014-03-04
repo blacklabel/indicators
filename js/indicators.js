@@ -276,7 +276,7 @@
 						pointsBeyondExtremes,
 						arrayValues,
 						extremes;
-						
+
 				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
 				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
 				if(arrayValues) {
@@ -436,6 +436,151 @@
 						each(this.indicators.allItems, function (indicator) {
 									indicator.redraw();
 						});
+				},
+				forceRedrawChart: function () {
+					var chart = this,
+     					axes = chart.axes,
+				      series = chart.series,
+				      pointer = chart.pointer,
+				      legend = chart.legend,
+				      redrawLegend = chart.isDirtyLegend,
+				      hasStackedSeries,
+				      hasDirtyStacks,
+				      isDirtyBox = chart.isDirtyBox, // todo: check if it has actually changed?
+				      seriesLength = series.length,
+				      i = seriesLength,
+				      serie,
+				      renderer = chart.renderer,
+				      isHiddenChart = renderer.isHidden(),
+				      afterRedraw = [];
+				    
+				    if (isHiddenChart) {
+				      chart.cloneRenderTo();
+				    }
+
+				    // Adjust title layout (reflow multiline text)
+				    chart.layOutTitles();
+
+				    // link stacked series
+				    while (i--) {
+				      serie = series[i];
+
+				      if (serie.options.stacking) {
+				        hasStackedSeries = true;
+				        
+				        if (serie.isDirty) {
+				          hasDirtyStacks = true;
+				          break;
+				        }
+				      }
+				    }
+				    if (hasDirtyStacks) { // mark others as dirty
+				      i = seriesLength;
+				      while (i--) {
+				        serie = series[i];
+				        if (serie.options.stacking) {
+				          serie.isDirty = true;
+				        }
+				      }
+				    }
+
+				    // handle updated data in the series
+				    each(series, function (serie) {
+				      if (serie.isDirty) { // prepare the data so axis can read it
+				        if (serie.options.legendType === 'point') {
+				          redrawLegend = true;
+				        }
+				      }
+				    });
+
+				    // handle added or removed series
+				    if (redrawLegend && legend.options.enabled) { // series or pie points are added or removed
+				      // draw legend graphics
+				      legend.render();
+
+				      chart.isDirtyLegend = false;
+				    }
+
+				    // reset stacks
+				    if (hasStackedSeries) {
+				      chart.getStacks();
+				    }
+
+
+				    if (chart.hasCartesianSeries) {
+				      if (!chart.isResizing) {
+
+				        // reset maxTicks
+				        chart.maxTicks = null;
+
+				        // set axes scales
+				        each(axes, function (axis) {
+				          axis.setScale();
+				        });
+				      }
+
+				      chart.adjustTickAmounts();
+				      chart.getMargins();
+
+				      // If one axis is dirty, all axes must be redrawn (#792, #2169)
+				      each(axes, function (axis) {
+				        if (axis.isDirty) {
+				          isDirtyBox = true;
+				        }
+				      });
+
+				      // redraw axes
+				      each(axes, function (axis) {
+				        
+				        // Fire 'afterSetExtremes' only if extremes are set
+				        if (axis.isDirtyExtremes) { // #821
+				          axis.isDirtyExtremes = false;
+				          afterRedraw.push(function () { // prevent a recursive call to chart.redraw() (#1119)
+				            fireEvent(axis, 'afterSetExtremes', extend(axis.eventArgs, axis.getExtremes())); // #747, #751
+				            delete axis.eventArgs;
+				          });
+				        }
+				        
+				        if (isDirtyBox || hasStackedSeries) {
+				          axis.redraw();
+				        }
+				      });
+
+
+				    }
+				    // the plot areas size has changed
+				    if (isDirtyBox) {
+				      chart.drawChartBox();
+				    }
+
+
+				    // redraw affected series
+				    each(series, function (serie) {
+				      if (serie.isDirty && serie.visible &&
+				          (!serie.isCartesian || serie.xAxis)) { // issue #153
+				        serie.redraw();
+				      }
+				    });
+
+				    // move tooltip or reset
+				    if (pointer && pointer.reset) {
+				      pointer.reset(true);
+				    }
+
+				    // redraw if canvas
+				    renderer.draw();
+
+				    // fire the event
+				    //HC.fireEvent(chart, 'redraw'); // jQuery breaks this when calling it from addEvent. Overwrites chart.redraw
+				    
+				    if (isHiddenChart) {
+				      chart.cloneRenderTo(true);
+				    }
+				    
+				    // Fire callbacks that are put on hold until after the redraw
+				    each(afterRedraw, function (callback) {
+				      callback.call();
+				    });
 				}
 		});
 		

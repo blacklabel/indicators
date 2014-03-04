@@ -114,16 +114,19 @@
                 }
                }
 
-           userOptions = merge(defaultOptions, options.yAxis);
+            userOptions = merge(defaultOptions, options.yAxis);
            
            if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
              yAxis = options.Axis = chart.yAxis[index];
+             yAxis.oldMax = max;
            } else {
-             if(yAxis.max < max) {
+             if(yAxis.max != max) {
               yAxis.update({
+                min: 0,
                 max: max
-              },false)
+              },false);
+              chart.forceRedrawChart();
              }
            }
 
