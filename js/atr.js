@@ -96,11 +96,11 @@
            var path = [],
                attrs = {},
                xAxis = series.xAxis,
-               atr = values,
-               atrLen = atr.length,
+               atrLen = values.length,
+               max = maxInArray(values),
+               yAxis = options.Axis,
                defaultOptions,
                userOptions,
-               yAxis,
                index,
                atrX,
                atrY,
@@ -108,7 +108,7 @@
 
                defaultOptions = {
                 min: 0,
-                max: maxInArray(values),
+                max: max,
                 title: {
                   text: 'ATR'
                 }
@@ -118,10 +118,14 @@
            
            if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
-             options.Axis = chart.yAxis[index];
+             yAxis = options.Axis = chart.yAxis[index];
+           } else {
+             if(yAxis.max < max) {
+              yAxis.update({
+                max: max
+              },false)
+             }
            }
-
-           yAxis = options.Axis;
 
            attrs = merge({
                'stroke-width': 2,
@@ -129,11 +133,11 @@
                dashstyle: 'Dash'
            },  options.styles);  
            
-           path.push('M', xAxis.toPixels(atr[0][0]), yAxis.toPixels(atr[0][1])); 
-               
+           path.push('M', xAxis.toPixels(values[0][0]), yAxis.toPixels(values[0][1])); 
+
            for(i = 0; i < atrLen; i++) {
-              atrX = atr[i][0];
-              atrY = atr[i][1];
+              atrX = values[i][0];
+              atrY = values[i][1];
               path.push('L', xAxis.toPixels(atrX), yAxis.toPixels(atrY));
            }
 
