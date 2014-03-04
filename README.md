@@ -109,7 +109,7 @@ indicators: [{
             type: 'ema',
             params: {
                 period: 5,
-                index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
+                index: 0
             },
             styles: {
                 strokeWidth: 2,
@@ -157,6 +157,14 @@ tooltip:{
     enabledIndicators: true
 },
 ```
+
+### Parameters
+* id - id of serie
+* type - type of indicator
+* styles - color, style, width
+* yAxis - options for additional yAxis (ATR, RSI)
+* index - parameter for ohlc / candlestick / arearange - index of value which should be calculated. I.e open has index 0
+* enabledIndicators - show indicators in tooltip
 
 ### Demo
 
