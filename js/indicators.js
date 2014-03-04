@@ -218,7 +218,7 @@
 				if(this.options.params.period > cropShoulder || cropShoulder === UNDEFINED) {
 					maxPeriod = this.options.params.period;
 					extend(this.series, {
-						cropShoulder: maxPeriod
+						cropShoulder: maxPeriod + 1
 					});
 				}
 
