@@ -160,9 +160,9 @@ tooltip:{
 
 ### Parameters
 * id - id of serie
-* type - type of indicator
+* type - type of indicator (sma, ema, atr, rsi)
 * styles - color, style, width
-* yAxis - options for additional yAxis (ATR, RSI)
+* yAxis - options for additional yAxis (atr, rsi)
 * index - parameter for ohlc / candlestick / arearange - index of value which should be calculated. I.e open has index 0
 * enabledIndicators - show indicators in tooltip
 
