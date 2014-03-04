@@ -513,14 +513,14 @@
             return (chart.yAxis.length - 1);
 			},
 			minInArray: function(arr) {
-				return arr.reduce(function (p, v) {
-			    return ( p < v ? p : v );
-			  })[1];
+				return arr.reduce(function(min, arr) {
+				    return Math.min(min, arr[1]);
+				}, -Infinity);
 			},
 			maxInArray: function(arr) {
-				return arr.reduce(function (p, v) {
-			    return ( p > v ? p : v );
-			  })[1];
+				return arr.reduce(function(max, arr) {
+				    return Math.max(max, arr[1]);
+				}, -Infinity);
 			}
 		});
 		
@@ -561,9 +561,9 @@
         // add clip path to indicators
         chart.indicators.clipPath = clipPath;
         
-       for(i = 0; i < optionsLen; i++) {
+        for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i]);
-       }
+        }
         
 				// update indicators after chart redraw
 			 chart.redrawIndicators();
