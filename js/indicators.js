@@ -71,7 +71,6 @@
 		
 		***/
 		
-		
 		/*
 		*  Remove corresponding indicators for series
 		*/
@@ -91,8 +90,6 @@
 						s.chart.addIndicator(el);
 				});
 		});
-		
-
 		
 		/*
 		*  Remove corresponding indicators for series
@@ -242,6 +239,7 @@
 						group = this.group,
 						options = this.options,
 						series = this.series,
+						pointsBeyondExtremes,
 						arrayValues,
 						extremes;
 						
@@ -253,7 +251,8 @@
 						error('Series not found');
 						return false;
 				} else if(!graph) {
-						arrayValues = Indicator.prototype[options.type].getValues(chart, series, options);
+						this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
+						arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
 						if(arrayValues) {
 							this.values = this.currentPoints = arrayValues.values;
 							this.xData = arrayValues.xData;
@@ -274,10 +273,12 @@
 						graph = this.graph,
 						group = this.group,
 						isDirty = this.isDirty,
+						pointsBeyondExtremes,
 						arrayValues,
 						extremes;
 						
-				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options);
+				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
+				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
 				if(arrayValues) {
 					this.values = this.currentPoints = arrayValues.values;
 					this.xData = arrayValues.xData;
@@ -289,6 +290,74 @@
 					graph.add(group);
 				}
 			},	
+			
+			/*
+			* Group points to allow calculation before extremes
+			*/
+			groupPoints: function(series){
+					var points = [[], []];
+					if(series.currentDataGrouping) {
+							var start = end = series.cropStart,
+									length = series.cropShoulder,
+									xMax = series.xData[end],
+									range = series.currentDataGrouping.totalRange,
+									xMin = xMax - range,
+									processedXData = [],
+									processedYData = [],
+									actX = series.xData[0],
+									preGroupedPoints = [],
+									groupedPoint,
+									pLen = 0,
+									i = 0;
+									
+							while(length >= 0 && end > 0){
+									//get points in range
+									preGroupedPoints = this.gatherPoints(series.xData, series.yData, xMin, xMax, end);
+									pLen = preGroupedPoints.x.length; 
+									if(pLen > 0){
+											length --;
+											groupedPoint = this.groupPoint(preGroupedPoints, series);
+											points[0].push(groupedPoint[0][0]);
+											points[1].push(groupedPoint[1][0]);
+									}
+									// change extremes for next range
+									end -= pLen;
+									xMax = xMin;
+									xMin -= range;
+							}
+							if(points[0].length > 0) {
+									points.sort(function(a,b) { return a[0][0] - b[0][0]; });
+							}
+					} 
+					return points;
+					
+			},
+			
+			/*
+			* Group points into array for grouping
+			*/
+			gatherPoints: function(xData, yData, min, max, end){
+					var x = [],
+							y = [],
+							middle = [max - (max - min) / 2];
+					
+					while(end >= 0 && max > min) {
+								end--;
+								max = max - (max - xData[end]); 
+								x.push(xData[end]);
+								y.push(yData[end]);
+					}
+					return {x: x, y: y, middle: middle};
+			},
+			
+			
+			/*
+			* Group points to get grouped points beyond extremes
+			*/
+			groupPoint: function(points, series) {
+				var grouped = series.groupData.apply(series, [points.x, points.y, points.middle, series.options.dataGrouping.approximation ]);
+				return grouped;
+			},
 			
 			/*
 			* Destroy the indicator

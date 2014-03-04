@@ -37,13 +37,13 @@
                 period: 5
             };
         },
-        getValues: function(chart, series, options) {
+        getValues: function(chart, series, options, points) {
 
             var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = series.processedXData,
-                yVal = series.processedYData,
+                xVal = points[0].concat(series.processedXData),
+                yVal = points[1].concat(series.processedYData),
                 yValLen = yVal ? yVal.length : 0,
                 EMApercent = (2 / (period + 1)),
                 calEMA = 0,
@@ -70,7 +70,6 @@
                utils.accumulateAverage(points, xVal, yVal, range, index); 
                range ++; 
            }
-console.log(period, EMApercent);
            // calculate value one-by-one for each perdio in visible data
            for(i = range; i < yValLen; i++){
 									EMAPoint = utils.populateAverage(points, xVal, yVal, i, EMApercent, calEMA, index);

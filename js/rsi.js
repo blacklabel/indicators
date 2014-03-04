@@ -39,12 +39,12 @@
 								oversold: 30
 						};
 				},
-				getValues: function(chart, series, options) {
+				getValues: function(chart, series, options, points) {
 						var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = series.processedXData,
-                yVal = series.processedYData,
+                xVal = points[0].concat(series.processedXData),
+                yVal = points[1].concat(series.processedYData),
                 yValLen = yVal ? yVal.length : 0,
                 EMA = Indicator.prototype.ema,
                 EMApercent = (2 / (period + 1)),

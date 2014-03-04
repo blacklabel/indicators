@@ -7,13 +7,13 @@ $(function () {
 								id: 'AAPL',
 								type: 'sma',
 								params: {
-										period: 5,
+										period: 14,
 								}
 						},{
 								id: 'AAPL',
 								type: 'ema',
 								params: {
-										period: 5,
+										period: 14,
 										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
 										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
 								},
