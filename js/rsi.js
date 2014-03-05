@@ -26,6 +26,10 @@
 		
 		***/
 		
+		function toFixed(a, n) {
+				return parseFloat(a.toFixed(n));	
+		}
+		
 		var UNDEFINED,
 				merge = HC.merge,
 				isArray = HC.isArray,
@@ -54,50 +58,53 @@
                 RSI = [],
                 xData = [],
                 yData = [],
-                index = 4,
+                index = 3,
                 gain = [],
                 loss = [],
                 RSIPoint, change, RS, avgGain, avgLoss;
-             
            // atr requires close value     
            if(!isArray(yVal[0]) || yVal[0].length != 4 || EMA === UNDEFINED) {
               return;
            }
            
            // accumulate first N-points
-           while(range < period){
-           	 	change = parseFloat((yVal[range][3] - yVal[range - 1][3]).toFixed(4));
+           while(range < period + 1){
+           	 	change = toFixed(yVal[range][index] - yVal[range - 1][index], 2);
            	 	gain.push(change > 0 ? change : 0);
            	 	loss.push(change < 0 ? Math.abs(change) : 0);
            	 	range ++;
            }
            
-           for(i = period - 1; i < yValLen; i++ ){
-           	 	 var len;
-           	 	 
-           	 	 change = parseFloat((yVal[i][3] - yVal[i - 1][3]).toFixed(4));
-							 gain.push(change > 0 ? change : 0);
-							 len = loss.push(change < 0 ? Math.abs(change) : 0) - 1; // better than loss.length
+           for(i = range - 1; i < yValLen; i++ ){
+							 //gain.push(change > 0 ? change : 0);
+							 //len = loss.push(change < 0 ? Math.abs(change) : 0); // better than loss.length
            	 	 
            	 	 // EMA for loss and gains
-           	 	 avgGain = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(gain) / len] ], 2, EMApercent, calEMAGain, 0);
-           	 	 avgLoss = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(loss) / len] ], 2, EMApercent, calEMALoss, 0);
-           	    
-           	 	 // relative strengh
-							 RS = avgGain[1] / avgLoss[1];
-							 // calculate RSI value
-							 RSIPoint = 100 - (100 / (1 + RS));
-							 
+           	 	 //avgGain = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(gain) / len] ], 2, EMApercent, calEMAGain, 0);
+           	 	 //avgLoss = EMA.utils.populateAverage([], gain, [ yVal[i-1], [utils.sumArray(loss) / len] ], 2, EMApercent, calEMALoss, 0);
+           	   if( i > range - 1) {
+           	   	 		// remove first point from array
+           	   	 		gain.shift();
+           	   	 	  loss.shift();
+           	   	 	  // calculate new change
+									  change = toFixed(yVal[i][index] - yVal[i - 1][index], 2);
+									  // add to array
+									  gain.push(change > 0 ? change : 0);
+									  loss.push(change < 0 ? Math.abs(change) : 0);
+           	   }
+           	   
+           	   // calculate averages, RS, RSI values:
+							 avgGain = toFixed(utils.sumArray(gain) / period, 2);
+							 avgLoss = toFixed(utils.sumArray(loss) / period, 2);	
+           	 	 
+							 RS = toFixed(avgGain / avgLoss, 2);
+							 RSIPoint = toFixed(100 - (100 / (1 + RS)), 2);
 							 RSI.push([xVal[i], RSIPoint]);
 							 xData.push(xVal[i]);
 							 yData.push(RSIPoint);	
 							 
-							 // remove first point from array
-							 gain.shift();
-							 loss.shift();
-							 
-							 calEMAGain = avgGain[1]; 
-							 calEMALoss = avgLoss[1]; 
+							 //calEMAGain = avgGain[1]; 
+							 //calEMALoss = avgLoss[1]; 
 					 }
 					 
 					 return {
