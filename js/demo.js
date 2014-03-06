@@ -3,6 +3,21 @@ $(function () {
  * 2.1 ADVANCED CHART
  */
  var adv_options = {
+						chart: {
+								borderWidth: 5,
+								borderColor: '#e8eaeb',
+								borderRadius: 0,
+								backgroundColor: '#f7f7f7', 
+						},
+						title: {
+								style: {
+										'fontSize': '1em'
+								},
+								useHTML: true,
+								x: -27,
+								y: 0,
+								text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators: </span>'	
+						},
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
@@ -35,9 +50,9 @@ $(function () {
 								},
 								yAxis: {
 									lineWidth:2,
-											title: {
-												text:'My ATR title'
-											}
+									title: {
+										text:'ATR'
+									}
 								}	
 						}, {
 								id: 'AAPL',
@@ -55,14 +70,15 @@ $(function () {
 								yAxis: {
 										lineWidth:2,
 										title: {
-											text:'My RSI title'
+											text:'RSI'
 										}
 								}	
 						}],
 						yAxis:{
 								title:{
-									text: 'aaa'
-								}
+									text: 'DATA'
+								},
+								lineWidth: 2
 						},
 						rangeSelector: {
 								selected: 0

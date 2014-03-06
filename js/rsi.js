@@ -52,9 +52,9 @@
                 yVal = points[1].concat(series.processedYData),
                 yValLen = yVal ? yVal.length : 0,
                 EMA = Indicator.prototype.ema,
-                EMApercent = (2 / (period + 1)),
-                calEMAGain = 0,
-                calEMALoss = 0,
+                //EMApercent = (2 / (period + 1)),
+                //calEMAGain = 0,
+                //calEMALoss = 0,
                 range = 1,
                 RSI = [],
                 xData = [],
@@ -98,7 +98,11 @@
 							 avgGain = toFixed(utils.sumArray(gain) / period, 2);
 							 avgLoss = toFixed(utils.sumArray(loss) / period, 2);	
            	 	 
-							 RS = toFixed(avgGain / avgLoss, 2);
+							 if(avgLoss == 0) {
+							 	 	RS = 100;
+							 } else {
+							 	  RS = toFixed(avgGain / avgLoss, 2);
+							 }
 							 RSIPoint = toFixed(100 - (100 / (1 + RS)), 2);
 							 RSI.push([xVal[i], RSIPoint]);
 							 xData.push(xVal[i]);
@@ -140,6 +144,7 @@
 							 		color: 'orange',
 							 		width: 1
 							 }],
+							 height: 100,
 							 max: 100,
 							 title: {
 							 	 	text: 'RSI'
@@ -162,7 +167,6 @@
            },  options.styles);  
            
            path.push('M', xAxis.toPixels(atr[0][0]), yAxis.toPixels(atr[0][1])); 
-               
            for(i = 0; i < atrLen; i++) {
               atrX = atr[i][0];
               atrY = atr[i][1];

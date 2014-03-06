@@ -177,7 +177,7 @@
 
 					$.each(ind.currentPoints,function(j,val){
 						if(val[0] === x) 
-							s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],2) + '<br/>');
+							s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
 						
 					});
 				});
@@ -604,7 +604,7 @@
             var chYxis = chart.yAxis,
                 len = chYxis.length,
                 top = chYxis[0].top,
-                topDiff = top,
+                topDiff = top / 2, 
                 options = merge(defaultOptions,userOptions),
                 i = sum = 0,
                 hp = [],
