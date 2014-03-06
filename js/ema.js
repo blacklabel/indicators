@@ -1,23 +1,22 @@
 (function (HC) {
-
-  /***
+		/***
     
     Each indicator requires mothods:
     
-    - getDefaultOptions()               - returns object with default parameters, like period etc.
-    - getValues(chart, series, options) - returns array of calculated values for indicator
-    - getGraph(chart, series, options)  - returns path, or columns as SVG elemnts to add.
-                                          Doesn't add to chart via renderer! 
+    - getDefaultOptions()               				- returns object with default parameters, like period etc.
+    - getValues(chart, series, options, points) - returns array of calculated values for indicator
+    - getGraph(chart, series, options, values)  - returns path, or columns as SVG elements to add.
+                                         				  Doesn't add to the chart via renderer! 
     
     ***/
     
     /***
     indicators: [{
         id: 'series-id',
-        type: 'sma',
+        type: 'ema',
         params: {
             period: 'x',
-            n: 'y'
+            index: 0
         },    
         styles: {
             lineWidth: 'x',
@@ -34,7 +33,8 @@
     Indicator.prototype.ema = {
         getDefaultOptions: function(){
             return {
-                period: 5
+                period: 14,
+                index: 0
             };
         },
         getValues: function(chart, series, options, points) {

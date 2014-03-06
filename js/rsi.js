@@ -4,9 +4,9 @@
 		Each indicator requires mothods:
 		
 		- getDefaultOptions() 											- returns object with default parameters, like period etc.
-		- getValues(chart, series, options) 				- returns array of calculated values for indicator
+		- getValues(chart, series, options, points) - returns array of calculated values for indicator
 		- getGraph(chart, series, options, values) 	- returns path, or columns as SVG elements to add.
-																									Doesn't add to chart via renderer! 
+																									Doesn't add to the chart via renderer! 
 		
 		***/
 		
@@ -16,7 +16,8 @@
 		    type: 'rsi',
 		    params: {
 		        period: 'x',
-		        n: 'y'
+		        overbought: value_a,
+		        oversold: value_b
 		    },    
 		    styles: {
 		        lineWidth: 'x',
@@ -38,7 +39,7 @@
 		Indicator.prototype.rsi = {
 				getDefaultOptions: function(){
 						return {
-								period: 5,
+								period: 14,
 								overbought: 70,
 								oversold: 30
 						};

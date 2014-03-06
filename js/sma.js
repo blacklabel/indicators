@@ -3,10 +3,10 @@
 		
 		Each indicator requires mothods:
 		
-		- getDefaultOptions() 							- returns object with default parameters, like period etc.
-		- getValues(chart, series, options) - returns array of calculated values for indicator
-		- getGraph(chart, series, options) 	- returns path, or columns as SVG elemnts to add.
-																					Doesn't add to chart via renderer! 
+		- getDefaultOptions() 											- returns object with default parameters, like period etc.
+		- getValues(chart, series, options, points) - returns array of calculated values for indicator
+		- getGraph(chart, series, options, values) 	- returns path, or columns as SVG elements to add.
+																									Doesn't add to the chart via renderer! 
 		
 		***/
 		
@@ -16,7 +16,7 @@
 		    type: 'sma',
 		    params: {
 		        period: 'x',
-		        n: 'y'
+		        index: n
 		    },    
 		    styles: {
 		        lineWidth: 'x',
@@ -32,7 +32,8 @@
 		Indicator.prototype.sma = {
 				getDefaultOptions: function(){
 						return {
-								period: 5
+								period: 14,
+								index: 0
 						};
 				},
 				getValues: function(chart, series, options, points) {

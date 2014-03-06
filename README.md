@@ -159,12 +159,17 @@ tooltip:{
 ```
 
 ### Parameters
-* id - id of serie
-* type - type of indicator (sma, ema, atr, rsi)
-* styles - color, style, width
-* yAxis - options for additional yAxis (atr, rsi)
-* index - parameter for ohlc / candlestick / arearange - index of value which should be calculated. I.e open has index 0
-* enabledIndicators - show indicators in tooltip
+* id - id of series
+* type - type of indicator (one of: 'sma', 'ema', 'atr', 'rsi')
+* styles - color, dashstyle, width etc. for a indicator line
+* yAxis (ATR/RSI) - yAxis object like in Highcharts, options for additional yAxis
+* params - config options for indicator
+* params.period (SMA/EMA/ATR/RSI) - base perdiod for indicator (it's number of points to be calculated). Defaults to 14.
+* params.index (SMA/EMA) - y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to 0.
+* params.overbought (RSI) - overbought value between 0-100. Defaults to 70.
+* params.oversold (RSI) - oversold value between 0-100. Defaults to 30.
+* tooltip.enabledIndicators - true/false, show indicators in tooltip. Disabled by default.
+
 
 ### Demo
 
