@@ -1,0 +1,44 @@
+{
+        "name": "Indicators",
+        "version": "1.0.0",
+        "title": "Indicators",
+        "author": {
+                "name": "Black Label",
+                "url": "http://www.blacklabel.pl/"
+        },
+        "licenses": [
+                {
+                        "type": "Creative Commons Attribution (CC)",
+                        "url": "https://github.com/blacklabel/indicators/blob/master/license.txt"
+                }
+        ],
+        "dependencies": {
+                "highstock": "1.3.9"
+        },
+        "demo": [
+                "http://jsfiddle.net/7sD2S/1/"
+        ],
+        "description": "Plugin that allows add indicators (SMA, EMA, RSI, ATR) for highstock.",
+        "keywords": [
+                "indicators",
+                "sma",
+                "ema",
+                "atr",
+                "rsi"
+        ],
+        "maintainers": [
+    {
+      "name": "Sebastian Bochan",
+      "email": "sebastian2@blacklabel.pl",
+      "url": "http://www.blacklabel.pl"
+    },{
+      "name": "Paweł Fus",
+      "email": "pawel@blacklabel.pl",
+      "url": "http://www.blacklabel.pl"
+    }
+  ],
+        "homepage": "http://blacklabel.github.io/indicators/",        
+        "docs": "https://github.com/blacklabel/indicators/",        
+        "bugs": "https://github.com/blacklabel/indicators/issues",
+        "download": "https://github.com/blacklabel/indicators/archive/master.zip"
+}
