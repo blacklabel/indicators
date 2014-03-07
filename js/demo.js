@@ -29,6 +29,10 @@ $(function () {
 								type: 'ema',
 								params: {
 										period: 14,
+<<<<<<< HEAD
+=======
+										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
+>>>>>>> 4bfb28875c0e66b9b83525106e42552df7509a3b
 										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
 								},
 								styles: {
