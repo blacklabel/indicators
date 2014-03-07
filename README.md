@@ -159,16 +159,26 @@ tooltip:{
 ```
 
 ### Parameters
-* id - id of series
-* type - type of indicator (one of: 'sma', 'ema', 'atr', 'rsi')
-* styles - color, dashstyle, width etc. for a indicator line
-* yAxis (ATR/RSI) - yAxis object like in Highcharts, options for additional yAxis
-* params - config options for indicator
-* params.period (SMA/EMA/ATR/RSI) - base perdiod for indicator (it's number of points to be calculated). Defaults to 14.
-* params.index (SMA/EMA) - y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to 0.
-* params.overbought (RSI) - overbought value between 0-100. Defaults to 70.
-* params.oversold (RSI) - oversold value between 0-100. Defaults to 30.
-* tooltip.enabledIndicators - true/false, show indicators in tooltip. Disabled by default.
+<table>
+  <thead>
+    <tr>
+      <th align="left">Property</th>
+      <th align="left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td align="left">id</td><td align="left">id of series
+    <tr><td align="left">type</td><td align="left">type of indicator (one of: 'sma', 'ema', 'atr', 'rsi')</td></tr>
+    <tr><td align="left">styles</td><td align="left">color, dashstyle, width etc. for a indicator line</td></tr>
+    <tr><td align="left">yAxis (ATR/RSI)</td><td align="left">yAxis object like in Highcharts, options for additional yAxis</td></tr>
+    <tr><td align="left">params</td><td align="left">config options for indicator</td></tr>
+    <tr><td align="left">params.period (SMA/EMA/ATR/RSI)</td><td align="left">base perdiod for indicator (it's number of points to be calculated). Defaults to 14.</td></tr>
+    <tr><td align="left">params.index (SMA/EMA)</td><td align="left">y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to 0.</td></tr>
+    <tr><td align="left">params.overbought (RSI)</td><td align="left">overbought value between 0-100. Defaults to 70.</td></tr>
+    <tr><td align="left">params.oversold (RSI)</td><td align="left">oversold value between 0-100. Defaults to 30.</td></tr>
+    <tr><td align="left">tooltip.enabledIndicators</td><td align="left">true/false, show indicators in tooltip. Disabled by default.</td></tr>
+  </tbody>
+</table>
 
 
 ### Demo
