@@ -29,7 +29,6 @@ $(function () {
 								type: 'ema',
 								params: {
 										period: 14,
-										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
 										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
 								},
 								styles: {
@@ -76,7 +75,7 @@ $(function () {
 						}],
 						yAxis:{
 								title:{
-									text: 'DATA'
+									text: 'DATA, SMA, EMA'
 								},
 								lineWidth: 2
 						},
