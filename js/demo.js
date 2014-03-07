@@ -75,7 +75,7 @@ $(function () {
 						}],
 						yAxis:{
 								title:{
-									text: 'DATA, SMA, EMA'
+									text: 'DATA SMA EMA'
 								},
 								lineWidth: 2
 						},
