@@ -98,7 +98,7 @@
 							 avgGain = toFixed(utils.sumArray(gain) / period, 2);
 							 avgLoss = toFixed(utils.sumArray(loss) / period, 2);	
            	 	 
-							 if(avgLoss == 0) {
+							 if(avgLoss === 0) {
 							 	 	RS = 100;
 							 } else {
 							 	  RS = toFixed(avgGain / avgLoss, 2);

@@ -37,13 +37,13 @@
                 index: 0
             };
         },
-        getValues: function(chart, series, options, points) {
+        getValues: function(chart, series, options, extraPoints) {
 
             var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = points[0].concat(series.processedXData),
-                yVal = points[1].concat(series.processedYData),
+                xVal = extraPoints[0].concat(series.processedXData),
+                yVal = extraPoints[1].concat(series.processedYData),
                 yValLen = yVal ? yVal.length : 0,
                 EMApercent = (2 / (period + 1)),
                 calEMA = 0,
@@ -141,5 +141,5 @@
                 return [x, y];
             }
         }
-    }
-})(Highcharts)
+    };
+})(Highcharts);

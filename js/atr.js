@@ -38,17 +38,17 @@
                 period: 14
             };
         },
-        getValues: function(chart, series, options, points) {
+        getValues: function(chart, series, options, extraPoints) {
             var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = points[0].concat(series.processedXData),
-                yVal = points[1].concat(series.processedYData),
+                xVal = extraPoints[0].concat(series.processedXData),
+                yVal = extraPoints[1].concat(series.processedYData),
                 yValLen = yVal ? yVal.length : 0,
                 xValue = xVal[0],
                 yValue = yVal[0],
                 range = 1,
-                prevATR = TR = 0,
+                prevATR = 0, TR = 0,
                 ATR = [],
                 xData = [],
                 yData = [],

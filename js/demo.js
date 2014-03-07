@@ -7,7 +7,7 @@ $(function () {
 								borderWidth: 5,
 								borderColor: '#e8eaeb',
 								borderRadius: 0,
-								backgroundColor: '#f7f7f7', 
+								backgroundColor: '#f7f7f7'
 						},
 						title: {
 								style: {
@@ -22,17 +22,13 @@ $(function () {
 								id: 'AAPL',
 								type: 'sma',
 								params: {
-										period: 14,
+										period: 14
 								}
 						},{
 								id: 'AAPL',
 								type: 'ema',
 								params: {
 										period: 14,
-<<<<<<< HEAD
-=======
-										periodUnit: 'day', // year, month, week, day, hour, minute, second, millisecond	
->>>>>>> 4bfb28875c0e66b9b83525106e42552df7509a3b
 										index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
 								},
 								styles: {
@@ -44,7 +40,7 @@ $(function () {
 								id: 'AAPL',
 								type: 'atr',
 								params: {
-										period: 14,
+										period: 14
 								},
 								styles: {
 										strokeWidth: 2,
