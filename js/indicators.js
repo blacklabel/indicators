@@ -157,10 +157,11 @@
 					tooltipOptions = chart.tooltip.options,
 					indicators = series.indicators,
 					x 			   = this.x,
+					t 				 = series.tooltipHeaderFormatter !== UNDEFINED ? series : chart.tooltip,
 					s;
 
 			// build the header
-			s = [series.tooltipHeaderFormatter(points[0])];
+			s = [t.tooltipHeaderFormatter(points[0])];
 
 			// build the values
 			each(points, function (item) {
