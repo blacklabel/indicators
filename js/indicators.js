@@ -176,9 +176,13 @@
 						return;
 
 					$.each(ind.currentPoints,function(j,val){
-						if(val[0] === x) 
-							s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
-						
+						if(val[0] === x) {
+							var valLen = val.length,
+									k = 1;
+							for(; k < valLen; k++){
+									s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[k],3) + '<br/>');
+							}
+						}
 					});
 				});
 			}
