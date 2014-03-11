@@ -343,8 +343,7 @@
 			*/
 			gatherPoints: function(xData, yData, min, max, end){
 					var x = [],
-							y = [],
-							middle = [max - (max - min) / 2];
+							y = [];
 					
 					while(end >= 0 && max > min) {
 								end--;
@@ -352,7 +351,7 @@
 								x.push(xData[end]);
 								y.push(yData[end]);
 					}
-					return {x: x, y: y, middle: middle};
+					return {x: x, y: y, middle: [x[0]]};
 			},
 			
 			
