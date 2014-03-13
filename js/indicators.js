@@ -302,19 +302,24 @@
 			groupPoints: function(series){
 					var points = [[], []];
 					if(series.currentDataGrouping) {
-							var start = end = series.cropStart,
-									length = series.cropShoulder,
-									xMax = series.xData[end],
-									range = series.currentDataGrouping.totalRange,
-									xMin = xMax - range,
-									processedXData = [],
-									processedYData = [],
-									actX = series.xData[0],
-									preGroupedPoints = [],
-									groupedPoint,
-									pLen = 0,
-									i = 0;
-									
+						var start = end = series.cropStart,
+								length = series.cropShoulder,
+								xMax = series.xData[end],
+								range = series.currentDataGrouping.totalRange,
+								xMin = xMax - range,
+								processedXData = [],
+								processedYData = [],
+								actX = series.xData[0],
+								preGroupedPoints = [],
+								groupedPoint,
+								pLen = 0,
+								i = 0;
+						if(series.currentDataGrouping.totalRange == series.closestPointRange) {
+							// we don't need grouping, since one point is the same as grouped point
+							points[0] = series.xData.slice(end - length, end);
+							points[1] = series.yData.slice(end - length, end);
+						} else {
+							// group points
 							while(length >= 0 && end > 0){
 									//get points in range
 									preGroupedPoints = this.gatherPoints(series.xData, series.yData, xMin, xMax, end);
@@ -333,6 +338,7 @@
 							if(points[0].length > 0) {
 									points.sort(function(a,b) { return a[0][0] - b[0][0]; });
 							}
+						}
 					} 
 					return points;
 					
