@@ -240,17 +240,32 @@
 				var indicator = this,
 						chart = this.chart,
 						renderer = chart.renderer,
+						clip = this.clipPath,
 						graph = this.graph,
 						group = this.group,
 						options = this.options,
 						series = this.series,
+						xAxis = series.xAxis,
+						yAxis = this.options.yAxis || series.yAxis,
 						pointsBeyondExtremes,
 						arrayValues,
 						extremes;
+				
+				if(!clip) {
+						var clipBox = {
+								x: xAxis.left,
+								y: yAxis.top,
+								width: xAxis.width,
+								height: yAxis.height
+						};
+        
+						indicator.clipBox = clipBox;
+						indicator.clipPath = clip = chart.renderer.clipRect(clipBox); 
+				}
 						
-				if (!group) {
+				if(!group) {
 						indicator.group = group = renderer.g().add(chart.indicators.group);
-						indicator.group.clip(chart.indicators.clipPath);
+						indicator.group.clip(clip);
 				}
 				if(!series) {
 						error('Series not found');
@@ -264,6 +279,9 @@
 							this.yData = arrayValues.yData;
 							this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 							graph.add(group);
+							if(this.yAxis){
+								this.redraw();	
+							}
 						}
 				}
 			},
@@ -278,10 +296,20 @@
 						graph = this.graph,
 						group = this.group,
 						isDirty = this.isDirty,
+						xAxis = series.xAxis,
+						yAxis = this.options.Axis || series.yAxis, 
 						pointsBeyondExtremes,
 						arrayValues,
-						extremes;
-
+						extremes,
+						clipBox = {
+								x: xAxis.left,
+								y: yAxis.top,
+								width: xAxis.width,
+								height: yAxis.height
+						};
+						
+				this.clipPath.attr(clipBox);
+				
 				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
 				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
 				if(arrayValues) {
