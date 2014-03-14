@@ -15,8 +15,8 @@ $(function () {
 								},
 								useHTML: true,
 								x: -27,
-								y: 0,
-								text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators: </span>'	
+								y: 8,
+								text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'	
 						},
 						indicators: [{
 								id: 'AAPL',
