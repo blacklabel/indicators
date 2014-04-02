@@ -367,7 +367,12 @@
 									points.sort(function(a,b) { return a[0][0] - b[0][0]; });
 							}
 						}
-					} 
+					} else {
+							var end = series.cropStart,
+									length = this.options.params.period + 2;
+							points[0] = series.xData.slice(end - length, end);
+							points[1] = series.yData.slice(end - length, end);
+					}
 					return points;
 					
 			},
