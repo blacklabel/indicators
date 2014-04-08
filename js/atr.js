@@ -56,7 +56,7 @@
 
             points = [[xValue, yValue]];
            
-            if(!isArray(yVal[0]) || yVal[0].length != 4) {
+            if((xVal.length <= period) || !isArray(yVal[0]) || yVal[0].length != 4) {
               return;
             }
 

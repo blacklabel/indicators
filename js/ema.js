@@ -57,6 +57,10 @@
                 point,i,points,
                 EMAPoint;
 
+            if(xVal.length <= period) {
+              return;
+            }
+
            //switch index for OHLC / Candlestick / Arearange
            if(isArray(yVal[0])) {
               index = params.index ? params.index : 0;

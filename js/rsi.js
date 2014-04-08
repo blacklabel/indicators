@@ -63,8 +63,11 @@
                 gain = [],
                 loss = [],
                 RSIPoint, change, RS, avgGain, avgLoss;
+
+
+
            // atr requires close value     
-           if(!isArray(yVal[0]) || yVal[0].length != 4 || EMA === UNDEFINED) {
+           if((xVal.length <= period) || !isArray(yVal[0]) || yVal[0].length != 4 || EMA === UNDEFINED) {
               return;
            }
            
