@@ -170,7 +170,7 @@
 					item.point.tooltipFormatter(series.tooltipOptions.pointFormat));
 			});
 
-			if(tooltipOptions.enabledIndicators) {
+			if(tooltipOptions.enabledIndicators && (typeof indicators !== 'undefined')) {
 				// build the values of indicators
 				$.each(indicators,function(i,ind){
 					if(typeof(ind.values) === 'undefined') 
