@@ -179,9 +179,15 @@
 					$.each(ind.currentPoints,function(j,val){
 						if(val[0] === x) {
 							var valLen = val.length,
-									k = 1;
+									k = 1,
+									label;
 							for(; k < valLen; k++){
-									s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[k],3) + '<br/>');
+									if (typeof ind.options.label === 'undefined') {
+										label = ind.options.type.toUpperCase();
+									} else {
+										label = ind.options.label.toUpperCase();
+									}
+									s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + label + '</span>: ' + HC.numberFormat(val[k],3) + '<br/>');
 							}
 						}
 					});
