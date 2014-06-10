@@ -1,6 +1,6 @@
 $(function () {
 /*
- * 2.1 ADVANCED CHART
+ * 2.1 ADVANCED CHART AAAA
  */
  var adv_options = {
 						chart: {
@@ -74,10 +74,15 @@ $(function () {
 								}	
 						}],
 						yAxis:{
+							opposite:false,
 								title:{
-									text: 'DATA SMA EMA'
+									text: 'DATA SMA EMA',
+									x: -4
 								},
-								lineWidth: 2
+								lineWidth: 2,
+								labels:{
+									x:22
+								}
 						},
 						rangeSelector: {
 								selected: 0
@@ -99,10 +104,10 @@ $(function () {
 $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.json&callback=?', function(data) {
 //$.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.json&callback=?', function(data) {
 
-			adv_options.series[0].type = 'candlestick';
+		adv_options.series[0].type = 'candlestick';
   		adv_options.series[0].data = data;
 
-			$('#container-advanced').highcharts('StockChart', adv_options);
+		$('#container-advanced').highcharts('StockChart', adv_options);
 });
 
 

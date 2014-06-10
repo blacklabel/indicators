@@ -101,6 +101,10 @@
 							 smaX,
 							 smaY,
                i;
+          
+          if(options.visible === false) {
+              return;
+          }
 							 
 					 attrs = merge({
 							 'stroke-width': 2,

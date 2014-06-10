@@ -97,7 +97,7 @@
                xAxis = series.xAxis,
                atrLen = values.length,
                max = maxInArray(values),
-               yAxis = options.Axis,
+               yAxis,
                defaultOptions,
                userOptions,
                index,
@@ -109,27 +109,34 @@
                 min: 0,
                 max: max,
                 tickPixelInterval: 50,
-                height: 150,
+                height: 100,
                 title: {
                   text: 'ATR'
                 }
                }
 
+            if(options.visible === false) {
+              return;
+           }
+
             userOptions = merge(defaultOptions, options.yAxis);
            
            if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
-             yAxis = options.Axis = chart.yAxis[index];
-             yAxis.oldMax = max;
+             options.Axis = chart.yAxis[index];
+             options.Axis.oldMax = max;
            } else {
-             if(yAxis.max != max) {
-              yAxis.update({
-                min: 0,
-                max: max
-              },false);
-              chart.forceRedrawChart();
+             if(options.Axis.max !== options.Axis.oldMax) {
+              userOptions.max = max;
              }
+              userOptions.height -= 20;
+              userOptions.top = options.Axis.top;
+              options.Axis.update(userOptions,false);
+              chart.forceRedrawChart();
            }
+
+           yAxis = options.Axis;
+
 
            attrs = merge({
                'stroke-width': 2,

@@ -76,11 +76,13 @@
 		*/
 		HC.wrap(HC.Series.prototype, 'update', function(proceed, redraw, animation) {
 				var tempIndics = [],
-						s = this;
+						s = this,
+						tmpAxis;
 						
 				if(s.indicators) {
 						each(s.indicators, function(el, i) {
-								tempIndics.push(merge({}, el.options));
+								tempIndics.push(el.options);
+								el.destroy();
 						});
 				}
 				proceed.call(this, redraw, animation);
@@ -117,22 +119,52 @@
 		*  Force redraw for indicator when new point is added
 		*/
 		HC.wrap(HC.Series.prototype, 'addPoint', function(proceed, options, redraw, shift, animation) {
-				forceRedraw(this);
+				var tempIndics = [],
+						s = this;
+						
+				if(s.indicators) {
+						each(s.indicators, function(el, i) {
+								tempIndics.push(el.options);
+								el.destroy();
+						});
+						s.indicators = null;
+				}
 				proceed.call(this, options, redraw, shift, animation);
+				
+				s = this;
+
+				each(tempIndics, function(el, i){
+						s.chart.addIndicator(el);
+				});
 		});
 		
 		/*
 		*  Force redraw for indicator with new point options, like value
 		*/
 		HC.wrap(HC.Point.prototype, 'update', function(proceed, options, redraw) {
-				forceRedraw(this.series);
+				var tempIndics = [],
+						s = this;
+						
+				if(s.indicators) {
+						each(s.indicators, function(el, i) {
+								tempIndics.push(el.options);
+								el.destroy();
+						});
+						s.indicators = null;
+				}
 				proceed.call(this, options, redraw);
+				
+				s = this;
+
+				each(tempIndics, function(el, i){
+						s.chart.addIndicator(el);
+				});
 		});
 		
 		/*
 		*  Force redraw for indicator when one of points is removed
 		*/
-		HC.wrap(HC.Point.prototype, 'remove', function(proceed, redraw, animation) {
+		HC.wrap(HC.Point.prototype, 'remove', function(proceed, options, redraw, animation) {
 				forceRedraw(this.series);
 				proceed.call(this, options, redraw);
 		});
@@ -170,20 +202,17 @@
 					item.point.tooltipFormatter(series.tooltipOptions.pointFormat));
 			});
 
-			if(tooltipOptions.enabledIndicators) {
+			if(indicators && indicators !== UNDEFINED && tooltipOptions.enabledIndicators) {
 				// build the values of indicators
-				$.each(indicators,function(i,ind){
-					if(typeof(ind.values) === 'undefined') 
+
+				$.each(indicators,function(i,ind) {
+					if(typeof(ind.values) === 'undefined' || ind.options.visible === false) 
 						return;
 
 					$.each(ind.currentPoints,function(j,val){
-						if(val[0] === x) {
-							var valLen = val.length,
-									k = 1;
-							for(; k < valLen; k++){
-									s.push('<span style="font-weight:bold;color:' + ind.graph.stroke + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[k],3) + '<br/>');
-							}
-						}
+						if(val[0] === x) 
+							s.push('<span style="font-weight:bold;color:' + ind.graph.element.attributes['stroke'].value + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
+						
 					});
 				});
 			}
@@ -240,32 +269,18 @@
 				var indicator = this,
 						chart = this.chart,
 						renderer = chart.renderer,
-						clip = this.clipPath,
 						graph = this.graph,
 						group = this.group,
 						options = this.options,
 						series = this.series,
-						xAxis = series.xAxis,
-						yAxis = this.options.yAxis || series.yAxis,
+						visible = options.visible,
 						pointsBeyondExtremes,
 						arrayValues,
 						extremes;
-				
-				if(!clip) {
-						var clipBox = {
-								x: xAxis.left,
-								y: yAxis.top,
-								width: xAxis.width,
-								height: yAxis.height
-						};
-        
-						indicator.clipBox = clipBox;
-						indicator.clipPath = clip = chart.renderer.clipRect(clipBox); 
-				}
-						
-				if(!group) {
+
+				if (!group) {
 						indicator.group = group = renderer.g().add(chart.indicators.group);
-						indicator.group.clip(clip);
+						indicator.group.clip(chart.indicators.clipPath);
 				}
 				if(!series) {
 						error('Series not found');
@@ -278,10 +293,10 @@
 							this.xData = arrayValues.xData;
 							this.yData = arrayValues.yData;
 							this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
-							graph.add(group);
-							if(this.yAxis){
-								this.redraw();	
-							}
+							
+								if(graph) {
+									graph.add(group);
+								}
 						}
 				}
 			},
@@ -296,22 +311,15 @@
 						graph = this.graph,
 						group = this.group,
 						isDirty = this.isDirty,
-						xAxis = series.xAxis,
-						yAxis = this.options.Axis || series.yAxis, 
+						visible = options.visible,
+						axis = options.Axis,
 						pointsBeyondExtremes,
 						arrayValues,
-						extremes,
-						clipBox = {
-								x: xAxis.left,
-								y: yAxis.top,
-								width: xAxis.width,
-								height: yAxis.height
-						};
-						
-				this.clipPath.attr(clipBox);
-				
+						extremes;
+
 				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
 				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
+
 				if(arrayValues) {
 					this.values = this.currentPoints = arrayValues.values;
 					this.xData = arrayValues.xData;
@@ -319,8 +327,12 @@
 					if(graph) {
 							graph.destroy();
 					}
+
 					this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
-					graph.add(group);
+					
+						if(graph) {
+								graph.add(group);
+						}
 				}
 			},	
 			
@@ -330,49 +342,45 @@
 			groupPoints: function(series){
 					var points = [[], []];
 					if(series.currentDataGrouping) {
-						var start = end = series.cropStart,
-								length = series.cropShoulder,
-								xMax = series.xData[end],
-								range = series.currentDataGrouping.totalRange,
-								xMin = xMax - range,
-								processedXData = [],
-								processedYData = [],
-								actX = series.xData[0],
-								preGroupedPoints = [],
-								groupedPoint,
-								pLen = 0,
-								i = 0;
-						if(series.currentDataGrouping.totalRange == series.closestPointRange) {
+							var start = end = series.cropStart,
+									length = series.cropShoulder,
+									xMax = series.xData[end],
+									range = series.currentDataGrouping.totalRange,
+									xMin = xMax - range,
+									processedXData = [],
+									processedYData = [],
+									actX = series.xData[0],
+									preGroupedPoints = [],
+									groupedPoint,
+									pLen = 0,
+									i = 0;
+									
+							if(series.currentDataGrouping.totalRange == series.closestPointRange) {
 							// we don't need grouping, since one point is the same as grouped point
-							points[0] = series.xData.slice(end - length, end);
-							points[1] = series.yData.slice(end - length, end);
-						} else {
-							// group points
-							while(length >= 0 && end > 0){
-									//get points in range
-									preGroupedPoints = this.gatherPoints(series.xData, series.yData, xMin, xMax, end);
-									pLen = preGroupedPoints.x.length; 
-									if(pLen > 0){
-											length --;
-											groupedPoint = this.groupPoint(preGroupedPoints, series);
-											points[0].push(groupedPoint[0][0]);
-											points[1].push(groupedPoint[1][0]);
-									}
-									// change extremes for next range
-									end -= pLen;
-									xMax = xMin;
-									xMin -= range;
+								points[0] = series.xData.slice(end - length, end);
+								points[1] = series.yData.slice(end - length, end);
+							} else {
+								// group points
+								while(length >= 0 && end > 0){
+										//get points in range
+										preGroupedPoints = this.gatherPoints(series.xData, series.yData, xMin, xMax, end);
+										pLen = preGroupedPoints.x.length; 
+										if(pLen > 0){
+												length --;
+												groupedPoint = this.groupPoint(preGroupedPoints, series);
+												points[0].push(groupedPoint[0][0]);
+												points[1].push(groupedPoint[1][0]);
+										}
+										// change extremes for next range
+										end -= pLen;
+										xMax = xMin;
+										xMin -= range;
+								}
+								if(points[0].length > 0) {
+										points.sort(function(a,b) { return a[0][0] - b[0][0]; });
+								}
 							}
-							if(points[0].length > 0) {
-									points.sort(function(a,b) { return a[0][0] - b[0][0]; });
-							}
-						}
-					} else {
-							var end = series.cropStart,
-									length = this.options.params.period + 2;
-							points[0] = series.xData.slice(end - length, end);
-							points[1] = series.yData.slice(end - length, end);
-					}
+					} 
 					return points;
 					
 			},
@@ -382,7 +390,8 @@
 			*/
 			gatherPoints: function(xData, yData, min, max, end){
 					var x = [],
-							y = [];
+							y = [],
+							middle = [max - (max - min) / 2];
 					
 					while(end >= 0 && max > min) {
 								end--;
@@ -390,7 +399,7 @@
 								x.push(xData[end]);
 								y.push(yData[end]);
 					}
-					return {x: x, y: y, middle: [x[0]]};
+					return {x: x, y: y, middle: middle};
 			},
 			
 			
@@ -409,11 +418,16 @@
 				var indicator = this,
 						chart = this.chart,
 						allItems = chart.indicators.allItems,
-						index = allItems.indexOf(indicator);
+						index = allItems.indexOf(indicator),
+						Axis = this.options.Axis;
 				
 				if (index > -1) {
 					allItems.splice(index, 1);
 				}
+
+				//remove axis
+				if(Axis)
+					Axis.remove();
 				
 				if (indicator.group) {
 					// TO DO: do we need to destroy graph, or goup will be enough?
@@ -458,7 +472,7 @@
 					var chart = this,
 							indicators = chart.indicators.allItems,
 							item;
-					
+
 					item = new Indicator(chart, options);
 					indicators.push(item);
 					item.render(redraw);
@@ -700,10 +714,11 @@
 
             return (chart.yAxis.length - 1);
 			},
-			minInArray: function(arr) {
+			
+ 			minInArray: function(arr) {
 				return arr.reduce(function(min, arr) {
 				    return Math.min(min, arr[1]);
-				}, -Infinity);
+				}, Infinity);
 			},
 			maxInArray: function(arr) {
 				return arr.reduce(function(max, arr) {
@@ -719,6 +734,7 @@
         		i = 0,
         		clipPath,
 						group,
+						exportingFlag = true, 
 						clipBox = {
 								x: chart.plotLeft,
 								y: chart.plotTop,
@@ -751,16 +767,21 @@
         
         for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i]);
+        		if((chart.get(options[i].id).data.length - 1) <= options[i].params.period)
+        			exportingFlag = false;
         }
         
 				// update indicators after chart redraw
-			 chart.redrawIndicators();
-			 Highcharts.addEvent(chart, 'redraw', function () {
-					chart.redrawIndicators();
-			 });
-			 chart.series[0].isDirty= true;
-			 chart.series[0].isDirtyData= true;
-			 chart.redraw();
+				 chart.redrawIndicators();
+				 Highcharts.addEvent(chart, 'redraw', function () {
+						chart.redrawIndicators();
+				 });
+				  
+				 if(exportingFlag) {
+					  chart.series[0].isDirty = true;
+					 	chart.series[0].isDirtyData = true;
+					 	chart.redraw();
+				 }
 		});
 
 

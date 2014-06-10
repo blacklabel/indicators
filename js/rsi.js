@@ -64,8 +64,6 @@
                 loss = [],
                 RSIPoint, change, RS, avgGain, avgLoss;
 
-
-
            // atr requires close value     
            if((xVal.length <= period) || !isArray(yVal[0]) || yVal[0].length != 4 || EMA === UNDEFINED) {
               return;
@@ -154,11 +152,19 @@
 							 }
 					 };
 
+           if(options.visible === false) {
+              return;
+           }
+
            userOptions = merge(defaultOptions, options.yAxis);
-           
+
+
            if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
              options.Axis = chart.yAxis[index];
+           } else {
+             options.Axis.update(userOptions,false);
+             chart.forceRedrawChart();
            }
 
            yAxis = options.Axis;

@@ -57,16 +57,18 @@
                 point,i,points,
                 EMAPoint;
 
-            if(xVal.length <= period) {
-              return;
-            }
+           //check period, if bigger than points length, skip
+           if(xVal.length <= period) {
+            return;
+           }
+
 
            //switch index for OHLC / Candlestick / Arearange
            if(isArray(yVal[0])) {
               index = params.index ? params.index : 0;
               yValue = yVal[0][index];
            }
-            // starting point
+           // starting point
            points = [[xValue, yValue]];
            
            // accumulate first N-points
@@ -107,6 +109,10 @@
                emaX,
                emaY,
                i;
+
+            if(options.visible === false) {
+              return;
+           }
                
            attrs = merge({
                'stroke-width': 2,
@@ -127,6 +133,7 @@
         },
         utils: {
             accumulateAverage: function(points, xVal, yVal, i, index){ 
+
                 var xValue = xVal[i],
                     yValue = index < 0 ? yVal[i] : yVal[i][index];
                     
