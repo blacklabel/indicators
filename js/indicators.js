@@ -187,7 +187,7 @@
 					series 		 = points[0].series,
 					chart 		 = series.chart,
 					tooltipOptions = chart.tooltip.options,
-					indicators = series.indicators,
+					indicators = chart.indicators.allItems,
 					x 			   = this.x,
 					t 				 = series.tooltipHeaderFormatter !== UNDEFINED ? series : chart.tooltip,
 					s;
