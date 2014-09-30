@@ -145,7 +145,7 @@
 							 		color: 'orange',
 							 		width: 1
 							 }],
-							 height: 100,
+							 //height: 100,
 							 max: 100,
 							 title: {
 							 	 	text: 'RSI'
@@ -162,9 +162,6 @@
            if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
              options.Axis = chart.yAxis[index];
-           } else {
-             options.Axis.update(userOptions,false);
-             chart.forceRedrawChart();
            }
 
            yAxis = options.Axis;

@@ -87,9 +87,22 @@ $(function () {
 						rangeSelector: {
 								selected: 0
 						},
-            tooltip:{
-								enabledIndicators: true
-						},
+                                tooltip:{
+                        shared: false,
+                        enabledIndicators: true,
+                        followPointer: false,
+                        backgroundColor: 'white',
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        headerFormat: '{point.key} ',
+                        pointFormat: ' | <span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b>',
+                        positioner: function(p,w,h) {
+                                return {
+                                        x: 70,
+                                        y: 50
+                                }
+                        }
+                    },
 						series: [{
 								cropThreshold: 0,
 								id: 'AAPL',

@@ -189,11 +189,13 @@
 					tooltipOptions = chart.tooltip.options,
 					indicators = chart.indicators.allItems,
 					x 			   = this.x,
-					t 				 = series.tooltipHeaderFormatter !== UNDEFINED ? series : chart.tooltip,
+					t 				 = series.tooltipHeaderFormatter !== UNDEFINED ? series.tooltipHeaderFormatter : 
+												(series.tooltipFooterHeaderFormatter !== UNDEFINED ? series.tooltipFooterHeaderFormatter : 
+											  	(chart.tooltip.tooltipFooterHeaderFormatter	!== UNDEFINED ? chart.tooltip.tooltipFooterHeaderFormatter : chart.tooltip.tooltipHeaderFormatter)),  // version 1.x vs 2.0.x vs 2.1.x
 					s;
 
 			// build the header
-			s = [t.tooltipHeaderFormatter(points[0])];
+			s = [t.call(chart.tooltip, points[0])];
 
 			// build the values
 			each(points, function (item) {
@@ -414,7 +416,7 @@
 			/*
 			* Destroy the indicator
 			*/
-			destroy: function () {
+			destroy: function (redraw) {
 				var indicator = this,
 						chart = this.chart,
 						allItems = chart.indicators.allItems,
@@ -426,15 +428,18 @@
 				}
 
 				//remove axis
-				if(Axis)
+				if(Axis) {
 					Axis.remove();
+					chart.updateHeightAxes(20, false);
+				}
 				
 				if (indicator.group) {
-					// TO DO: do we need to destroy graph, or goup will be enough?
+					// TO TEST: do we need to destroy graph, or group will be enough? - Looks fine.
 					indicator.group.destroy();
 					indicator.group = null;
 				}
 				indicator = null;
+				chart.redraw(redraw);
 			},
 			
 			/*
@@ -476,6 +481,7 @@
 					item = new Indicator(chart, options);
 					indicators.push(item);
 					item.render(redraw);
+					chart.redraw(redraw);
 				},
 				/*
 				 * Redraw all indicators, method used in chart events
@@ -494,237 +500,80 @@
 									indicator.redraw();
 						});
 				},
-				forceRedrawChart: function () {
-					var chart = this,
-     					axes = chart.axes,
-				      series = chart.series,
-				      pointer = chart.pointer,
-				      legend = chart.legend,
-				      redrawLegend = chart.isDirtyLegend,
-				      hasStackedSeries,
-				      hasDirtyStacks,
-				      isDirtyBox = chart.isDirtyBox, // todo: check if it has actually changed?
-				      seriesLength = series.length,
-				      i = seriesLength,
-				      serie,
-				      renderer = chart.renderer,
-				      isHiddenChart = renderer.isHidden(),
-				      afterRedraw = [];
-				    
-				    if (isHiddenChart) {
-				      chart.cloneRenderTo();
-				    }
-
-				    // Adjust title layout (reflow multiline text)
-				    chart.layOutTitles();
-
-				    // link stacked series
-				    while (i--) {
-				      serie = series[i];
-
-				      if (serie.options.stacking) {
-				        hasStackedSeries = true;
-				        
-				        if (serie.isDirty) {
-				          hasDirtyStacks = true;
-				          break;
-				        }
-				      }
-				    }
-				    if (hasDirtyStacks) { // mark others as dirty
-				      i = seriesLength;
-				      while (i--) {
-				        serie = series[i];
-				        if (serie.options.stacking) {
-				          serie.isDirty = true;
-				        }
-				      }
-				    }
-
-				    // handle updated data in the series
-				    each(series, function (serie) {
-				      if (serie.isDirty) { // prepare the data so axis can read it
-				        if (serie.options.legendType === 'point') {
-				          redrawLegend = true;
-				        }
-				      }
-				    });
-
-				    // handle added or removed series
-				    if (redrawLegend && legend.options.enabled) { // series or pie points are added or removed
-				      // draw legend graphics
-				      legend.render();
-
-				      chart.isDirtyLegend = false;
-				    }
-
-				    // reset stacks
-				    if (hasStackedSeries) {
-				      chart.getStacks();
-				    }
-
-
-				    if (chart.hasCartesianSeries) {
-				      if (!chart.isResizing) {
-
-				        // reset maxTicks
-				        chart.maxTicks = null;
-
-				        // set axes scales
-				        each(axes, function (axis) {
-				          axis.setScale();
-				        });
-				      }
-
-				      chart.adjustTickAmounts();
-				      chart.getMargins();
-
-				      // If one axis is dirty, all axes must be redrawn (#792, #2169)
-				      each(axes, function (axis) {
-				        if (axis.isDirty) {
-				          isDirtyBox = true;
-				        }
-				      });
-
-				      // redraw axes
-				      each(axes, function (axis) {
-				        
-				        // Fire 'afterSetExtremes' only if extremes are set
-				        if (axis.isDirtyExtremes) { // #821
-				          axis.isDirtyExtremes = false;
-				          afterRedraw.push(function () { // prevent a recursive call to chart.redraw() (#1119)
-				            fireEvent(axis, 'afterSetExtremes', extend(axis.eventArgs, axis.getExtremes())); // #747, #751
-				            delete axis.eventArgs;
-				          });
-				        }
-				        
-				        if (isDirtyBox || hasStackedSeries) {
-				          axis.redraw();
-				        }
-				      });
-
-
-				    }
-				    // the plot areas size has changed
-				    if (isDirtyBox) {
-				      chart.drawChartBox();
-				    }
-
-
-				    // redraw affected series
-				    each(series, function (serie) {
-				      if (serie.isDirty && serie.visible &&
-				          (!serie.isCartesian || serie.xAxis)) { // issue #153
-				        serie.redraw();
-				      }
-				    });
-
-				    // move tooltip or reset
-				    if (pointer && pointer.reset) {
-				      pointer.reset(true);
-				    }
-
-				    // redraw if canvas
-				    renderer.draw();
-
-				    // fire the event
-				    //HC.fireEvent(chart, 'redraw'); // jQuery breaks this when calling it from addEvent. Overwrites chart.redraw
-				    
-				    if (isHiddenChart) {
-				      chart.cloneRenderTo(true);
-				    }
-				    
-				    // Fire callbacks that are put on hold until after the redraw
-				    each(afterRedraw, function (callback) {
-				      callback.call();
-				    });
+				/*
+				 * updates axes and returns new and normalized height for each of them. 
+				 */
+				updateHeightAxes: function(topDiff, add) {
+						var chart = this,
+								chYxis = chart.yAxis,
+                len = calcLen = chYxis.length,
+                i = 0,
+                sum = chart.containerHeight - chart.plotTop - chart.marginBottom, //workaround until chart.plotHeight will return real value
+                indexWithoutNav = 0,
+                newHeight,
+                top;
+                
+            // when we want to remove axis, e.g. after indicator remove
+            if(!add) calcLen--;    
+            
+						newHeight = (sum - (calcLen-1) * topDiff) / calcLen;
+            //update all axis
+            for (;i < len; i++) {
+                var yAxis = chYxis[i];
+                
+                if(!yAxis.isNavigator) {
+                		top = chart.plotTop + indexWithoutNav * (topDiff + newHeight);
+                        
+                    chYxis[i].update({
+                        top: top,
+                        height: newHeight
+                    },false);
+                		indexWithoutNav++;
+                }
+            }
+            return newHeight;
 				}
 		});
 		
 		// Add yAxis as pane
 		extend(Axis.prototype, {
-			addAxisPane: function(chart, userOptions) {
-
-            var defaultOptions = {
-	            	labels: {
-	            		align: 'left',
-	            		x: 2,
-	            		y: -2
-	            	},
-            		offset: 0,
-                height: 250,
-                top: 0,
-                min: 0,
-                max: 100
-            }
-            
-            var chYxis = chart.yAxis,
-                len = chYxis.length,
-                top = chYxis[0].top,
-                topDiff = top / 2, 
-                options = merge(defaultOptions,userOptions),
-                i = sum = 0,
-                hp = [],
-                lastTop;
-            //calculate height
-            for (i = 0; i < len; i++) {
-                if(!chYxis[i].isNavigator) 
-                     sum += chYxis[i].height;
-            };
-            
-            //update all axis
-            for (i = 0; i < len; i++) {
-                var yAxis = chYxis[i];
-                
-                if(!yAxis.isNavigator) {
-
-                    var yAxisHeight = yAxis.height,
-                        paneHeight = options.height,
-                        hPercent = paneHeight / sum,
-                        diffHeight, newHeight;
-                    
-                    if(hPercent > 0.5) {
-                    	paneHeight = (yAxisHeight / 2);
-                    	hPercent = paneHeight / sum;
-                    }
-
-                    diffHeight = sum * hPercent * (yAxisHeight / sum), 
-                    newHeight = yAxisHeight - diffHeight - (topDiff / (len - 1));
-                    options.height = paneHeight;
-
-                    if(i > 0) {
-                        var prevP = chYxis[i-1].isNavigator ? chYxis[i-2] : chYxis[i-1], 
-                            prevH = prevP.options.height,
-                            prevOldH = prevP.height;
-                        
-                        top = prevP.options.top + prevH + topDiff;
-                    } 
-                    
-                    lastTop = top + newHeight + topDiff;
-                    chYxis[i].update({
-                        top: top,
-                        height: newHeight
-                    },false);
-                }
-            }
-            
-            //add new axis
-            options.top = lastTop;
-            chart.addAxis(options);
-
-            return (chart.yAxis.length - 1);
-			},
-			
- 			minInArray: function(arr) {
-				return arr.reduce(function(min, arr) {
-				    return Math.min(min, arr[1]);
-				}, Infinity);
-			},
-			maxInArray: function(arr) {
-				return arr.reduce(function(max, arr) {
-				    return Math.max(max, arr[1]);
-				}, -Infinity);
-			}
+				/* 
+				 * When new indicator is added, sometimes we need new pane. 
+				 * Note: It automatically scales all of other axes.
+				 */
+				addAxisPane: function(chart, userOptions) {
+						var topDiff = 20,
+								height = chart.updateHeightAxes(topDiff, true),
+								defaultOptions = {
+										labels: {
+												align: 'left',
+												x: 2,
+												y: -2
+										},
+										offset: 0,
+										height: height,
+										top: chart.plotTop + (chart.yAxis.length - 1) * (topDiff + height),
+										min: 0,
+										max: 100
+								},
+								options = merge(defaultOptions,userOptions);
+							
+						//add new axis
+						chart.preventIndicators = true;
+						chart.addAxis(options, false, true, false);
+						return (chart.yAxis.length - 1);
+				},
+				
+				minInArray: function(arr) {
+						return arr.reduce(function(min, arr) {
+								return Math.min(min, arr[1]);
+						}, Infinity);
+				},
+				maxInArray: function(arr) {
+						return arr.reduce(function(max, arr) {
+								return Math.max(max, arr[1]);
+						}, -Infinity);
+				}
 		});
 		
 		// Initialize on chart load
@@ -766,22 +615,24 @@
         chart.indicators.clipPath = clipPath;
         
         for(i = 0; i < optionsLen; i++) {
-        		chart.addIndicator(options[i]);
+        		chart.addIndicator(options[i], false);
         		if((chart.get(options[i].id).data.length - 1) <= options[i].params.period)
         			exportingFlag = false;
         }
         
-				// update indicators after chart redraw
-				 chart.redrawIndicators();
-				 Highcharts.addEvent(chart, 'redraw', function () {
-						chart.redrawIndicators();
-				 });
+				 // update indicators after chart redraw
+				Highcharts.addEvent(chart, 'redraw', function () {
+						if(!chart.preventIndicators) {
+							chart.redrawIndicators();
+						}
+						chart.preventIndicators = false;
+				});
 				  
-				 if(exportingFlag) {
+				if(exportingFlag) {
 					  chart.series[0].isDirty = true;
 					 	chart.series[0].isDirtyData = true;
-					 	chart.redraw();
-				 }
+					 	chart.redraw(false);
+				}
 		});
 
 

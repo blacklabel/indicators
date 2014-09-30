@@ -109,7 +109,7 @@
                 min: 0,
                 max: max,
                 tickPixelInterval: 50,
-                height: 100,
+                //height: 100,
                 title: {
                   text: 'ATR'
                 }
@@ -129,10 +129,6 @@
              if(options.Axis.max !== options.Axis.oldMax) {
               userOptions.max = max;
              }
-              userOptions.height -= 20;
-              userOptions.top = options.Axis.top;
-              options.Axis.update(userOptions,false);
-              chart.forceRedrawChart();
            }
 
            yAxis = options.Axis;
