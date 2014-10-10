@@ -623,10 +623,6 @@
 			hide: function() {
 					this.group.hide();
 					this.visible = false;
-					if(this.options.Axis) {
-							this.options.Axis.setExtremes(null, null, false, false);
-							this.render(false);
-					}
 			},
 			
 			/*
@@ -635,10 +631,6 @@
 			show: function() {
 					this.group.show();
 					this.visible = true;
-					if(this.options.Axis) {
-							this.options.Axis.setExtremes(null, null, false, false);
-							this.render(false);
-					}
 			}
 		};
 		
