@@ -1,6 +1,6 @@
 {
         "name": "Indicators",
-        "version": "1.0.5",
+        "version": "1.0.6",
         "title": "Indicators",
         "author": {
                 "name": "Black Label",
@@ -13,7 +13,7 @@
                 }
         ],
         "dependencies": {
-                "highstock": "1.3.9"
+                "highstock": "1.3.9+"
         },
         "demo": [
                 "http://jsfiddle.net/BlackLabel/RE7sS/"
@@ -29,7 +29,7 @@
         "maintainers": [
     {
       "name": "Sebastian Bochan",
-      "email": "sebastian2@blacklabel.pl",
+      "email": "sebastian@blacklabel.pl",
       "url": "http://www.blacklabel.pl"
     },{
       "name": "Paweł Fus",

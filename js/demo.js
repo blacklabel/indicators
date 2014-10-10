@@ -18,12 +18,19 @@ $(function () {
 								y: 8,
 								text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'	
 						},
+						legend: {
+								enabled: true,
+								align: 'right',
+								verticalAlign: 'middle',
+								layout: 'vertical'
+						},
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
 								params: {
 										period: 14
-								}
+								},
+								showInLegend: true
 						},{
 								id: 'AAPL',
 								type: 'ema',
@@ -35,7 +42,8 @@ $(function () {
 										strokeWidth: 2,
 										stroke: 'green',
 										dashstyle: 'solid'
-								}
+								},
+								showInLegend: true
 						}, {
 								id: 'AAPL',
 								type: 'atr',
@@ -52,7 +60,8 @@ $(function () {
 									title: {
 										text:'ATR'
 									}
-								}	
+								},
+								showInLegend: true
 						}, {
 								id: 'AAPL',
 								type: 'rsi',
@@ -71,7 +80,8 @@ $(function () {
 										title: {
 											text:'RSI'
 										}
-								}	
+								},
+								showInLegend: true
 						}],
 						yAxis:{
 							opposite:false,

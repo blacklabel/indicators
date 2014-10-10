@@ -48,7 +48,7 @@
 						each(s.indicators, function(el, i) {
 								el.isDirty = true;
 						});
-						s.indicators = null;
+						//s.indicators = null;
 				}
 		}
 
@@ -138,6 +138,21 @@
 				});
 		});
 		
+		
+		/*
+		*  Set visibility for all indicators to be the same as series
+		*/
+		HC.wrap(HC.Series.prototype, 'setVisible', function(proceed, vis, redraw) {
+				var newVis = vis === UNDEFINED ? !this.visible : vis;
+
+				proceed.call(this, newVis, true);
+				if(this.indicators) { 
+					HC.each(this.indicators, function(ind, i) {
+						ind.setVisible(newVis, redraw);
+					});
+				}				
+		});
+		
 		/*
 		*  Force redraw for indicator with new point options, like value
 		*/
@@ -177,6 +192,16 @@
     	proceed.call(this);
       this.yAxis.isNavigator = true;
     });
+    
+    /*
+    *  Set flag for hasData when indicator has own axis
+    */
+    HC.wrap(HC.Axis.prototype, 'render', function(p) {
+    		if(this.indicator && !this.indicator.visible) {
+    			this.hasData = false;
+    		}
+    		p.call(this);
+    });
 
     /*
 		*		Tooltip formatter content
@@ -208,13 +233,14 @@
 				// build the values of indicators
 
 				$.each(indicators,function(i,ind) {
-					if(typeof(ind.values) === 'undefined' || ind.options.visible === false) 
+					if(typeof(ind.values) === 'undefined' || ind.visible === false) {
 						return;
+					}
 
 					$.each(ind.currentPoints,function(j,val){
-						if(val[0] === x) 
-							s.push('<span style="font-weight:bold;color:' + ind.graph.element.attributes['stroke'].value + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
-						
+						if(val[0] === x) {
+							s.push('<span style="font-weight:bold;color:' + ind.graph.element.attributes.stroke.value + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
+						}
 					});
 				});
 			}
@@ -224,7 +250,54 @@
 			return s.join('');
 
 		});
+		
 
+		/***
+		
+		Add legend items:
+		
+		***/
+		
+		
+		/* 
+		* Add indicators to legend
+		*/
+		HC.wrap(HC.Legend.prototype, 'getAllItems', function(p) {
+				var allItems = p.call(this),
+						indicators = this.chart.indicators;
+				if(indicators) {
+						HC.each(indicators.allItems, function(e, i) {
+								if(e.options.showInLegend) {
+										allItems.push(e);
+								}
+						});
+				}
+				return allItems;
+		});
+		
+		
+		/*
+		* Render indicator
+		*/
+		HC.wrap(HC.Legend.prototype, 'renderItem', function(p, item) {
+				if(item instanceof Indicator) {
+						var series = item.series;
+						item.series = null;
+						item.color = item.graph.stroke;
+						p.call(this, item);
+						item.series = series;
+				} else {
+						p.call(this, item);
+				}
+		});
+		
+		/*
+		* Update positioning in legend
+		*/
+		HC.wrap(HC.Legend.prototype, 'positionItem', function(p, item) {
+					p.call(this, item);
+		});
+		
 		/***
 		
 		Indicator Class:
@@ -247,6 +320,8 @@
 				this.chart = chart;
 				this.options = options;
 				this.series = chart.get(options.id);
+				this.name = options.type;
+				this.visible = options.visible === UNDEFINED ? true : options.visible;
 
 				var cropShoulder = this.series.cropShoulder,
 						maxPeriod;
@@ -280,6 +355,8 @@
 						arrayValues,
 						extremes;
 
+				if(!indicator.visible) return;		
+						
 				if (!group) {
 						indicator.group = group = renderer.g().add(chart.indicators.group);
 						indicator.group.clip(chart.indicators.clipPath);
@@ -298,6 +375,9 @@
 							
 								if(graph) {
 									graph.add(group);
+								}
+								if(indicator.options.Axis) {
+										indicator.options.Axis.indicator = indicator;
 								}
 						}
 				}
@@ -318,6 +398,8 @@
 						pointsBeyondExtremes,
 						arrayValues,
 						extremes;
+						
+				if(!this.visible) return;				
 
 				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
 				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
@@ -443,6 +525,90 @@
 			},
 			
 			/*
+			* setState for indicator?
+			*/
+			setState: function(state) {
+				
+			},
+			
+			/*
+			* Hide or show indicator
+			*/
+			setVisible: function(vis, redraw) {
+				var indicator = this,
+						oldVis = indicator.visible,
+						newVis,
+						method;
+				
+				if(vis === UNDEFINED) {
+						newVis = oldVis ? false : true;
+						method = oldVis ? 'hide' : 'show';
+				} else {
+						newVis = vis;
+						method = vis ? 'show' : 'hide';
+				}	
+				
+				if(!this.series.visible) {
+					if(!this.visible) return;
+					newVis = false;
+				}
+				
+				if (this.options.showInLegend) {
+						this.chart.legend.colorizeItem(this, newVis);
+				}
+				this.visible = newVis;
+				
+				// hide axis by resetting extremes
+				if(this.options.Axis) {
+						if(this.visible) {
+							this.options.Axis.hasData = true;
+							this.options.Axis.render();
+						} else {
+							this.options.Axis.hasData = false;
+							this.options.Axis.render();
+							
+						}
+				}
+				indicator[method]();
+				indicator.redraw();
+			}, 
+			
+			/*
+			* Draw symbol in legend - should be simple line
+			*/ 
+			
+			drawLegendSymbol: function(legend) {
+					var options = this.options,
+							markerOptions = options.marker,
+							radius,
+							legendOptions = legend.options,
+							legendSymbol,
+							symbolWidth = legend.symbolWidth,
+							renderer = this.chart.renderer,
+							legendItemGroup = this.legendGroup,
+							verticalCenter = legend.baseline - Math.round(renderer.fontMetrics(legendOptions.itemStyle.fontSize, this.legendItem).b * 0.3),
+							attr;
+				
+					// Draw the line
+					attr = {
+						'stroke-width': options.lineWidth || 2
+					};
+					if (options.dashStyle) {
+						attr.dashstyle = options.dashStyle;
+					}
+					this.legendLine = renderer.path([
+						'M',
+						0,
+						verticalCenter,
+						'L',
+						symbolWidth,
+						verticalCenter
+					])
+					.attr(attr)
+					.add(legendItemGroup);
+			},
+			
+			/*
 			* Update the indicator with a given options
 			*/
 			update: function (options, redraw) {
@@ -456,6 +622,11 @@
 			*/
 			hide: function() {
 					this.group.hide();
+					this.visible = false;
+					if(this.options.Axis) {
+							this.options.Axis.setExtremes(null, null, false, false);
+							this.render(false);
+					}
 			},
 			
 			/*
@@ -463,6 +634,11 @@
 			*/
 			show: function() {
 					this.group.show();
+					this.visible = true;
+					if(this.options.Axis) {
+							this.options.Axis.setExtremes(null, null, false, false);
+							this.render(false);
+					}
 			}
 		};
 		
@@ -508,7 +684,7 @@
 								chYxis = chart.yAxis,
                 len = calcLen = chYxis.length,
                 i = 0,
-                sum = chart.containerHeight - chart.plotTop - chart.marginBottom, //workaround until chart.plotHeight will return real value
+                sum = chart.chartHeight - chart.plotTop - chart.marginBottom, //workaround until chart.plotHeight will return real value
                 indexWithoutNav = 0,
                 newHeight,
                 top;
@@ -629,6 +805,7 @@
 				});
 				  
 				if(exportingFlag) {
+						chart.isDirtyLegend = true;
 					  chart.series[0].isDirty = true;
 					 	chart.series[0].isDirtyData = true;
 					 	chart.redraw(false);

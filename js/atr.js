@@ -115,7 +115,7 @@
                 }
                }
 
-            if(options.visible === false) {
+           if(options.visible === false) {
               return;
            }
 
@@ -125,10 +125,20 @@
              index = addAxisPane(chart,userOptions); 
              options.Axis = chart.yAxis[index];
              options.Axis.oldMax = max;
-           } else {
-             if(options.Axis.max !== options.Axis.oldMax) {
-              userOptions.max = max;
-             }
+           } else if(max !== options.Axis.max) {
+             userOptions.max = max;
+             
+             options.Axis.userMax = max;
+             options.Axis.isDirty = true;
+             options.Axis.isDirtyExtremes = true;
+             
+             options.Axis.setScale();
+						 options.Axis.setTickPositions(true); // update to reflect the new margins
+						 options.Axis.setMaxTicks();	
+
+					   chart.getMargins();
+
+					   options.Axis.render();
            }
 
            yAxis = options.Axis;

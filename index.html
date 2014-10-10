@@ -3,7 +3,7 @@
 <head>
 	<title>Indicators demo</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script type="text/javascript" src="http://github.highcharts.com/master/highstock.src.js"></script>
+	<script type="text/javascript" src="http://code.highcharts.com/stock/highstock.src.js"></script>
 	<script type="text/javascript" src="js/indicators.js"></script>
 	<script type="text/javascript" src="js/sma.js"></script>
 	<script type="text/javascript" src="js/ema.js"></script>
@@ -109,6 +109,7 @@ tooltip:{
   <tbody>
     <tr><td align="left">id</td><td align="left">id of series
     <tr><td align="left">type</td><td align="left">type of indicator (one of: 'sma', 'ema', 'atr', 'rsi')</td></tr>
+    <tr><td align="left">showInLegend</td><td align="left">determines if indicator should be visible in the legend. Defaults to false.</td></tr>
     <tr><td align="left">styles</td><td align="left">color, dashstyle, width etc. for a indicator line</td></tr>
     <tr><td align="left">yAxis (ATR/RSI)</td><td align="left">yAxis object like in Highcharts, options for additional yAxis</td></tr>
     <tr><td align="left">params</td><td align="left">config options for indicator</td></tr>

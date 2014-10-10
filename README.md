@@ -169,6 +169,7 @@ tooltip:{
   <tbody>
     <tr><td align="left">id</td><td align="left">id of series
     <tr><td align="left">type</td><td align="left">type of indicator (one of: 'sma', 'ema', 'atr', 'rsi')</td></tr>
+    <tr><td align="left">showInLegend</td><td align="left">determines if indicator should be visible in the legend. Defaults to false.</td></tr>
     <tr><td align="left">styles</td><td align="left">color, dashstyle, width etc. for a indicator line</td></tr>
     <tr><td align="left">yAxis (ATR/RSI)</td><td align="left">yAxis object like in Highcharts, options for additional yAxis</td></tr>
     <tr><td align="left">params</td><td align="left">config options for indicator</td></tr>
