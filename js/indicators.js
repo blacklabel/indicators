@@ -727,20 +727,12 @@
 										min: 0,
 										max: 100
 								},
-								options = merge(defaultOptions,userOptions),
-								yIndex;
+								options = merge(defaultOptions,userOptions);
 							
 						//add new axis
 						chart.preventIndicators = true;
 						chart.addAxis(options, false, true, false);
-						yIndex = chart.yAxis.length - 1;
-						/* HC.each(chart.yAxis, function(axis, ind) {
-								axis.isDirty = true;
-								axis.isDirtyExtremes = true;
-								axis.redraw();
-						}); */
-						//chart.yAxis[yIndex].render();
-						return yIndex;
+						return chart.yAxis.length - 1;
 				},
 				
 				minInArray: function(arr) {
