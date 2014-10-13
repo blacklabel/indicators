@@ -112,6 +112,7 @@
 		*/
 		HC.wrap(HC.Series.prototype, 'setData', function(proceed, redraw, animation) {
 				forceRedraw(this);
+				this.chart.updateHeightAxes(20, false);
 				proceed.call(this, redraw, animation);
 		});
 		
@@ -184,15 +185,6 @@
 				proceed.call(this, options, redraw);
 		});
 		
-
-		/*
-		*		Set flag for navigator yAxis
-		*/
-    HC.wrap(HC.Scroller.prototype, 'init', function (proceed) {
-    	proceed.call(this);
-      this.yAxis.isNavigator = true;
-    });
-    
     /*
     *  Set flag for hasData when indicator has own axis
     */
@@ -367,20 +359,26 @@
 				} else if(!graph) {
 						this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
 						arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
-						if(arrayValues) {
-							this.values = this.currentPoints = arrayValues.values;
-							this.xData = arrayValues.xData;
-							this.yData = arrayValues.yData;
-							this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
-							
-								if(graph) {
-									graph.add(group);
-								}
-								if(indicator.options.Axis) {
-										indicator.options.Axis.indicator = indicator;
-								}
+						if(!arrayValues) { //#6 - create dummy data 
+							arrayValues = {
+								values: [[]],
+								xData: [[]],
+								yData: [[]]
+							};
 						}
+						this.values = this.currentPoints = arrayValues.values;
+						this.xData = arrayValues.xData;
+						this.yData = arrayValues.yData;
+						this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
+						
+							if(graph) {
+								graph.add(group);
+							}
+							if(indicator.options.Axis) {
+									indicator.options.Axis.indicator = indicator;
+							}
 				}
+				chart.legend.render();
 			},
 
 			/*
@@ -403,20 +401,25 @@
 
 				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
 				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
-
-				if(arrayValues) {
-					this.values = this.currentPoints = arrayValues.values;
-					this.xData = arrayValues.xData;
-					this.yData = arrayValues.yData;
-					if(graph) {
-							graph.destroy();
-					}
-
-					this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
-					
-						if(graph) {
-								graph.add(group);
+                   
+				if(!arrayValues) { //#6 - create dummy data 
+						arrayValues = {
+								values: [[]],
+								xData: [[]],
+								yData: [[]]
 						}
+				}
+				this.values = this.currentPoints = arrayValues.values;
+				this.xData = arrayValues.xData;
+				this.yData = arrayValues.yData;
+				if(graph) {
+						graph.destroy();
+				}
+
+				this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
+				
+				if(graph) {
+						graph.add(group);
 				}
 			},	
 			
@@ -689,7 +692,7 @@
             for (;i < len; i++) {
                 var yAxis = chYxis[i];
                 
-                if(!yAxis.isNavigator) {
+                if(yAxis.options.id !== 'navigator-y-axis') {
                 		top = chart.plotTop + indexWithoutNav * (topDiff + newHeight);
                         
                     chYxis[i].update({
@@ -697,7 +700,7 @@
                         height: newHeight
                     },false);
                 		indexWithoutNav++;
-                }
+                } 
             }
             return newHeight;
 				}
@@ -724,12 +727,20 @@
 										min: 0,
 										max: 100
 								},
-								options = merge(defaultOptions,userOptions);
+								options = merge(defaultOptions,userOptions),
+								yIndex;
 							
 						//add new axis
 						chart.preventIndicators = true;
 						chart.addAxis(options, false, true, false);
-						return (chart.yAxis.length - 1);
+						yIndex = chart.yAxis.length - 1;
+						/* HC.each(chart.yAxis, function(axis, ind) {
+								axis.isDirty = true;
+								axis.isDirtyExtremes = true;
+								axis.redraw();
+						}); */
+						//chart.yAxis[yIndex].render();
+						return yIndex;
 				},
 				
 				minInArray: function(arr) {
