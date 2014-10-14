@@ -106,11 +106,12 @@
               return;
           }
 							 
-					 attrs = merge({
+					 options.styles = attrs = merge({
 							 'stroke-width': 2,
 							 stroke: 'red',
-							 dashstyle: 'Dash'
+							 dashstyle: 'ShortDash'
 					 },  options.styles);	 
+					 
 					 
 					 path.push('M', xAxis.toPixels(sma[0][0]), yAxis.toPixels(sma[0][1])); 
 							 

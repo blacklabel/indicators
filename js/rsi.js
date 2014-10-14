@@ -166,7 +166,7 @@
 
            yAxis = options.Axis;
 
-           attrs = merge({
+           options.styles = attrs = merge({
                'stroke-width': 2,
                stroke: 'red',
                dashstyle: 'Dash'

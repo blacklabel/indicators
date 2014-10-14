@@ -282,13 +282,7 @@
 						p.call(this, item);
 				}
 		});
-		
-		/*
-		* Update positioning in legend
-		*/
-		HC.wrap(HC.Legend.prototype, 'positionItem', function(p, item) {
-					p.call(this, item);
-		});
+	
 		
 		/***
 		
@@ -598,8 +592,8 @@
 					attr = {
 						'stroke-width': options.lineWidth || 2
 					};
-					if (options.dashStyle) {
-						attr.dashstyle = options.dashStyle;
+					if (options.styles && options.styles.dashstyle) {
+						attr.dashstyle = options.styles.dashstyle;
 					}
 					this.legendLine = renderer.path([
 						'M',
