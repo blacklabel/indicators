@@ -183,6 +183,53 @@ tooltip:{
 </table>
 
 
+###Chart.indicators 
+
+<table>
+	<thead>
+		<tr>
+			<th align="left"> Method/Property </th>
+			<th align="left"> Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td align="left"> chart.addIndicator(options, [redraw]) </td>
+			<td align="left"> Add new indicator with given options. Optionally redraw chart.</td>
+		</tr>
+		<tr>
+			<td align="left"> chart.indicators.allItems     </td>
+			<td align="left"> Array containing all indicators.</td>
+		</tr>
+	</tbody>
+</table>
+
+
+###Indicator object
+
+<table>
+	<thead>
+		<tr>
+			<th align="left"> Method                   </th>
+			<th align="left"> Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td align="left"> indicator.update(options) </td>
+			<td align="left"> Update indicator with given options</td>
+		</tr>
+		<tr>
+			<td align="left"> indicator.destroy()       </td>
+			<td align="left"> Destroy indicator</td>
+		</tr>
+		<tr>
+			<td align="left"> indicator.setVisible(true|false)       </td>
+			<td align="left"> Hide or show indicator.</td>
+		</tr>
+	</tbody>
+</table>
+
 ### Demo
 
 Demos are available at project's github page: [http://blacklabel.github.io/indicators/](http://blacklabel.github.io/indicators/)

@@ -23,7 +23,7 @@
 
 <h3>Requirements</h3>
 
-<p>Plugin requires the latest Highstock (tested with 1.3.9)</p>
+<p>Plugin requires the latest Highstock</p>
 
 <h3>Installation</h3>
 
@@ -120,6 +120,54 @@ tooltip:{
     <tr><td align="left">params.oversold (RSI)</td><td align="left">oversold value between 0-100. Defaults to 30.</td></tr>
     <tr><td align="left">tooltip.enabledIndicators</td><td align="left">true/false, show indicators in tooltip. Disabled by default.</td></tr>
   </tbody>
+</table>
+
+
+<h3>Chart.indicators</h3>
+
+<table>
+	<thead>
+		<tr>
+			<th align="left"> Method                       </th>
+			<th align="left"> Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td align="left"> chart.addIndicator(options, [redraw]) </td>
+			<td align="left"> Add new indicator with given options. Optionally redraw chart.</td>
+		</tr>
+		<tr>
+			<td align="left"> chart.indicators.allItems     </td>
+			<td align="left"> Array containing all indicators.</td>
+		</tr>
+	</tbody>
+</table>
+
+
+<h3>Indicator object</h3>
+
+<table>
+	<thead>
+		<tr>
+			<th align="left"> Method                   </th>
+			<th align="left"> Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td align="left"> indicator.update(options) </td>
+			<td align="left"> Update indicator with given options</td>
+		</tr>
+		<tr>
+			<td align="left"> indicator.destroy()       </td>
+			<td align="left"> Destroy indicator</td>
+		</tr>
+		<tr>
+			<td align="left"> indicator.setVisible(true|false)       </td>
+			<td align="left"> Hide or show indicator.</td>
+		</tr>
+	</tbody>
 </table>
 
 <h3>Demo</h3>
