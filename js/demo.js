@@ -27,11 +27,12 @@ $(function () {
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
+								name: 'SMA',
 								params: {
 										period: 14
 								},
 								showInLegend: true
-						},{
+						}, {
 								id: 'AAPL',
 								type: 'ema',
 								params: {

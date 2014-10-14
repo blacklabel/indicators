@@ -231,7 +231,7 @@
 
 					$.each(ind.currentPoints,function(j,val){
 						if(val[0] === x) {
-							s.push('<span style="font-weight:bold;color:' + ind.graph.element.attributes.stroke.value + ';">' + ind.options.type.toUpperCase() + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
+							s.push('<span style="font-weight:bold;color:' + ind.graph.element.attributes.stroke.value + ';">' + ind.name + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
 						}
 					});
 				});
@@ -312,7 +312,7 @@
 				this.chart = chart;
 				this.options = options;
 				this.series = chart.get(options.id);
-				this.name = options.type;
+				this.name = options.name === UNDEFINED ? options.type : options.name;
 				this.visible = options.visible === UNDEFINED ? true : options.visible;
 
 				var cropShoulder = this.series.cropShoulder,
@@ -378,7 +378,9 @@
 									indicator.options.Axis.indicator = indicator;
 							}
 				}
-				chart.legend.render();
+				if(chart.legend) {
+						chart.legend.render();
+				}
 			},
 
 			/*
