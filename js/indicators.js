@@ -48,6 +48,9 @@
 						each(s.indicators, function(el, i) {
 								el.isDirty = true;
 						});
+						each(s.chart.yAxis, function(el, i) {
+								el.render();
+						});
 						//s.indicators = null;
 				}
 		}
@@ -63,6 +66,12 @@
 		HC.splat = function (obj) {
 			return HC.isArray(obj) ? obj : [obj];
 		};
+		
+		HC.setOptions({
+				tooltip: {
+						followPointer: true
+				}
+		});
 
 		
 		/***
@@ -141,17 +150,29 @@
 		
 		
 		/*
-		*  Set visibility for all indicators to be the same as series
+		*  Set visibility to true, but disable tooltip when needed. Required for forcing recalculation of values 
 		*/
 		HC.wrap(HC.Series.prototype, 'setVisible', function(proceed, vis, redraw) {
-				var newVis = vis === UNDEFINED ? !this.visible : vis;
+				var newVis = vis === UNDEFINED ? ( this.isVisible === UNDEFINED ? !this.visible : !this.isVisible) : vis,
+						showOrHide = newVis ? 'show' : 'hide',
+						series = this;
+						
+				if(series.indicators) { 
+					series.isVisible = newVis;
+					series.hideInTooltip = !newVis;
+					proceed.call(series, true, true); 
+					series.chart.legend.colorizeItem(this, newVis);
 
-				proceed.call(this, newVis, true);
-				if(this.indicators) { 
-					HC.each(this.indicators, function(ind, i) {
-						ind.setVisible(newVis, redraw);
+					// show or hide elements
+					each(['group', 'dataLabelsGroup', 'markerGroup', 'tracker'], function (key) {
+						if (series[key]) {
+							series[key][showOrHide]();
+						}
 					});
-				}				
+					series.visible = true;
+				}	else {
+						proceed.call(series, newVis, true);
+				}
 		});
 		
 		/*
@@ -189,16 +210,77 @@
     *  Set flag for hasData when indicator has own axis
     */
     HC.wrap(HC.Axis.prototype, 'render', function(p) {
-    		if(this.indicator && !this.indicator.visible) {
-    			this.hasData = false;
+    		function manageIndicators() {
+    				var hasData = false,
+    						indMin = Infinity,
+    						indMax = -Infinity;
+						each(this.indicators, function(ind, i) {
+								if(ind.visible) {
+										hasData = true; 
+										indMin = Math.min(indMin, ind.options.yAxisMin);
+										indMax = Math.max(indMax, ind.options.yAxisMax);
+								}
+						});
+						if(hasData) {
+								this.isDirty = true;
+								this.isDirtyExtremes = true;
+								this.userMax = indMax;
+								this.userMin = indMin;
+						} else {
+								this.userMax = null;
+								this.userMin = null;
+						}
+						return hasData;
     		}
+				if(this.indicators && !this.hasVisibleSeries) {
+						// case 1: axis doesn't have series
+						this.hasData = manageIndicators.call(this);
+						
+						if(this.hasData) {
+								this.setScale();
+								this.setTickPositions(true);  
+		
+								this.chart.getMargins();
+								HC.each(this.indicators, function(ind, e) {
+									ind.drawGraph();
+								});
+						}
+				} else if(this.indicators) {
+						// case 2: right now all series are 'visible', so we need to check param: isVisible
+						var hasData = false;
+						
+						each(this.series, function(serie, i) {
+								if(serie.isVisible || (serie.isVisible === UNDEFINED && serie.visible)) {
+									hasData = true;	
+								}
+						});
+						
+						if(!hasData) {
+								hasData = manageIndicators.call(this);
+						} else {
+								this.userMax = null;
+								this.userMin = null;
+						}
+						if(hasData) {
+								this.setScale();
+								this.setTickPositions(true); 
+						
+								this.chart.getMargins();
+						}
+						this.hasData = hasData;
+						
+						HC.each(this.indicators, function(ind, e) {
+							ind.drawGraph();
+						});
+				}
     		p.call(this);
     });
 
+    
     /*
 		*		Tooltip formatter content
 		*/
-		HC.wrap(HC.Tooltip.prototype, 'defaultFormatter',function (proceed, options, redraw) {
+		HC.wrap(HC.Tooltip.prototype, 'defaultFormatter', function (proceed, options, redraw) {
 
 			var points 		 = this.points || HC.splat(this),
 					series 		 = points[0].series,
@@ -217,8 +299,10 @@
 			// build the values
 			each(points, function (item) {
 					series = item.series;
-					s.push((series.tooltipFormatter && series.tooltipFormatter(item)) ||
-					item.point.tooltipFormatter(series.tooltipOptions.pointFormat));
+					if(!series.hideInTooltip) {
+							s.push((series.tooltipFormatter && series.tooltipFormatter(item)) ||
+							item.point.tooltipFormatter(series.tooltipOptions.pointFormat));
+					}
 			});
 
 			if(indicators && indicators !== UNDEFINED && tooltipOptions.enabledIndicators) {
@@ -284,6 +368,20 @@
 		});
 	
 		
+		/* 
+		* When hovering legend item, use isVisible instead of visible property
+		*/ 
+		
+		HC.wrap(HC.Legend.prototype, 'setItemEvents', function(p, item, legendItem, useHTML, itemStyle, itemHiddenStyle) {
+				p.call(this, item, legendItem, useHTML, itemStyle, itemHiddenStyle);
+				(useHTML ? legendItem : item.legendGroup).on('mouseout', function () {
+						var style = item.isVisible === UNDEFINED ? 
+												(item.visible ? itemStyle : itemHiddenStyle) : (item.isVisible ? itemStyle : itemHiddenStyle);
+						legendItem.css(style);
+						item.setState();
+				})
+		});
+		
 		/***
 		
 		Indicator Class:
@@ -336,6 +434,7 @@
 						group = this.group,
 						options = this.options,
 						series = this.series,
+						clipPath = this.clipPath,
 						visible = options.visible,
 						pointsBeyondExtremes,
 						arrayValues,
@@ -345,8 +444,8 @@
 						
 				if (!group) {
 						indicator.group = group = renderer.g().add(chart.indicators.group);
-						indicator.group.clip(chart.indicators.clipPath);
 				}
+				
 				if(!series) {
 						error('Series not found');
 						return false;
@@ -365,14 +464,22 @@
 						this.yData = arrayValues.yData;
 						this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 						
-							if(graph) {
-								graph.add(group);
-							}
-							if(indicator.options.Axis) {
-									indicator.options.Axis.indicator = indicator;
-							}
+						if(graph) {
+							graph.add(group);
+						}
+						if(indicator.options.Axis) {
+								indicator.options.Axis.indicators = indicator.options.Axis.indicators || [];
+								indicator.options.Axis.indicators.push(indicator);
+								indicator.clipPath = renderer.clipRect({
+										x: indicator.options.Axis.left,
+										y: indicator.options.Axis.top,
+										width: indicator.options.Axis.width,
+										height: indicator.options.Axis.height
+								});
+								group.clip(indicator.clipPath);
+						}
 				}
-				if(chart.legend) {
+				if(chart.legend && chart.legend.options.enabled) {
 						chart.legend.render();
 				}
 			},
@@ -393,8 +500,14 @@
 						arrayValues,
 						extremes;
 						
-				if(!this.visible) return;				
-
+				if(!this.visible) {
+					// remove extremes
+					options.yAxisMax = null;
+					options.yAxisMin = null;
+					this.values = [[]];
+					return;				
+				}
+					
 				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
 				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
                    
@@ -408,16 +521,35 @@
 				this.values = this.currentPoints = arrayValues.values;
 				this.xData = arrayValues.xData;
 				this.yData = arrayValues.yData;
+			},	
+			
+			/*
+			* Draw graph
+			*/
+			drawGraph: function() {
+				var ind = this,
+						graph = this.graph;
+						
 				if(graph) {
 						graph.destroy();
 				}
-
-				this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
-				
-				if(graph) {
-						graph.add(group);
+				ind.graph = Indicator.prototype[ind.options.type].getGraph(ind.chart, ind.series, ind.options, ind.values);
+		
+				if(ind.graph) {
+						ind.graph.add(ind.group);
+						ind.clipPath.attr({
+								x: ind.options.Axis.left,
+								y: ind.options.Axis.top,
+								width: ind.options.Axis.width,
+								height: ind.options.Axis.height
+						});   
+						
 				}
-			},	
+			},
+			
+			preprocessData: function(){
+				this.redraw();
+			},
 			
 			/*
 			* Group points to allow calculation before extremes
@@ -485,7 +617,6 @@
 					return {x: x, y: y, middle: middle};
 			},
 			
-			
 			/*
 			* Group points to get grouped points beyond extremes
 			*/
@@ -547,29 +678,19 @@
 						method = vis ? 'show' : 'hide';
 				}	
 				
-				if(!this.series.visible) {
-					if(!this.visible) return;
-					newVis = false;
-				}
-				
 				if (this.options.showInLegend) {
 						this.chart.legend.colorizeItem(this, newVis);
 				}
 				this.visible = newVis;
 				
+				indicator[method]();
+				indicator.preprocessData();
+				
 				// hide axis by resetting extremes
 				if(this.options.Axis) {
-						if(this.visible) {
-							this.options.Axis.hasData = true;
-							this.options.Axis.render();
-						} else {
-							this.options.Axis.hasData = false;
-							this.options.Axis.render();
-							
-						}
+						this.options.Axis.render();
 				}
-				indicator[method]();
-				indicator.redraw();
+				
 			}, 
 			
 			/*
@@ -654,18 +775,17 @@
 				 * Redraw all indicators, method used in chart events
 				 */
 				redrawIndicators: function () {
-						var chart = this,
-								clipPath = chart.indicators.clipPath;
-        
-						clipPath.attr({
-								x: chart.plotLeft,
-								y: chart.plotTop,
-								width: chart.plotWidth,
-								height: chart.plotHeight
-						});   
+						var chart = this;
+						
 						each(this.indicators.allItems, function (indicator) {
-									indicator.redraw();
+									indicator.preprocessData();
 						});
+						// we need two loops - one to calculate values and register extremes
+						// and second to draw paths with proper extremes on yAxis
+						each(this.yAxis, function (axis) {
+									axis.render();
+						});
+						
 				},
 				/*
 				 * updates axes and returns new and normalized height for each of them. 
@@ -694,7 +814,7 @@
                     chYxis[i].update({
                         top: top,
                         height: newHeight
-                    },false);
+                    }, false);
                 		indexWithoutNav++;
                 } 
             }
@@ -748,22 +868,13 @@
         var options = chart.options.indicators,
         		optionsLen = options ? options.length : 0,
         		i = 0,
-        		clipPath,
 						group,
-						exportingFlag = true, 
-						clipBox = {
-								x: chart.plotLeft,
-								y: chart.plotTop,
-								width: chart.plotWidth,
-								height: chart.plotHeight
-						};
-        
-        clipPath = chart.renderer.clipRect(clipBox);   
+						exportingFlag = true;
+						
         group = chart.renderer.g("indicators");
         group.attr({
         		zIndex: 2
         });
-        group.clip(clipPath);
         group.add();
         
         if(!chart.indicators) chart.indicators = {};
@@ -777,9 +888,6 @@
         
         // link indicators group element to the chart
         chart.indicators.group = group;
-        
-        // add clip path to indicators
-        chart.indicators.clipPath = clipPath;
         
         for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i], false);

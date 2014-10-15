@@ -28,6 +28,8 @@
 
     var merge   = HC.merge,
         isArray = HC.isArray,
+        minInArray = HC.Axis.prototype.minInArray,
+        maxInArray = HC.Axis.prototype.maxInArray,
         UNDEFINED;
     
     Indicator.prototype.ema = {
@@ -92,6 +94,10 @@
 					 xData.push(EMAPoint[0]);
 					 yData.push(EMAPoint[1]);
 					 
+            // registger extremes for axis;
+					 options.yAxisMax = maxInArray(EMA);
+					 options.yAxisMin = minInArray(EMA);
+					 
            return {
            	 values: EMA,
            	 xData: xData,
@@ -103,7 +109,7 @@
            var path   = [],
                attrs  = {},
                xAxis  = series.xAxis,
-               yAxis  = series.yAxis,
+               yAxis  = options.Axis = series.yAxis,
                ema    = values,
                emaLen = ema.length,
                emaX,

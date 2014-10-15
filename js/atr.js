@@ -85,6 +85,11 @@
            yData.push(point[1]);
            ATR.push(point);
 
+           
+            // registger extremes for axis;
+					 options.yAxisMax = maxInArray(ATR);
+					 options.yAxisMin = 0;
+           
            return {
            	 values: ATR,
            	 xData: xData,
@@ -125,20 +130,8 @@
              index = addAxisPane(chart,userOptions); 
              options.Axis = chart.yAxis[index];
              options.Axis.oldMax = max;
-           } else if(max !== options.Axis.max) {
-             userOptions.max = max;
-             
-             options.Axis.userMax = max;
-             options.Axis.isDirty = true;
-             options.Axis.isDirtyExtremes = true;
-             
-             options.Axis.setScale();
-						 options.Axis.setTickPositions(true); // update to reflect the new margins
-						 options.Axis.setMaxTicks();	
-
-					   chart.getMargins();
-
-					   options.Axis.render();
+           } else {
+					  // options.Axis.render();
            }
 
            yAxis = options.Axis;

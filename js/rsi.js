@@ -34,6 +34,8 @@
 		var UNDEFINED,
 				merge = HC.merge,
 				isArray = HC.isArray,
+        minInArray = HC.Axis.prototype.minInArray,
+        maxInArray = HC.Axis.prototype.maxInArray,
         addAxisPane = HC.Axis.prototype.addAxisPane;
 		
 		Indicator.prototype.rsi = {
@@ -113,6 +115,9 @@
 							 //calEMALoss = avgLoss[1]; 
 					 }
 					 
+					 options.yAxisMax = 100;
+					 options.yAxisMin = 0;
+					 
 					 return {
 					 	 values: RSI,
 					 	 xData: xData,
@@ -155,13 +160,16 @@
            if(options.visible === false) {
               return;
            }
-
+					 
+					 
            userOptions = merge(defaultOptions, options.yAxis);
 
 
            if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
              options.Axis = chart.yAxis[index];
+           } else {
+					   //options.Axis.render();
            }
 
            yAxis = options.Axis;

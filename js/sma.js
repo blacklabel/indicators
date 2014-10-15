@@ -27,6 +27,8 @@
 		***/
 		
 		var merge = HC.merge,
+        minInArray = HC.Axis.prototype.minInArray,
+        maxInArray = HC.Axis.prototype.maxInArray,
 				isArray = HC.isArray;
 		
 		Indicator.prototype.sma = {
@@ -56,7 +58,7 @@
             if(xVal.length <= period) {
               return;
             }
-
+          
            //switch index for OHLC / Candlestick / Arearange
            if(isArray(yVal[0])) {
               index = params.index ? params.index : 0;
@@ -85,6 +87,13 @@
 					 SMA.push(SMAPoint);
 					 xData.push(SMAPoint[0]);
 					 yData.push(SMAPoint[1]);
+					 
+					 
+            // registger extremes for axis;
+					 options.yAxisMax = maxInArray(SMA);
+					 options.yAxisMin = minInArray(SMA);
+
+					 
 					 return {
 					 	 values: SMA,
 					 	 xData: xData,
@@ -95,13 +104,13 @@
 					 var path = [],
 					 		 attrs = {},
 							 xAxis = series.xAxis,
-							 yAxis = series.yAxis,
+							 yAxis = options.Axis = series.yAxis,
 							 sma = values,
 							 smaLen = sma.length,
 							 smaX,
 							 smaY,
                i;
-          
+					 
           if(options.visible === false) {
               return;
           }
