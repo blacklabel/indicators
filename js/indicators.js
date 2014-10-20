@@ -359,7 +359,7 @@
 				if(item instanceof Indicator) {
 						var series = item.series;
 						item.series = null;
-						item.color = item.graph.stroke;
+						item.color = item.options.styles.stroke;
 						p.call(this, item);
 						item.series = series;
 				} else {
