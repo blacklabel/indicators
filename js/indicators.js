@@ -635,18 +635,30 @@
 						index = allItems.indexOf(indicator),
 						Axis = this.options.Axis;
 				
+				// remove from all indicators array
 				if (index > -1) {
 					allItems.splice(index, 1);
 				}
+				// remove from series.indicators
+				index = indicator.series.indicators.indexOf(indicator);
+				if(index > -1) {
+						indicator.series.indicators.splice(index, 1);
+				}
 
-				//remove axis
-				if(Axis) {
+				// remove from yAxis.indicators
+				index = Axis.indicators.indexOf(indicator);
+				if(index > -1) {
+						Axis.indicators.splice(index, 1);
+				}
+				
+				//remove axis if that was the last one indicator
+				if(Axis && Axis.series.length === 0 && Axis.indicators && Axis.indicators.length === 0) {
 					Axis.remove();
 					chart.updateHeightAxes(20, false);
 				}
 				
+				// remove group with graph
 				if (indicator.group) {
-					// TO TEST: do we need to destroy graph, or group will be enough? - Looks fine.
 					indicator.group.destroy();
 					indicator.group = null;
 				}
