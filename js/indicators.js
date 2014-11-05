@@ -470,6 +470,7 @@
 						if(indicator.options.Axis) {
 								indicator.options.Axis.indicators = indicator.options.Axis.indicators || [];
 								indicator.options.Axis.indicators.push(indicator);
+								if(indicator.clipPath) indicator.clipPath.destroy();
 								indicator.clipPath = renderer.clipRect({
 										x: indicator.options.Axis.left,
 										y: indicator.options.Axis.top,
@@ -595,7 +596,12 @@
 										points.sort(function(a,b) { return a[0][0] - b[0][0]; });
 								}
 							}
-					} 
+					} else {
+						var start = end = series.cropStart,
+								length = series.cropShoulder;
+						points[0] = series.xData.slice(end - length, end);
+						points[1] = series.yData.slice(end - length, end);
+					}
 					return points;
 					
 			},
@@ -649,6 +655,13 @@
 				index = Axis.indicators.indexOf(indicator);
 				if(index > -1) {
 						Axis.indicators.splice(index, 1);
+				}
+				
+				if(indicator.legendGroup) {
+						indicator.legendGroup.destroy();
+						if(chart.legend && chart.legend.options.enabled) {
+								chart.legend.render();
+						}
 				}
 				
 				//remove axis if that was the last one indicator
@@ -744,9 +757,20 @@
 			* Update the indicator with a given options
 			*/
 			update: function (options, redraw) {
-				extend(this.options, options);
+				merge(true, this.options, options);
 				
-				this.render(redraw);
+				var cropShoulder = this.series.cropShoulder,
+						maxPeriod;
+	
+				if(this.options.params.period > cropShoulder || cropShoulder === UNDEFINED) {
+					maxPeriod = this.options.params.period;
+					extend(this.series, {
+						cropShoulder: maxPeriod + 2
+					});
+				}
+				
+				this.redraw(redraw);
+				this.options.Axis.render();
 			},
 			
 			/*
