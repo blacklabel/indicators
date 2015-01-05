@@ -847,10 +847,12 @@
                 if(yAxis.options.id !== 'navigator-y-axis') {
                 		top = chart.plotTop + indexWithoutNav * (topDiff + newHeight);
                         
-                    chYxis[i].update({
-                        top: top,
-                        height: newHeight
-                    }, false);
+										if(yAxis.top !== top || yAxis.height !== newHeight) {
+												chYxis[i].update({
+														top: top,
+														height: newHeight
+												}, false);
+										}
                 		indexWithoutNav++;
                 } 
             }
