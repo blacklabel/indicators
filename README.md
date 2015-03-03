@@ -4,6 +4,12 @@
 
 # Indicators - Highstock module
 
+Indicators available in this plugin: **SMA, EMA, ATR, RSI**. You can use these indicators for free.
+
+We also have some extra indicators available: **Bollinger Bands, MACD, Momentum, CCI, Stochastic.** <br>
+If you're are interested in purchasing them, developing new indicators or any other tools, please contact us at: <a href="mailto:start@blacklabel.pl"> start@blacklabel.pl </a>
+
+
 Go to project page to see this module in action: [http://blacklabel.github.io/indicators/](http://blacklabel.github.io/indicators/)
 
 

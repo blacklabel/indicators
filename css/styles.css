@@ -180,9 +180,10 @@ table {
 
 img {
   max-width: 100%; }
-span.info {
+div.info {
 	border: 5px solid red;
 	padding: 5px;
+	width: 820px;
 }
 span.frame {
   display: block;
