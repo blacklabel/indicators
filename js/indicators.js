@@ -837,7 +837,12 @@
                 top;
                 
             // when we want to remove axis, e.g. after indicator remove
-            if(!add) calcLen--;    
+            // #17 - we need to consider navigator (disabled vs enabled) when calculating height in advance
+            if(!add && chart.options.navigator.enabled) { 
+            	calcLen--; 
+            } else if(!chart.options.navigator.enabled){
+            	calcLen++;
+            }
             
 						newHeight = (sum - (calcLen-1) * topDiff) / calcLen;
             //update all axis
@@ -869,6 +874,7 @@
 				addAxisPane: function(chart, userOptions) {
 						var topDiff = 20,
 								height = chart.updateHeightAxes(topDiff, true),
+								yLen = chart.options.navigator.enabled ? chart.yAxis.length - 1 : chart.yAxis.length, // #17 - don't count navigator
 								defaultOptions = {
 										labels: {
 												align: 'left',
@@ -877,7 +883,7 @@
 										},
 										offset: 0,
 										height: height,
-										top: chart.plotTop + (chart.yAxis.length - 1) * (topDiff + height),
+										top: chart.plotTop + yLen * (topDiff + height),
 										min: 0,
 										max: 100
 								},
