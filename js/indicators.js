@@ -468,6 +468,7 @@
 							graph.add(group);
 						}
 						if(indicator.options.Axis) {
+								chart.indicators.haveAxes = true;		
 								indicator.options.Axis.indicators = indicator.options.Axis.indicators || [];
 								indicator.options.Axis.indicators.push(indicator);
 								if(indicator.clipPath) indicator.clipPath.destroy();
@@ -836,6 +837,9 @@
                 newHeight,
                 top;
                 
+            // don't update axes when none of indicators have separate axis 
+            if(!chart.indicators || !chart.indicators.haveAxes || chart.indicators.allItems.length === 0) return;   
+                
             // when we want to remove axis, e.g. after indicator remove
             // #17 - we need to consider navigator (disabled vs enabled) when calculating height in advance
             if(!add && chart.options.navigator.enabled) { 
@@ -888,7 +892,7 @@
 										max: 100
 								},
 								options = merge(defaultOptions,userOptions);
-							
+						
 						//add new axis
 						chart.preventIndicators = true;
 						chart.addAxis(options, false, true, false);

@@ -24,7 +24,7 @@ $(function () {
 								verticalAlign: 'middle',
 								layout: 'vertical'
 						},
-						indicators: [{
+						/* indicators: [{
 								id: 'AAPL',
 								type: 'sma',
 								name: 'SMA',
@@ -83,7 +83,7 @@ $(function () {
 										}
 								},
 								showInLegend: true
-						}],
+						}], */
 						yAxis:{
 							opposite:false,
 								title:{
