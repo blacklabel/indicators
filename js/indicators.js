@@ -161,7 +161,6 @@
 					series.isVisible = newVis;
 					series.hideInTooltip = !newVis;
 					proceed.call(series, true, true); 
-					series.chart.legend.colorizeItem(this, newVis);
 
 					// show or hide elements
 					each(['group', 'dataLabelsGroup', 'markerGroup', 'tracker'], function (key) {
@@ -468,7 +467,6 @@
 							graph.add(group);
 						}
 						if(indicator.options.Axis) {
-								chart.indicators.haveAxes = true;		
 								indicator.options.Axis.indicators = indicator.options.Axis.indicators || [];
 								indicator.options.Axis.indicators.push(indicator);
 								if(indicator.clipPath) indicator.clipPath.destroy();
@@ -668,6 +666,7 @@
 				//remove axis if that was the last one indicator
 				if(Axis && Axis.series.length === 0 && Axis.indicators && Axis.indicators.length === 0) {
 					Axis.remove();
+					chart.indicators.haveAxes --; // #18: decrement number of axes to be updated		
 					chart.updateHeightAxes(20, false);
 				}
 				
@@ -837,8 +836,8 @@
                 newHeight,
                 top;
                 
-            // don't update axes when none of indicators have separate axis 
-            if(!chart.indicators || !chart.indicators.haveAxes || chart.indicators.allItems.length === 0) return;   
+            // #18 - don't update axes when none of indicators have separate axis 
+            if(!chart.indicators || chart.indicators.haveAxes == 0 || chart.indicators.allItems.length === 0) return;   
                 
             // when we want to remove axis, e.g. after indicator remove
             // #17 - we need to consider navigator (disabled vs enabled) when calculating height in advance
@@ -876,6 +875,8 @@
 				 * Note: It automatically scales all of other axes.
 				 */
 				addAxisPane: function(chart, userOptions) {
+						chart.indicators.haveAxes++;	// #18: increment number of axes
+					
 						var topDiff = 20,
 								height = chart.updateHeightAxes(topDiff, true),
 								yLen = chart.options.navigator.enabled ? chart.yAxis.length - 1 : chart.yAxis.length, // #17 - don't count navigator
@@ -936,6 +937,9 @@
         
         // link indicators group element to the chart
         chart.indicators.group = group;
+        
+        // counter for axes #18
+        chart.indicators.haveAxes = 0;
         
         for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i], false);
