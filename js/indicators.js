@@ -161,6 +161,9 @@
 					series.isVisible = newVis;
 					series.hideInTooltip = !newVis;
 					proceed.call(series, true, true); 
+					if(series.chart.legend && series.chart.legend.options.enabled) { // #20
+							series.chart.legend.colorizeItem(this, newVis);
+					}
 
 					// show or hide elements
 					each(['group', 'dataLabelsGroup', 'markerGroup', 'tracker'], function (key) {
