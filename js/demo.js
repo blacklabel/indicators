@@ -7,7 +7,8 @@ $(function () {
 								borderWidth: 5,
 								borderColor: '#e8eaeb',
 								borderRadius: 0,
-								backgroundColor: '#f7f7f7'
+								backgroundColor: '#f7f7f7',
+								// alignAxes: false
 						},
 						title: {
 								style: {

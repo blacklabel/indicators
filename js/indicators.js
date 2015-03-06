@@ -43,6 +43,10 @@
 				}
 		}
 		
+		function defined(obj) {
+			return obj !== UNDEFINED && obj !== null;
+		}
+		
 		function forceRedraw(s){
 				if(s.indicators) {
 						each(s.indicators, function(el, i) {
@@ -121,7 +125,9 @@
 		*/
 		HC.wrap(HC.Series.prototype, 'setData', function(proceed, redraw, animation) {
 				forceRedraw(this);
-				this.chart.updateHeightAxes(20, false);
+				if(this.chart.alignAxes) {
+						this.chart.updateHeightAxes(20, false);
+				}
 				proceed.call(this, redraw, animation);
 		});
 		
@@ -670,7 +676,9 @@
 				if(Axis && Axis.series.length === 0 && Axis.indicators && Axis.indicators.length === 0) {
 					Axis.remove();
 					chart.indicators.haveAxes --; // #18: decrement number of axes to be updated		
-					chart.updateHeightAxes(20, false);
+					if(chart.alignAxes) {
+							chart.updateHeightAxes(20, false);
+					}
 				}
 				
 				// remove group with graph
@@ -875,27 +883,39 @@
 		extend(Axis.prototype, {
 				/* 
 				 * When new indicator is added, sometimes we need new pane. 
-				 * Note: It automatically scales all of other axes.
+				 * Note: It automatically scales all of other axes unless alignAxes is set to false.
 				 */
 				addAxisPane: function(chart, userOptions) {
 						chart.indicators.haveAxes++;	// #18: increment number of axes
 					
 						var topDiff = 20,
-								height = chart.updateHeightAxes(topDiff, true),
+								height,
 								yLen = chart.options.navigator.enabled ? chart.yAxis.length - 1 : chart.yAxis.length, // #17 - don't count navigator
-								defaultOptions = {
+								defaultOptions,
+							  options;
+								
+						if(chart.alignAxes) {
+							height = chart.updateHeightAxes(topDiff, true),
+							defaultOptions = {
 										labels: {
 												align: 'left',
 												x: 2,
 												y: -2
 										},
-										offset: 0,
+										offset: chart.alignAxes ? 0 : null,
 										height: height,
-										top: chart.plotTop + yLen * (topDiff + height),
+										top: chart.plotTop + yLen * (topDiff + height) ,
 										min: 0,
 										max: 100
-								},
-								options = merge(defaultOptions,userOptions);
+								};
+						} else {
+								defaultOptions = {
+										min: 0,
+										max: 100
+								};
+						}
+						
+						options = merge(defaultOptions,userOptions);
 						
 						//add new axis
 						chart.preventIndicators = true;
@@ -943,6 +963,7 @@
         
         // counter for axes #18
         chart.indicators.haveAxes = 0;
+        chart.alignAxes = defined(chart.options.chart.alignAxes) ? chart.options.chart.alignAxes : true;
         
         for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i], false);

@@ -113,7 +113,7 @@
                defaultOptions = {
                 min: 0,
                 max: max,
-                tickPixelInterval: 50,
+                //tickPixelInterval: 50,
                 //height: 100,
                 title: {
                   text: 'ATR'
