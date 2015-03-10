@@ -90,20 +90,24 @@
 		HC.wrap(HC.Series.prototype, 'update', function(proceed, redraw, animation) {
 				var tempIndics = [],
 						s = this,
-						tmpAxis;
+						tmpAxis, len, el;
 						
 				if(s.indicators) {
-						each(s.indicators, function(el, i) {
+						len = s.indicators.length;
+						while(len--) { // #21
+								el = s.indicators[len];
 								tempIndics.push(el.options);
 								el.destroy();
-						});
+						};
+						proceed.call(this, redraw, animation);
+						s = this; // get series reference back after update
+						len = tempIndics.length;
+						while(len--) { // #21
+							s.chart.addIndicator(tempIndics[len]);
+						};
+				} else {
+						proceed.call(this, redraw, animation);
 				}
-				proceed.call(this, redraw, animation);
-				
-				s = this;
-				each(tempIndics, function(el, i){
-						s.chart.addIndicator(el);
-				});
 		});
 		
 		/*
