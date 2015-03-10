@@ -983,7 +983,7 @@
 						chart.preventIndicators = false;
 				});
 				  
-				if(exportingFlag) {
+				if(exportingFlag && chart.series && chart.series.length > 0) { // #16
 						chart.isDirtyLegend = true;
 					  chart.series[0].isDirty = true;
 					 	chart.series[0].isDirtyData = true;
