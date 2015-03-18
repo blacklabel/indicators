@@ -42,8 +42,8 @@
 						var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = extraPoints[0].concat(series.processedXData),
-                yVal = extraPoints[1].concat(series.processedYData),
+                xVal = extraPoints[0].concat(series.processedXData || []), // #22
+                yVal = extraPoints[1].concat(series.processedYData || []), // #22
                 yValLen = yVal ? yVal.length : 0,
                 range = 1,
                 xValue = xVal[0],
@@ -135,11 +135,13 @@
 				},
 				utils: {
 						accumulateAverage: function(points, xVal, yVal, i, index){ 
+							console.log("Y", i, index, xVal, yVal);
 								var xValue = xVal[i],
                     yValue = index < 0 ? yVal[i] : yVal[i][index],
                     pLen =  points.push([xValue, yValue]);
 						},
 						populateAverage: function(points, xVal, yVal, i, period, index){
+							//console.log("X", xVal, yVal, i, period, index);
 								var pLen = points.length,
 										smaY = this.sumArray(points) / pLen,
 										smaX = xVal[i-1];

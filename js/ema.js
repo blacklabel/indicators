@@ -44,8 +44,8 @@
             var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = extraPoints[0].concat(series.processedXData),
-                yVal = extraPoints[1].concat(series.processedYData),
+                xVal = extraPoints[0].concat(series.processedXData || []), // #22
+                yVal = extraPoints[1].concat(series.processedYData || []), // #22
                 yValLen = yVal ? yVal.length : 0,
                 EMApercent = (2 / (period + 1)),
                 calEMA = 0,

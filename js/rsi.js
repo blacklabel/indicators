@@ -50,8 +50,8 @@
 						var utils = this.utils,
                 params = options.params,
                 period = params.period,
-                xVal = points[0].concat(series.processedXData),
-                yVal = points[1].concat(series.processedYData),
+                xVal = points[0].concat(series.processedXData || []), // #22
+                yVal = points[1].concat(series.processedYData || []), // #22
                 yValLen = yVal ? yVal.length : 0,
                 EMA = Indicator.prototype.ema,
                 //EMApercent = (2 / (period + 1)),

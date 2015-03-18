@@ -209,7 +209,7 @@ tooltip:{
 		</tr>
 		<tr>
 			<td align="left"> chart.alignAxes (1.0.9+) </td>
-			<td align="left"> When idicator requires separate yAxis (like ATR or RSI) then indicators plugin will update heights of the axes to fit plotting area. Disable it and set `yAxis.top` and `yAxis.height` when you want different heights for the y-axes. Defaults to `true`. <b>Note:<b> When disabled top and height options need to be set for all axes for better view.</td>
+			<td align="left"> When idicator requires separate yAxis (like ATR or RSI) then indicators plugin will update heights of the axes to fit plotting area. Disable it and set `yAxis.top` and `yAxis.height` when you want different heights for the y-axes. Defaults to `true`. <b>Note:<b> When disabled, top and height options need to be set for all axes for better view.</td>
 		</tr>
 	</tbody>
 </table>
