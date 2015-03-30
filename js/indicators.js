@@ -679,6 +679,7 @@
 				//remove axis if that was the last one indicator
 				if(Axis && Axis.series.length === 0 && Axis.indicators && Axis.indicators.length === 0) {
 					Axis.remove();
+					this.options.Axis = UNDEFINED;
 					chart.indicators.haveAxes --; // #18: decrement number of axes to be updated		
 					if(chart.alignAxes) {
 							chart.updateHeightAxes(20, false);
