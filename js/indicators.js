@@ -419,16 +419,6 @@
 				this.name = options.name === UNDEFINED ? options.type : options.name;
 				this.visible = options.visible === UNDEFINED ? true : options.visible;
 
-				var cropShoulder = this.series.cropShoulder,
-						maxPeriod;
-	
-				if(this.options.params.period > cropShoulder || cropShoulder === UNDEFINED) {
-					maxPeriod = this.options.params.period;
-					extend(this.series, {
-						cropShoulder: maxPeriod + 2
-					});
-				}
-
 				if(!this.series.indicators) {
 						this.series.indicators = [];
 				}
@@ -568,11 +558,12 @@
 			* Group points to allow calculation before extremes
 			*/
 			groupPoints: function(series){
-					var points = [[], []];
+					var points = [[], []],
+							start = end = series.cropStart,
+							length = this.options.params.period; //#23 - don't use cropShould - it's broken since v1.3.6
+							
 					if(series.currentDataGrouping) {
-							var start = end = series.cropStart,
-									length = series.cropShoulder,
-									xMax = series.xData[end],
+							var xMax = series.xData[end],
 									range = series.currentDataGrouping.totalRange,
 									xMin = xMax - range,
 									processedXData = [],
@@ -581,12 +572,13 @@
 									preGroupedPoints = [],
 									groupedPoint,
 									pLen = 0,
+									
 									i = 0;
 									
-							if(series.currentDataGrouping.totalRange == series.closestPointRange) {
+							if(range == series.closestPointRange) {
 							// we don't need grouping, since one point is the same as grouped point
-								points[0] = series.xData.slice(end - length, end);
-								points[1] = series.yData.slice(end - length, end);
+								points[0] = series.xData.slice(Math.max(0, end - length), end); //#23
+								points[1] = series.yData.slice(Math.max(0, end - length), end); //#23
 							} else {
 								// group points
 								while(length >= 0 && end > 0){
@@ -609,10 +601,8 @@
 								}
 							}
 					} else {
-						var start = end = series.cropStart,
-								length = series.cropShoulder;
-						points[0] = series.xData.slice(end - length, end);
-						points[1] = series.yData.slice(end - length, end);
+						points[0] = series.xData.slice(Math.max(0, end - length), end); //#23
+						points[1] = series.yData.slice(Math.max(0, end - length), end); //#23
 					}
 					return points;
 					
@@ -774,16 +764,6 @@
 			*/
 			update: function (options, redraw) {
 				merge(true, this.options, options);
-				
-				var cropShoulder = this.series.cropShoulder,
-						maxPeriod;
-	
-				if(this.options.params.period > cropShoulder || cropShoulder === UNDEFINED) {
-					maxPeriod = this.options.params.period;
-					extend(this.series, {
-						cropShoulder: maxPeriod + 2
-					});
-				}
 				
 				this.redraw(redraw);
 				this.options.Axis.render();
