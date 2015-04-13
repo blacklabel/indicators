@@ -9,6 +9,7 @@ Indicators available in this plugin: **SMA, EMA, ATR, RSI**. You can use these i
 We also have other indicators available: **Bollinger Bands, MACD, Momentum, CCI, Stochastic.** <br>
 If you're are interested in purchasing them, developing new indicators or any other tools, please contact us at: <a href="mailto:start@blacklabel.pl"> start@blacklabel.pl </a>
 
+You may also want to check our other demo here: http://demo.blacklabel.pl.
 
 Go to project page to see this module in action: [http://blacklabel.github.io/indicators/](http://blacklabel.github.io/indicators/)
 
