@@ -294,7 +294,7 @@
 		*/
 		HC.wrap(HC.Tooltip.prototype, 'defaultFormatter', function (proceed, tooltip) {
 
-			var items 		   = this.points || splat(this),
+			var items 		   = this.points || HC.splat(this),
 				chart 		   = items[0].series.chart,
 				x 			   = this.x,
 				tooltipOptions = chart.tooltip.options,
@@ -654,13 +654,14 @@
 
 							for(i = 0; i < len ;i++) {
 								ind.graph[i].add(ind.group);
-								ind.clipPath.attr({
-										x: ind.options.Axis.left,
-										y: ind.options.Axis.top,
-										width: ind.options.Axis.width,
-										height: ind.options.Axis.height
-								});   
 							} 
+
+							ind.clipPath.attr({
+									x: ind.options.Axis.left,
+									y: ind.options.Axis.top,
+									width: ind.options.Axis.width,
+									height: ind.options.Axis.height
+							});   
 						
 				}
 			},
