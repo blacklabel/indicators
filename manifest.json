@@ -13,7 +13,7 @@
                 }
         ],
         "dependencies": {
-                "highstock": "2.0.5+"
+                "highstock": "2.1.5+"
         },
         "demo": [
                 "http://jsfiddle.net/BlackLabel/RE7sS/"

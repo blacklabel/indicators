@@ -93,7 +93,8 @@ $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.
 
 ### Requirements
 
-* Plugin requires the latest Highstock (supported since v 2.0.5)
+* Version 1.1+ requires the latest Highstock (supported since v 2.1.5)
+* Version <1.1 supported since v 1.3.9
 
 ### Installation
 
