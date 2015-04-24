@@ -3,32 +3,14 @@ $(function () {
  * 2.1 ADVANCED CHART AAAA
  */
  var adv_options = {
-						chart: {
-								borderWidth: 5,
-								borderColor: '#e8eaeb',
-								borderRadius: 0,
-								backgroundColor: '#f7f7f7',
-								// alignAxes: false
-						},
-						title: {
-								style: {
-										'fontSize': '1em'
-								},
-								useHTML: true,
-								x: -27,
-								y: 8,
-								text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'	
-						},
-						legend: {
-								enabled: true,
-								align: 'right',
-								verticalAlign: 'middle',
-								layout: 'vertical'
-						},
+						
 						indicators: [{
 								id: 'AAPL',
 								type: 'sma',
 								name: 'SMA',
+								tooltip:{
+									pointFormat: '<span style="color: {point.color}; ">pointFormat SMA: </span> {point.y}<br>'
+								},
 								params: {
 										period: 14
 								},
@@ -46,7 +28,7 @@ $(function () {
 										dashstyle: 'solid'
 								},
 								showInLegend: true
-						}, {
+						},{
 								id: 'AAPL',
 								type: 'atr',
 								params: {
@@ -86,7 +68,7 @@ $(function () {
 								showInLegend: true
 						}],
 						yAxis:{
-							opposite:false,
+								opposite:false,
 								title:{
 									text: 'DATA SMA EMA',
 									x: -4

@@ -110,6 +110,10 @@
 							 RSI.push([xVal[i], RSIPoint]);
 							 xData.push(xVal[i]);
 							 yData.push(RSIPoint);	
+
+							 if(i > period && series.points[i - period] !== UNDEFINED) {
+			                    series.points[i - period].indicators.rsi = RSIPoint;
+			                 }
 							 
 							 //calEMAGain = avgGain[1]; 
 							 //calEMALoss = avgLoss[1]; 
@@ -187,7 +191,7 @@
               path.push('L', xAxis.toPixels(atrX), yAxis.toPixels(atrY));
            }
 
-           return chart.renderer.path(path).attr(attrs);
+           return [chart.renderer.path(path).attr(attrs)];
         },
 				utils: {
 						sumArray: function(array){

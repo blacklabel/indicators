@@ -27,9 +27,10 @@
 		***/
 		
 		var merge = HC.merge,
-        minInArray = HC.Axis.prototype.minInArray,
-        maxInArray = HC.Axis.prototype.maxInArray,
-				isArray = HC.isArray;
+	        minInArray = HC.Axis.prototype.minInArray,
+	        maxInArray = HC.Axis.prototype.maxInArray,
+			isArray = HC.isArray,
+			UNDEFINED;
 		
 		Indicator.prototype.sma = {
 				getDefaultOptions: function(){
@@ -74,22 +75,31 @@
            }
            
            // calculate value one-by-one for each perdio in visible data
+
 					 for(i = range; i < yValLen; i++ ){
 							 SMAPoint = utils.populateAverage(points, xVal, yVal, i, period, index);
 							 SMA.push(SMAPoint);
 							 xData.push(SMAPoint[0]);
-							 yData.push(SMAPoint[1]);	
+							 yData.push(SMAPoint[1]);
+						
+						if(i > period && series.points[i - period - 1] !== UNDEFINED) {
+							series.points[i - period - 1].indicators.sma = SMAPoint[1];
+						}
 							 
-							 utils.accumulateAverage(points, xVal, yVal, i, index); 
+						utils.accumulateAverage(points, xVal, yVal, i, index); 
 					 }
            
 					 SMAPoint = utils.populateAverage(points, xVal, yVal, i, period, index);
 					 SMA.push(SMAPoint);
 					 xData.push(SMAPoint[0]);
 					 yData.push(SMAPoint[1]);
+
+					if(series.points !== UNDEFINED && series.points[yValLen - period - 1] !== UNDEFINED) {
+					 	series.points[yValLen - period - 1].indicators.sma = SMAPoint[1];
+					}
 					 
 					 
-            // registger extremes for axis;
+            		// register extremes for axis;
 					 options.yAxisMax = maxInArray(SMA);
 					 options.yAxisMin = minInArray(SMA);
 
@@ -131,7 +141,7 @@
 					 		path.push('L', xAxis.toPixels(smaX), yAxis.toPixels(smaY));
 					 }
 							 
-					 return chart.renderer.path(path).attr(attrs);
+					 return [chart.renderer.path(path).attr(attrs)];
 				},
 				utils: {
 						accumulateAverage: function(points, xVal, yVal, i, index){ 

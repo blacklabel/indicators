@@ -86,6 +86,10 @@
 									yData.push(EMAPoint[1]);
                   calEMA = EMAPoint[1]; 
 
+                  if(i > period && series.points[i - period - 1] !== UNDEFINED) {
+                    series.points[i - period - 1].indicators.ema = EMAPoint[1];
+                  }
+
                   utils.accumulateAverage(points, xVal, yVal, i, index);   
            }
            
@@ -93,6 +97,10 @@
 					 EMA.push(EMAPoint);
 					 xData.push(EMAPoint[0]);
 					 yData.push(EMAPoint[1]);
+
+           if(series.points !== UNDEFINED && series.points[yValLen - period - 1] !== UNDEFINED) {
+            series.points[yValLen - period - 1].indicators.ema = EMAPoint[1];
+           }
 					 
             // registger extremes for axis;
 					 options.yAxisMax = maxInArray(EMA);
@@ -135,7 +143,7 @@
               path.push('L', xAxis.toPixels(emaX), yAxis.toPixels(emaY));
            }
 
-           return chart.renderer.path(path).attr(attrs);
+           return [chart.renderer.path(path).attr(attrs)];
         },
         utils: {
             accumulateAverage: function(points, xVal, yVal, i, index){ 

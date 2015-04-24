@@ -292,53 +292,112 @@
     /*
 		*		Tooltip formatter content
 		*/
-		HC.wrap(HC.Tooltip.prototype, 'defaultFormatter', function (proceed, options, redraw) {
+		HC.wrap(HC.Tooltip.prototype, 'defaultFormatter', function (proceed, tooltip) {
 
-			var points 		 = this.points || HC.splat(this),
-					series 		 = points[0].series,
-					chart 		 = series.chart,
-					tooltipOptions = chart.tooltip.options,
-					indicators = chart.indicators.allItems,
-					x 			   = this.x,
-					t 				 = series.tooltipHeaderFormatter !== UNDEFINED ? series.tooltipHeaderFormatter : 
-												(series.tooltipFooterHeaderFormatter !== UNDEFINED ? series.tooltipFooterHeaderFormatter : 
-											  	(chart.tooltip.tooltipFooterHeaderFormatter	!== UNDEFINED ? chart.tooltip.tooltipFooterHeaderFormatter : chart.tooltip.tooltipHeaderFormatter)),  // version 1.x vs 2.0.x vs 2.1.x
-					s;
+			var items 		   = this.points || splat(this),
+				chart 		   = items[0].series.chart,
+				x 			   = this.x,
+				tooltipOptions = chart.tooltip.options,
+				s;
 
 			// build the header
-			s = [t.call(chart.tooltip, points[0])];
+			s = [tooltip.tooltipFooterHeaderFormatter(items[0])]; //#3397: abstraction to enable formatting of footer and header
 
 			// build the values
-			each(points, function (item) {
-					series = item.series;
-					if(!series.hideInTooltip) {
-							s.push((series.tooltipFormatter && series.tooltipFormatter(item)) ||
-							item.point.tooltipFormatter(series.tooltipOptions.pointFormat));
-					}
+			s = s.concat(tooltip.bodyFormatter(items));
+
+			// footer
+			s.push(tooltip.tooltipFooterHeaderFormatter(items[0], true)); //#3397: abstraction to enable formatting of footer and header
+
+			return s.join('');
+
+		});
+
+		HC.wrap(HC.Tooltip.prototype, 'bodyFormatter', function (proceed, items) {
+			return HC.map(items, function (item) {
+	            var tooltipOptions = item.series.tooltipOptions;
+	            return (tooltipOptions.pointFormatter || item.point.tooltipFormatter).call(item.point, tooltipOptions.pointFormat);
+	        });
+		});
+
+		/*
+			Tooltip pointFormat
+		*/
+		
+		HC.wrap(HC.Point.prototype, 'tooltipFormatter', function (proceed, pointFormat) {
+
+			// Insert options for valueDecimals, valuePrefix, and valueSuffix
+			var series = this.series,
+				indicators 	   = series.chart.indicators.allItems,
+				seriesTooltipOptions = series.tooltipOptions,
+				tooltipOptions = series.chart.tooltip.options,
+				valueDecimals = HC.pick(seriesTooltipOptions.valueDecimals, ''),
+				valuePrefix = seriesTooltipOptions.valuePrefix || '',
+				valueSuffix = seriesTooltipOptions.valueSuffix || '',
+				x = this.x,
+				graphLen = 0,
+				indLen = 0,
+				indTooltip,
+				indPointFormat,
+				k;
+			
+			// Loop over the point array map and replace unformatted values with sprintf formatting markup
+			HC.each(series.pointArrayMap || ['y'], function (key) {
+				key = '{point.' + key; // without the closing bracket
+				if (valuePrefix || valueSuffix) {
+					pointFormat = pointFormat.replace(key + '}', valuePrefix + key + '}' + valueSuffix);
+				}
+				pointFormat = pointFormat.replace(key + '}', key + ':,.' + valueDecimals + 'f}');
 			});
 
 			if(indicators && indicators !== UNDEFINED && tooltipOptions.enabledIndicators) {
+				
 				// build the values of indicators
-
-				$.each(indicators,function(i,ind) {
+				HC.each(indicators,function(ind,i) {
 					if(typeof(ind.values) === 'undefined' || ind.visible === false) {
 						return;
 					}
 
-					$.each(ind.currentPoints,function(j,val){
+					HC.each(ind.currentPoints,function(val, j){
 						if(val[0] === x) {
-							s.push('<span style="font-weight:bold;color:' + ind.graph.element.attributes.stroke.value + ';">' + ind.name + '</span>: ' + HC.numberFormat(val[1],3) + '<br/>');
+
+							if(ind.options.tooltip) {
+
+								indLen = val.length;
+								indTooltip = ind.options.tooltip;
+								indPointFormat = indTooltip.pointFormat;
+
+								pointFormat += HC.format(indPointFormat, {
+									point: {
+										bottomColor: indLen > 3 ? ind.graph[2].element.attributes.stroke.value : '',
+										bottomLine: HC.numberFormat(val[3],3),
+										x: val[0],
+										y: indLen > 3 ? HC.numberFormat(val[2],3) : HC.numberFormat(val[1],3),
+										color: indLen > 3 ? ind.graph[1].element.attributes.stroke.value : ind.graph[0].element.attributes.stroke.value,
+										topLine: HC.numberFormat(val[1],3),
+										topColor: ind.graph[0].element.attributes.stroke.value
+									},
+									series:ind
+								});
+
+							} else {
+
+								//default format
+								graphLen = ind.graph.length;
+								for(k = 0; k < graphLen; k++) {
+									pointFormat += '<span style="font-weight:bold;color:' + ind.graph[k].element.attributes.stroke.value + ';">' + HC.splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val[k+1],3) + '<br/>';
+								}
+							}
 						}
 					});
 				});
 			}
 
-			// build the footer
-			s.push(tooltipOptions.footerFormat || '');
-			return s.join('');
-
+			return HC.format(pointFormat, {
+				point: this,
+				series: this.series
+			});
 		});
-		
 
 		/***
 		
@@ -378,7 +437,47 @@
 						p.call(this, item);
 				}
 		});
-	
+
+
+/////////
+	HC.wrap(HC.Point.prototype, 'getLabelConfig', function(proceed, point, mouseEvent) {
+		var point = this;
+
+		return {
+			x: point.category,
+			y: point.y,
+			indicators: point.indicators,
+			key: point.name || point.category,
+			series: point.series,
+			point: point,
+			percentage: point.percentage,
+			total: point.total || point.stackTotal
+		};
+	});
+
+	HC.wrap(HC.Point.prototype, 'init', function(proceed, series, options, x) {
+		var point = this,
+			colors;
+
+		point.series = series;
+		point.color = series.color; // #3445
+		point.applyOptions(options, x);
+		point.pointAttr = {};
+		point.indicators = {};
+
+		if (series.options.colorByPoint) {
+			colors = series.options.colors || series.chart.options.colors;
+			point.color = point.color || colors[series.colorCounter++];
+			// loop back to zero
+			if (series.colorCounter === colors.length) {
+				series.colorCounter = 0;
+			}
+		}
+
+		series.chart.pointCount++;
+		return point;
+	});
+////////////
 		
 		/* 
 		* When hovering legend item, use isVisible instead of visible property
@@ -453,6 +552,8 @@
 						return false;
 				} else if(!graph) {
 						this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
+
+
 						arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
 						if(!arrayValues) { //#6 - create dummy data 
 							arrayValues = {
@@ -467,7 +568,13 @@
 						this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 						
 						if(graph) {
-							graph.add(group);
+
+							var len = graph.length,
+								i;
+
+							for(i = 0; i < len ;i++) {
+								graph[i].add(group);
+							}
 						}
 						if(indicator.options.Axis) {
 								indicator.options.Axis.indicators = indicator.options.Axis.indicators || [];
@@ -531,21 +638,29 @@
 			*/
 			drawGraph: function() {
 				var ind = this,
-						graph = this.graph;
+					graph = this.graph,
+					len = graph.length,
+					i;
 						
 				if(graph) {
-						graph.destroy();
+
+						for(i = 0; i < len ;i++) {
+								graph[i].destroy();
+						}
 				}
 				ind.graph = Indicator.prototype[ind.options.type].getGraph(ind.chart, ind.series, ind.options, ind.values);
 		
 				if(ind.graph) {
-						ind.graph.add(ind.group);
-						ind.clipPath.attr({
-								x: ind.options.Axis.left,
-								y: ind.options.Axis.top,
-								width: ind.options.Axis.width,
-								height: ind.options.Axis.height
-						});   
+
+							for(i = 0; i < len ;i++) {
+								ind.graph[i].add(ind.group);
+								ind.clipPath.attr({
+										x: ind.options.Axis.left,
+										y: ind.options.Axis.top,
+										width: ind.options.Axis.width,
+										height: ind.options.Axis.height
+								});   
+							} 
 						
 				}
 			},
@@ -557,28 +672,28 @@
 			/*
 			* Group points to allow calculation before extremes
 			*/
-			groupPoints: function(series){
+			groupPoints: function(series) {
 					var points = [[], []],
-							start = end = series.cropStart,
-							length = this.options.params.period; //#23 - don't use cropShould - it's broken since v1.3.6
+						start = end = series.cropStart,
+						length = HC.splat(this.options.params.period)[0]; //#23 - don't use cropShould - it's broken since v1.3.6
 							
 					if(series.currentDataGrouping) {
 							var xMax = series.xData[end],
 									range = series.currentDataGrouping.totalRange,
-									xMin = xMax - range,
+									xMin = xMax - 2*range,
 									processedXData = [],
 									processedYData = [],
 									actX = series.xData[0],
 									preGroupedPoints = [],
 									groupedPoint,
 									pLen = 0,
-									
 									i = 0;
 									
-							if(range == series.closestPointRange) {
+							if(range == series.closestPointRange && 1 == 0) {
 							// we don't need grouping, since one point is the same as grouped point
 								points[0] = series.xData.slice(Math.max(0, end - length), end); //#23
 								points[1] = series.yData.slice(Math.max(0, end - length), end); //#23
+
 							} else {
 								// group points
 								while(length >= 0 && end > 0){
@@ -601,9 +716,10 @@
 								}
 							}
 					} else {
-						points[0] = series.xData.slice(Math.max(0, end - length), end); //#23
-						points[1] = series.yData.slice(Math.max(0, end - length), end); //#23
+						points[0] = series.xData.slice(Math.max(0, end - length - 1), end); //#23
+						points[1] = series.yData.slice(Math.max(0, end - length - 1), end); //#23
 					}
+
 					return points;
 					
 			},
@@ -672,7 +788,7 @@
 					this.options.Axis = UNDEFINED;
 					chart.indicators.haveAxes --; // #18: decrement number of axes to be updated		
 					if(chart.alignAxes) {
-							chart.updateHeightAxes(20, false);
+							chart.updateHeightAxes(20, false, true);
 					}
 				}
 				
@@ -822,7 +938,7 @@
 				/*
 				 * updates axes and returns new and normalized height for each of them. 
 				 */
-				updateHeightAxes: function(topDiff, add) {
+				updateHeightAxes: function(topDiff, add, afterRemove) {
 						var chart = this,
 								chYxis = chart.yAxis,
                 len = calcLen = chYxis.length,
@@ -833,7 +949,7 @@
                 top;
                 
             // #18 - don't update axes when none of indicators have separate axis 
-            if(!chart.indicators || chart.indicators.haveAxes == 0 || chart.indicators.allItems.length === 0) return;   
+            if(afterRemove !== true && (!chart.indicators || chart.indicators.haveAxes == 0 || chart.indicators.allItems.length === 0)) return;   
                 
             // when we want to remove axis, e.g. after indicator remove
             // #17 - we need to consider navigator (disabled vs enabled) when calculating height in advance

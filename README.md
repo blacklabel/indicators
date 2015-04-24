@@ -93,7 +93,7 @@ $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.
 
 ### Requirements
 
-* Plugin requires the latest Highstock (supported since v 1.3.9)
+* Plugin requires the latest Highstock (supported since v 2.0.5)
 
 ### Installation
 
@@ -110,7 +110,10 @@ indicators: [{
             type: 'sma',
             params: {
                 period: 5,
-            }
+            },
+            tooltip:{
+                pointFormat: '<span style="color: {point.color}; ">pointFormat SMA: </span> {point.y}<br>'
+            },
         }, {
             id: 'AAPL',
             type: 'ema',
@@ -186,6 +189,7 @@ tooltip:{
     <tr><td align="left">params.overbought (RSI)</td><td align="left">overbought value between 0-100. Defaults to 70.</td></tr>
     <tr><td align="left">params.oversold (RSI)</td><td align="left">oversold value between 0-100. Defaults to 30.</td></tr>
     <tr><td align="left">tooltip.enabledIndicators</td><td align="left">true/false, show indicators in tooltip. Disabled by default.</td></tr>
+    <tr><td align="left">tooltip.pointFormat</td><td align="left">point.color and point.y return values from indicator. Disabled by default.</td></tr>
   </tbody>
 </table>
 
