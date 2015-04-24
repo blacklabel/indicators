@@ -114,13 +114,13 @@
 		*  Remove corresponding indicators for series
 		*/
 		HC.wrap(HC.Series.prototype, 'remove', function(proceed, redraw, animation) {
-				var s = this;
-				if(s.indicators) {
-						each(s.indicators, function(el, i) {
-								el.destroy();
-						});
+				var s = this,
+					len = s.indicators.length;
+						while(len--) { // #21
+							s.indicators[len].destroy();
+						};
 						s.indicators = null;
-				}
+						
 				proceed.call(this, redraw, animation);
 		});
 		
