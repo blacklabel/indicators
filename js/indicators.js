@@ -690,7 +690,7 @@
 									pLen = 0,
 									i = 0;
 									
-							if(range == series.closestPointRange && 1 == 0) {
+							if(range == series.closestPointRange) {
 							// we don't need grouping, since one point is the same as grouped point
 								points[0] = series.xData.slice(Math.max(0, end - length), end); //#23
 								points[1] = series.yData.slice(Math.max(0, end - length), end); //#23
