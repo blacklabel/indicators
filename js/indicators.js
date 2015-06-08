@@ -1081,7 +1081,7 @@
 						chart.preventIndicators = false;
 				});
 				  
-				if(exportingFlag && chart.series && chart.series.length > 0) { // #16
+				if(exportingFlag && optionsLen > 0 && chart.series && chart.series.length > 0) { // #16 & #27
 						chart.isDirtyLegend = true;
 					  chart.series[0].isDirty = true;
 					 	chart.series[0].isDirtyData = true;
