@@ -24,12 +24,23 @@ You may also want to check our other demo here: <a href="http://demo.blacklabel.
 
 <h3>Requirements</h3>
 
-<p>Plugin requires the latest Highstock</p>
+<ul>
+	<li>Version <b>2.0+</b> requires the latest Highstock (<b>v2.1.5+</b>)</li>
+	<li>Version <b>1.1</b> requires Highstock <b>v2.1.5</b></li>
+	<li>Version <b>&lt;1.1</b> supported since Highstock <b>v1.3.9</b> to Highstock <b>v2.1.4</b></li>
+</ul>
+
+<h3>Versions</h3>
+
+<ul>
+	<li><b>2.x</b> - Improved logic for calculations and performance. Values are based on initial points, not grouped. When points are grouped by <code>dataGrouping</code> then indicators values are grouped too.</li>
+	<li><b>1.x</b> - Initial version of Indicators.js. Calculations are based on grouped points (aka <code>dataGrouping</code>)</li>
+</ul>
 
 <h3>Installation</h3>
 
 <ul>
-<tr><td align="left">Like any other Highcharts module (e.g. exporting), add <code>&lt;script&gt;</code> tag pointing to <code>indicators.js</code> below Highcharts script tag. Then attach all required indicators (like `ema.js`, `rsi.js`).</li>
+<tr><td align="left">Like any other Highcharts module (e.g. exporting), add <code>&lt;script&gt;</code> tag pointing to <code>indicators.js</code> below Highcharts script tag. Then attach all required indicators (like <code>ema.js</code>, <code>rsi.js</code>).</li>
 </ul>
 
 <h3>Code</h3>
@@ -109,17 +120,18 @@ tooltip:{
   </thead>
   <tbody>
     <tr><td align="left">id</td><td align="left">id of series
-    <tr><td align="left">type</td><td align="left">type of indicator (one of: 'sma', 'ema', 'atr', 'rsi')</td></tr>
-    <tr><td align="left">showInLegend</td><td align="left">determines if indicator should be visible in the legend. Defaults to false.</td></tr>
+    <tr><td align="left">type</td><td align="left">type of indicator (one of: <code>sma</code>, <code>ema</code>, <code>atr</code>, <code>rsi</code>)</td></tr>
+    <tr><td align="left">showInLegend</td><td align="left">determines if indicator should be visible in the legend. Defaults to <code>false</code>.</td></tr>
 		<tr><td align="left">name</td><td align="left">name is used in legend and tooltip to display indicator. By default it's the same as type.</td></tr>
     <tr><td align="left">styles</td><td align="left">color, dashstyle, width etc. for a indicator line</td></tr>
     <tr><td align="left">yAxis (ATR/RSI)</td><td align="left">yAxis object like in Highcharts, options for additional yAxis</td></tr>
-    <tr><td align="left">params</td><td align="left">config options for indicator</td></tr>
-    <tr><td align="left">params.period (SMA/EMA/ATR/RSI)</td><td align="left">base perdiod for indicator (it's number of points to be calculated). Defaults to 14.</td></tr>
-    <tr><td align="left">params.index (SMA/EMA)</td><td align="left">y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to 0.</td></tr>
-    <tr><td align="left">params.overbought (RSI)</td><td align="left">overbought value between 0-100. Defaults to 70.</td></tr>
-    <tr><td align="left">params.oversold (RSI)</td><td align="left">oversold value between 0-100. Defaults to 30.</td></tr>
-    <tr><td align="left">tooltip.enabledIndicators</td><td align="left">true/false, show indicators in tooltip. Disabled by default.</td></tr>
+    <tr><td align="left">params</td><td align="left">config options for indicator</td></tr>    
+    <tr><td align="left">params.approximation (SMA/EMA/ATR/RSI)</td><td align="left">The same property as in <code>dataGrouping.approximation</code> for Highstock. Supported since version <b>2.0.0</b>. Defaults to <code>"average"</code>.</td></tr>
+    <tr><td align="left">params.period (SMA/EMA/ATR/RSI)</td><td align="left">base perdiod for indicator (it's number of points to be calculated). Defaults to <code>14</code>.</td></tr>
+    <tr><td align="left">params.index (SMA/EMA)</td><td align="left">y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to <code>0</code>.</td></tr>
+    <tr><td align="left">params.overbought (RSI)</td><td align="left">overbought value between 0-100. Defaults to <code>70</code>.</td></tr>
+    <tr><td align="left">params.oversold (RSI)</td><td align="left">oversold value between 0-100. Defaults to <code>30</code>.</td></tr>
+    <tr><td align="left">tooltip.enabledIndicators</td><td align="left"><code>true</code>/<code>false</code>, show indicators in tooltip. Disabled by default.</td></tr>
   </tbody>
 </table>
 
@@ -143,8 +155,8 @@ tooltip:{
 			<td align="left"> Array containing all indicators.</td>
 		</tr>
 		<tr>
-			<td align="left"> chart.alignAxes (1.0.9+) </td>
-			<td align="left"> true/false. When idicator requires separate yAxis (like ATR or RSI) then indicators plugin will update heights of the axes to fit plotting area. Disable it and set `yAxis.top` and `yAxis.height` when you want different heights for the y-axes. Defaults to `true`. <b>Note:<b> When disabled, top and height options need to be set for all axes for better view.</td>
+			<td align="left"> chart.alignAxes (<b>1.0.9+</b>) </td>
+			<td align="left"> <code>true</code>/<code>false</code>. When idicator requires separate yAxis (like ATR or RSI) then indicators plugin will update heights of the axes to fit plotting area. Disable it and set <code>yAxis.top</code> and <code>yAxis.height</code> when you want different heights for the y-axes. Defaults to <code>true</code>. <b>Note:<b> When disabled, top and height options need to be set for all axes for better view.</td>
 		</tr>
 	</tbody>
 </table>

@@ -36,11 +36,11 @@
         getDefaultOptions: function(){
             return {
                 period: 14,
-                index: 0
+                index: 0,
+                approximation: "average"
             };
         },
         getValues: function(chart, series, options, extraPoints) {
-
             var utils = this.utils,
                 params = options.params,
                 period = params.period,
@@ -86,10 +86,6 @@
 									yData.push(EMAPoint[1]);
                   calEMA = EMAPoint[1]; 
 
-                  if(i > period && series.points[i - period - 1] !== UNDEFINED) {
-                    series.points[i - period - 1].indicators.ema = EMAPoint[1];
-                  }
-
                   utils.accumulateAverage(points, xVal, yVal, i, index);   
            }
            
@@ -98,10 +94,6 @@
 					 xData.push(EMAPoint[0]);
 					 yData.push(EMAPoint[1]);
 
-           if(series.points !== UNDEFINED && series.points[yValLen - period - 1] !== UNDEFINED) {
-            series.points[yValLen - period - 1].indicators.ema = EMAPoint[1];
-           }
-					 
             // registger extremes for axis;
 					 options.yAxisMax = maxInArray(EMA);
 					 options.yAxisMin = minInArray(EMA);

@@ -36,7 +36,8 @@
 				getDefaultOptions: function(){
 						return {
 								period: 14,
-								index: 0
+								index: 0,
+								approximation: "average"
 						};
 				},
 				getValues: function(chart, series, options, extraPoints) {
@@ -81,10 +82,6 @@
 							 SMA.push(SMAPoint);
 							 xData.push(SMAPoint[0]);
 							 yData.push(SMAPoint[1]);
-						
-						if(i > period && series.points[i - period - 1] !== UNDEFINED) {
-							series.points[i - period - 1].indicators.sma = SMAPoint[1];
-						}
 							 
 						utils.accumulateAverage(points, xVal, yVal, i, index); 
 					 }
@@ -94,15 +91,9 @@
 					 xData.push(SMAPoint[0]);
 					 yData.push(SMAPoint[1]);
 
-					if(series.points !== UNDEFINED && series.points[yValLen - period - 1] !== UNDEFINED) {
-					 	series.points[yValLen - period - 1].indicators.sma = SMAPoint[1];
-					}
-					 
-					 
             		// register extremes for axis;
 					 options.yAxisMax = maxInArray(SMA);
 					 options.yAxisMin = minInArray(SMA);
-
 					 
 					 return {
 					 	 values: SMA,

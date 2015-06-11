@@ -93,12 +93,18 @@ $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.
 
 ### Requirements
 
-* Version 1.1+ requires the latest Highstock (supported since v 2.1.5)
-* Version <1.1 supported since v 1.3.9
+* Version 2.0+ requires the latest Highstock (v2.1.5+)
+* Version 1.1 requires Highstock v2.1.5
+* Version <1.1 supported since Highstock v1.3.9 to Highstock v2.1.4
+
+### Versions
+
+* 2.x - Improved logic for calculations and performance. Values are based on initial points, not grouped. When points are grouped by `dataGrouping` then indicators values are grouped too.
+* 1.x - Initial version of Indicators.js. Calculations are based on grouped points (aka `dataGrouping`)
 
 ### Installation
 
-* Like any other Highcharts module (e.g. exporting), add `<script>` tag pointing to `indicators.js` below Highcharts script tag.
+* Like any other Highcharts module (e.g. exporting), add `<script>` tag pointing to `indicators.js` below Highcharts script tag. Then attach all required indicators (like `ema.js`, `rsi.js`).
 
 ### Code
 
@@ -185,6 +191,7 @@ tooltip:{
     <tr><td align="left">styles</td><td align="left">color, dashstyle, width etc. for a indicator line</td></tr>
     <tr><td align="left">yAxis (ATR/RSI)</td><td align="left">yAxis object like in Highcharts, options for additional yAxis</td></tr>
     <tr><td align="left">params</td><td align="left">config options for indicator</td></tr>
+    <tr><td align="left">params.approximation (SMA/EMA/ATR/RSI)</td><td align="left">The same property as in `dataGrouping.approximation` for Highstock. Defaults to `average`.</td></tr>
     <tr><td align="left">params.period (SMA/EMA/ATR/RSI)</td><td align="left">base perdiod for indicator (it's number of points to be calculated). Defaults to 14.</td></tr>
     <tr><td align="left">params.index (SMA/EMA)</td><td align="left">y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to 0.</td></tr>
     <tr><td align="left">params.overbought (RSI)</td><td align="left">overbought value between 0-100. Defaults to 70.</td></tr>

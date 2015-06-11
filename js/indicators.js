@@ -34,7 +34,8 @@
 				extend = HC.extend,
 				each = HC.each,
 				merge = HC.merge,
-        mathMax = Math.max;
+        mathMax = Math.max,
+        NUMBER = "number";
 
 		
 		function error(name) {
@@ -50,7 +51,7 @@
 		function forceRedraw(s){
 				if(s.indicators) {
 						each(s.indicators, function(el, i) {
-								el.isDirty = true;
+								el.isDirtyData = true;
 						});
 						each(s.chart.yAxis, function(el, i) {
 								el.render();
@@ -83,6 +84,7 @@
 		Wrappers:
 		
 		***/
+		
 		
 		/*
 		*  Remove corresponding indicators for series
@@ -129,9 +131,9 @@
 		*/
 		HC.wrap(HC.Series.prototype, 'setData', function(proceed, redraw, animation) {
 				forceRedraw(this);
-				if(this.chart.alignAxes) {
+				/* if(this.chart.alignAxes) {
 						this.chart.updateHeightAxes(20, false);
-				}
+				} */
 				proceed.call(this, redraw, animation);
 		});
 		
@@ -139,23 +141,8 @@
 		*  Force redraw for indicator when new point is added
 		*/
 		HC.wrap(HC.Series.prototype, 'addPoint', function(proceed, options, redraw, shift, animation) {
-				var tempIndics = [],
-						s = this;
-						
-				if(s.indicators) {
-						each(s.indicators, function(el, i) {
-								tempIndics.push(el.options);
-								el.destroy();
-						});
-						s.indicators = null;
-				}
+				forceRedraw(this);
 				proceed.call(this, options, redraw, shift, animation);
-				
-				s = this;
-
-				each(tempIndics, function(el, i){
-						s.chart.addIndicator(el);
-				});
 		});
 		
 		
@@ -191,23 +178,8 @@
 		*  Force redraw for indicator with new point options, like value
 		*/
 		HC.wrap(HC.Point.prototype, 'update', function(proceed, options, redraw) {
-				var tempIndics = [],
-						s = this;
-						
-				if(s.indicators) {
-						each(s.indicators, function(el, i) {
-								tempIndics.push(el.options);
-								el.destroy();
-						});
-						s.indicators = null;
-				}
+				forceRedraw(this);
 				proceed.call(this, options, redraw);
-				
-				s = this;
-
-				each(tempIndics, function(el, i){
-						s.chart.addIndicator(el);
-				});
 		});
 		
 		/*
@@ -358,7 +330,7 @@
 						return;
 					}
 
-					HC.each(ind.currentPoints,function(val, j){
+					HC.each(ind.values,function(val, j){
 						if(val[0] === x) {
 
 							if(ind.options.tooltip) {
@@ -366,7 +338,6 @@
 								indLen = val.length;
 								indTooltip = ind.options.tooltip;
 								indPointFormat = indTooltip.pointFormat;
-
 								pointFormat += HC.format(indPointFormat, {
 									point: {
 										bottomColor: indLen > 3 ? ind.graph[2].element.attributes.stroke.value : '',
@@ -439,50 +410,47 @@
 		});
 
 
-/////////
-	HC.wrap(HC.Point.prototype, 'getLabelConfig', function(proceed, point, mouseEvent) {
-		var point = this;
-
-		return {
-			x: point.category,
-			y: point.y,
-			indicators: point.indicators,
-			key: point.name || point.category,
-			series: point.series,
-			point: point,
-			percentage: point.percentage,
-			total: point.total || point.stackTotal
-		};
-	});
-
-	HC.wrap(HC.Point.prototype, 'init', function(proceed, series, options, x) {
-		var point = this,
-			colors;
-
-		point.series = series;
-		point.color = series.color; // #3445
-		point.applyOptions(options, x);
-		point.pointAttr = {};
-		point.indicators = {};
-
-		if (series.options.colorByPoint) {
-			colors = series.options.colors || series.chart.options.colors;
-			point.color = point.color || colors[series.colorCounter++];
-			// loop back to zero
-			if (series.colorCounter === colors.length) {
-				series.colorCounter = 0;
+		HC.wrap(HC.Point.prototype, 'getLabelConfig', function(proceed, point, mouseEvent) {
+			var point = this;
+		
+			return {
+				x: point.category,
+				y: point.y,
+				indicators: point.indicators,
+				key: point.name || point.category,
+				series: point.series,
+				point: point,
+				percentage: point.percentage,
+				total: point.total || point.stackTotal
+			};
+		});
+		
+		HC.wrap(HC.Point.prototype, 'init', function(proceed, series, options, x) {
+			var point = this,
+				colors;
+		
+			point.series = series;
+			point.color = series.color; // #3445
+			point.applyOptions(options, x);
+			point.pointAttr = {};
+			point.indicators = {};
+		
+			if (series.options.colorByPoint) {
+				colors = series.options.colors || series.chart.options.colors;
+				point.color = point.color || colors[series.colorCounter++];
+				// loop back to zero
+				if (series.colorCounter === colors.length) {
+					series.colorCounter = 0;
+				}
 			}
-		}
-
-		series.chart.pointCount++;
-		return point;
-	});
-////////////
+		
+			series.chart.pointCount++;
+			return point;
+		});
 		
 		/* 
 		* When hovering legend item, use isVisible instead of visible property
 		*/ 
-		
 		HC.wrap(HC.Legend.prototype, 'setItemEvents', function(p, item, legendItem, useHTML, itemStyle, itemHiddenStyle) {
 				p.call(this, item, legendItem, useHTML, itemStyle, itemHiddenStyle);
 				(useHTML ? legendItem : item.legendGroup).on('mouseout', function () {
@@ -499,7 +467,7 @@
 		
 		***/
 				
-		Indicator = Indicator = function () {
+		window.Indicator = function () {
 			this.init.apply(this, arguments);
 		};
 		
@@ -551,10 +519,7 @@
 						error('Series not found');
 						return false;
 				} else if(!graph) {
-						this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
-
-
-						arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
+						arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, series.yData]);
 						if(!arrayValues) { //#6 - create dummy data 
 							arrayValues = {
 								values: [[]],
@@ -565,6 +530,8 @@
 						this.values = this.currentPoints = arrayValues.values;
 						this.xData = arrayValues.xData;
 						this.yData = arrayValues.yData;
+						this.groupPoints(series);
+						
 						this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 						
 						if(graph) {
@@ -576,6 +543,7 @@
 								graph[i].add(group);
 							}
 						}
+						// indicator has connection to the specific Axis, like RSI or ATR
 						if(indicator.options.Axis) {
 								indicator.options.Axis.indicators = indicator.options.Axis.indicators || [];
 								indicator.options.Axis.indicators.push(indicator);
@@ -603,7 +571,7 @@
 						series = this.series,
 						graph = this.graph,
 						group = this.group,
-						isDirty = this.isDirty,
+						isDirtyData = this.isDirtyData,
 						visible = options.visible,
 						axis = options.Axis,
 						pointsBeyondExtremes,
@@ -617,20 +585,22 @@
 					this.values = [[]];
 					return;				
 				}
-					
-				this.pointsBeyondExtremes = pointsBeyondExtremes = this.groupPoints(series);
-				arrayValues = Indicator.prototype[options.type].getValues(chart, series, options, pointsBeyondExtremes);
-                   
-				if(!arrayValues) { //#6 - create dummy data 
-						arrayValues = {
-								values: [[]],
-								xData: [[]],
-								yData: [[]]
-						}
+				// only after series.setData() or series.addPoint() etc.
+				if(isDirtyData) {
+					arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, series.yData]);
+					if(!arrayValues) { //#6 - create dummy data 
+							arrayValues = {
+									values: [[]],
+									xData: [[]],
+									yData: [[]]
+							}
+					}
+					this.values = this.currentPoints = arrayValues.values;
+					this.xData = arrayValues.xData;
+					this.yData = arrayValues.yData;
 				}
-				this.values = this.currentPoints = arrayValues.values;
-				this.xData = arrayValues.xData;
-				this.yData = arrayValues.yData;
+				// always check if points should be grouped, like after setExtremes() which doesn't change data
+				this.groupPoints(series);
 			},	
 			
 			/*
@@ -666,90 +636,195 @@
 				}
 			},
 			
-			preprocessData: function(){
-				this.redraw();
-			},
-			
 			/*
 			* Group points to allow calculation before extremes
 			*/
 			groupPoints: function(series) {
 					var points = [[], []],
-						start = end = series.cropStart,
-						length = HC.splat(this.options.params.period)[0]; //#23 - don't use cropShould - it's broken since v1.3.6
-							
+						start = series.cropStart,
+						end,
+						length = HC.splat(this.options.params.period)[0], //#23 - don't use cropShoulded - it's broken since v1.3.6
+						minLen = Math.max(0, start - length - 1), // cropping starts from 0 at least
+						maxLen = series.options.data.length,              
+						groupedPoints = [],
+						currentData = [],
+						xAxis = series.xAxis,
+						groupIntervalFactor,
+						interval,
+						ex, 
+						xMin, xMax,
+						yData, groupPositions,
+						processedXData,
+						processedXDataLength,
+						totalRange,
+						defaultDataGroupingUnits = [[
+							'millisecond', // unit name
+							[1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
+						], [
+							'second',
+							[1, 2, 5, 10, 15, 30]
+						], [
+							'minute',
+							[1, 2, 5, 10, 15, 30]
+						], [
+							'hour',
+							[1, 2, 3, 4, 6, 8, 12]
+						], [
+							'day',
+							[1]
+						], [
+							'week',
+							[1]
+						], [
+							'month',
+							[1, 3, 6]
+						], [
+							'year',
+							null
+						]
+					];
+						
 					if(series.currentDataGrouping) {
-							var xMax = series.xData[end],
-									range = series.currentDataGrouping.totalRange,
-									xMin = xMax - 2*range,
-									processedXData = [],
-									processedYData = [],
-									actX = series.xData[0],
-									preGroupedPoints = [],
-									groupedPoint,
-									pLen = 0,
-									i = 0;
-									
-							if(range == series.closestPointRange) {
-							// we don't need grouping, since one point is the same as grouped point
-								points[0] = series.xData.slice(Math.max(0, end - length), end); //#23
-								points[1] = series.yData.slice(Math.max(0, end - length), end); //#23
-
-							} else {
-								// group points
-								while(length >= 0 && end > 0){
-										//get points in range
-										preGroupedPoints = this.gatherPoints(series.xData, series.yData, xMin, xMax, end);
-										pLen = preGroupedPoints.x.length; 
-										if(pLen > 0){
-												length --;
-												groupedPoint = this.groupPoint(preGroupedPoints, series);
-												points[0].push(groupedPoint[0][0]);
-												points[1].push(groupedPoint[1][0]);
-										}
-										// change extremes for next range
-										end -= pLen;
-										xMax = xMin;
-										xMin -= range;
-								}
-								if(points[0].length > 0) {
-										points.sort(function(a,b) { return a[0][0] - b[0][0]; });
-								}
-							}
+							ex = xAxis.getExtremes();
+							xMin = ex.min;
+							xMax = ex.max;
+							totalRange = series.currentDataGrouping.totalRange;
+							processedXData = series.processedXData.slice();
+							processedXDataLength = processedXData.length;
+							end = this.getCropEnd(start, xMax, this.xData);
+							groupIntervalFactor = (xAxis.options.ordinal && xAxis.getGroupIntervalFactor(xMin,xMax, series)) || 1;
+							interval = (series.groupPixelWidth * (xMax - xMin) / series.chart.plotSizeX) * groupIntervalFactor;
+							groupPositions = series.xAxis.getTimeTicks(
+								series.currentDataGrouping,
+								xMin,
+								xMax,
+								xAxis.options.startOfWeek,
+								processedXData,
+								series.closestPointRange
+							);
+							groupedPoints = this.groupData(this.xData.slice(Math.max(0, start - length), end), this.yData.slice(Math.max(0, start - length), end), groupPositions.slice(), this.options.params.approximation);
+							this.processedXData = groupedPoints[0];
+							this.processedYData = yData = groupedPoints[1];
 					} else {
-						points[0] = series.xData.slice(Math.max(0, end - length - 1), end); //#23
-						points[1] = series.yData.slice(Math.max(0, end - length - 1), end); //#23
+							this.processedXData = this.xData.slice(minLen, maxLen); //copy default data
+							this.processedYData = yData = this.yData.slice(minLen, maxLen);
+					} 
+					// merge current points
+					HC.each(this.processedXData, function(p, i){
+							if(HC.isArray(yData[i])) { 
+									currentData.push( [p].concat(yData[i]) );
+							} else {
+									currentData.push( [p, yData[i]] );
+							}
+					}); 
+					this.options.yAxisMin = Math.min.apply(null, Array.prototype.concat.apply([], this.processedYData)); // new extremes
+					this.options.yAxisMax = Math.max.apply(null, Array.prototype.concat.apply([], this.processedYData)); // new extremes
+					this.values = currentData;
+					this.applyTooltipPoints();
+			},
+			/*
+			* Mechanism for goruping points into grouped positions
+			*/
+			groupData: function (xData, yData, groupPositions, approximation) {
+					var ind = this,
+							groupedXData = [],
+							groupedYData = [],
+							groupedY,
+							dataLength = xData.length,
+							pointY,
+							pointX,
+							values = [[], [], [], []],
+							approximationFn = typeof approximation === 'function' ? approximation : HC.approximations[approximation],
+							i;
+				
+					// Start with the first point within the X axis range (#2696)
+					for (i = 0; i <= dataLength; i++) {
+						if (xData[i] >= groupPositions[0]) {
+							break;
+						}
 					}
-
-					return points;
 					
+					for (; i <= dataLength; i++) {
+						// when a new group is entered, summarize and initiate the previous group
+						while ((groupPositions[1] !== UNDEFINED && xData[i] >= groupPositions[1]) ||
+								i === dataLength) { // get the last group
+				
+							// get group x and y
+							pointX = groupPositions.shift();
+							groupedY = approximationFn.apply(0, values);
+				
+							// push the grouped data
+							if (groupedY !== UNDEFINED) {
+								groupedXData.push(pointX);
+								groupedYData.push(groupedY);
+							}
+				
+							// reset the aggregate arrays
+							values[0] = [];
+							values[1] = [];
+							values[2] = [];
+							values[3] = [];
+				
+							// don't loop beyond the last group
+							if (i === dataLength) {
+								break;
+							}
+						}
+				
+						// break out
+						if (i === dataLength) {
+							break;
+						}
+			
+						pointY = yData[i];
+						if (pointY === null) {
+							values[0].hasNulls = true;
+						} else if(typeof pointY === NUMBER){
+							values[0].push(pointY);
+						} else {
+							HC.each(pointY, function(e, i) {
+								values[i].push(e);
+							});
+						}
+					}
+						
+					return [groupedXData, groupedYData];
 			},
 			
 			/*
-			* Group points into array for grouping
+			* Apply indicator's value to the grouped, corresponding points
 			*/
-			gatherPoints: function(xData, yData, min, max, end){
-					var x = [],
-							y = [],
-							middle = [max - (max - min) / 2];
-					
-					while(end >= 0 && max > min) {
-								end--;
-								max = max - (max - xData[end]); 
-								x.push(xData[end]);
-								y.push(yData[end]);
+			applyTooltipPoints: function() {
+				var indicator = this,
+						values = indicator.values,
+						vLen = values.length,
+						points = indicator.series.points,
+						pLen = points.length,
+						diff = pLen - vLen,
+						point,
+						i;
+						
+				for(i = diff; i < pLen; i++){
+					point = points[i];
+					if(point) {
+						point.indicators[indicator.options.type] = values[i - diff][1];
 					}
-					return {x: x, y: y, middle: middle};
+				}
 			},
-			
 			/*
-			* Group points to get grouped points beyond extremes
+			* Get right edge of the data actually displayed on the chart. cropStart is stored, but cropEnd we need to find
 			*/
-			groupPoint: function(points, series) {
-				var grouped = series.groupData.apply(series, [points.x, points.y, points.middle, series.options.dataGrouping.approximation ]);
-				return grouped;
+			getCropEnd: function(start, max, data) {
+					var len = data.length,
+							i = start;
+					while(i < len) {
+						  if(data[i] >= max) {
+						  		break;
+						  }
+							i++;
+					}
+					return i + 1;
 			},
-			
 			/*
 			* Destroy the indicator
 			*/
@@ -832,7 +907,7 @@
 				this.visible = newVis;
 				
 				indicator[method]();
-				indicator.preprocessData();
+				indicator.redraw();
 				
 				// hide axis by resetting extremes
 				if(this.options.Axis) {
@@ -927,7 +1002,7 @@
 						var chart = this;
 						
 						each(this.indicators.allItems, function (indicator) {
-									indicator.preprocessData();
+									indicator.redraw();
 						});
 						// we need two loops - one to calculate values and register extremes
 						// and second to draw paths with proper extremes on yAxis
@@ -942,7 +1017,8 @@
 				updateHeightAxes: function(topDiff, add, afterRemove) {
 						var chart = this,
 								chYxis = chart.yAxis,
-                len = calcLen = chYxis.length,
+                len = chYxis.length,
+                calcLen = len,
                 i = 0,
                 sum = chart.chartHeight - chart.plotTop - chart.marginBottom, //workaround until chart.plotHeight will return real value
                 indexWithoutNav = 0,
@@ -1069,7 +1145,7 @@
         
         for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i], false);
-        		if((chart.get(options[i].id).data.length - 1) <= options[i].params.period)
+        		if((chart.get(options[i].id).data.length - 1) <= options[i].params.period) // SPLAT?
         			exportingFlag = false;
         }
         
@@ -1081,13 +1157,79 @@
 						chart.preventIndicators = false;
 				});
 				  
-				if(exportingFlag && chart.series && chart.series.length > 0) { // #16
+				if(exportingFlag && optionsLen > 0 && chart.series && chart.series.length > 0) { // #16 & #27
 						chart.isDirtyLegend = true;
 					  chart.series[0].isDirty = true;
 					 	chart.series[0].isDirtyData = true;
 					 	chart.redraw(false);
 				}
 		});
-
+		
+		HC.approximations = {
+			sum: function (arr) {
+				var len = arr.length,
+					ret;
+	
+				// 1. it consists of nulls exclusively
+				if (!len && arr.hasNulls) {
+					ret = null;
+				// 2. it has a length and real values
+				} else if (len) {
+					ret = 0;
+					while (len--) {
+						ret += arr[len];
+					}
+				}
+				// 3. it has zero length, so just return undefined
+				// => doNothing()
+	
+				return ret;
+			},
+			average: function (arr) {
+				var len = arr.length,
+					ret = HC.approximations.sum(arr);
+	
+				// If we have a number, return it divided by the length. If not, return
+				// null or undefined based on what the sum method finds.
+				if (typeof ret === NUMBER && len) {
+					ret = ret / len;
+				}
+	
+				return ret;
+			},
+			open: function (arr) {
+				return arr.length ? arr[0] : (arr.hasNulls ? null : UNDEFINED);
+			},
+			high: function (arr) {
+				return arr.length ? HC.arrayMax(arr) : (arr.hasNulls ? null : UNDEFINED);
+			},
+			low: function (arr) {
+				return arr.length ? HC.arrayMin(arr) : (arr.hasNulls ? null : UNDEFINED);
+			},
+			close: function (arr) {
+				return arr.length ? arr[arr.length - 1] : (arr.hasNulls ? null : UNDEFINED);
+			},
+			// ohlc and range are special cases where a multidimensional array is input and an array is output
+			ohlc: function (open, high, low, close) {
+				open = HC.approximations.open(open);
+				high = HC.approximations.high(high);
+				low = HC.approximations.low(low);
+				close = HC.approximations.close(close);
+	
+				if (typeof open === NUMBER || typeof high === NUMBER || typeof low === NUMBER || typeof close === NUMBER) {
+					return [open, high, low, close];
+				}
+				// else, return is undefined
+			},
+			range: function (low, high) {
+				low = HC.approximations.low(low);
+				high = HC.approximations.high(high);
+	
+				if (typeof low === NUMBER || typeof high === NUMBER) {
+					return [low, high];
+				}
+				// else, return is undefined
+			}
+		};
 
 })(Highcharts);

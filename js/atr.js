@@ -35,7 +35,8 @@
     Indicator.prototype.atr = {
         getDefaultOptions: function(){
             return {
-                period: 14
+                period: 14,
+                approximation: "average"
             };
         },
         getValues: function(chart, series, options, extraPoints) {
@@ -70,11 +71,6 @@
                   ATR.push(point);
                   xData.push(point[0]);
                   yData.push(point[1]);
-
-                  if(i > period && series.points[i - period - 1] !== UNDEFINED) {
-                    series.points[i - period - 1].indicators.atr = point[1];
-                  }
-
               } else if (period === range) {
                   prevATR = TR / (i-1);
                   ATR.push([xVal[i-1],prevATR]); 
@@ -90,11 +86,6 @@
            yData.push(point[1]);
            ATR.push(point);
 
-           if(series.points[i - period - 1] !== UNDEFINED) {
-            series.points[yValLen - period - 1].indicators.atr = point[1];
-           }
-
-           
             // registger extremes for axis;
 					 options.yAxisMax = maxInArray(ATR);
 					 options.yAxisMin = 0;

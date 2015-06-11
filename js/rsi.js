@@ -43,7 +43,8 @@
 						return {
 								period: 14,
 								overbought: 70,
-								oversold: 30
+								oversold: 30,
+								approximation: "average"
 						};
 				},
 				getValues: function(chart, series, options, points) {
@@ -111,10 +112,6 @@
 							 xData.push(xVal[i]);
 							 yData.push(RSIPoint);	
 
-							 if(i > period && series.points[i - period] !== UNDEFINED) {
-			                    series.points[i - period].indicators.rsi = RSIPoint;
-			                 }
-							 
 							 //calEMAGain = avgGain[1]; 
 							 //calEMALoss = avgLoss[1]; 
 					 }

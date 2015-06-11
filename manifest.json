@@ -1,44 +1,40 @@
 {
-        "name": "Indicators",
-        "version": "1.1.1",
-        "title": "Indicators",
-        "author": {
-                "name": "Black Label",
-                "url": "http://www.blacklabel.pl/"
-        },
-        "licenses": [
-                {
-                        "type": "Creative Commons Attribution (CC)",
-                        "url": "https://github.com/blacklabel/indicators/blob/master/license.txt"
-                }
-        ],
-        "dependencies": {
-                "highstock": "2.1.5+"
-        },
-        "demo": [
-                "http://jsfiddle.net/BlackLabel/RE7sS/"
-        ],
-        "description": "Plugin that allows add indicators (SMA, EMA, RSI, ATR) for Highstock.",
-        "keywords": [
-                "indicators",
-                "sma",
-                "ema",
-                "atr",
-                "rsi"
-        ],
-        "maintainers": [
-    {
-      "name": "Sebastian Bochan",
-      "email": "sebastian@blacklabel.pl",
-      "url": "http://www.blacklabel.pl"
-    },{
-      "name": "Paweł Fus",
-      "email": "pawel@blacklabel.pl",
-      "url": "http://www.blacklabel.pl"
-    }
-  ],
-        "homepage": "http://blacklabel.github.io/indicators/",        
-        "docs": "https://github.com/blacklabel/indicators/",        
-        "bugs": "https://github.com/blacklabel/indicators/issues",
-        "download": "https://github.com/blacklabel/indicators/archive/master.zip"
+	"name": "Indicators",
+	"version": "2.0.0",
+	"title": "Indicators",
+	"author": {
+		"name": "Black Label",
+		"url": "http://www.blacklabel.pl/"
+	},
+	"licenses": [{
+		"type": "Creative Commons Attribution (CC)",
+		"url": "https://github.com/blacklabel/indicators/blob/master/license.txt"
+	}],
+	"dependencies": {
+		"highstock": "2.1.5+"
+	},
+	"demo": [
+		"http://jsfiddle.net/BlackLabel/RE7sS/"
+	],
+	"description": "Plugin that allows add indicators (SMA, EMA, RSI, ATR) for Highstock.",
+	"keywords": [
+		"indicators",
+		"sma",
+		"ema",
+		"atr",
+		"rsi"
+	],
+	"maintainers": [{
+		"name": "Sebastian Bochan",
+		"email": "sebastian@blacklabel.pl",
+		"url": "http://www.blacklabel.pl"
+	},{
+		"name": "Paweł Fus",
+		"email": "pawel@blacklabel.pl",
+		"url": "http://www.blacklabel.pl"
+	}],
+  "homepage": "http://blacklabel.github.io/indicators/",        
+  "docs": "https://github.com/blacklabel/indicators/",        
+  "bugs": "https://github.com/blacklabel/indicators/issues",
+  "download": "https://github.com/blacklabel/indicators/archive/master.zip"
 }
