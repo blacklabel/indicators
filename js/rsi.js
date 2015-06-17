@@ -17,7 +17,9 @@
 		    params: {
 		        period: 'x',
 		        overbought: value_a,
-		        oversold: value_b
+		        oversold: value_b,
+		        approximation: 'average',
+		        decimals: 5
 		    },    
 		    styles: {
 		        lineWidth: 'x',
@@ -44,7 +46,8 @@
 								period: 14,
 								overbought: 70,
 								oversold: 30,
-								approximation: "average"
+								approximation: "average",
+								decimals: 4
 						};
 				},
 				getValues: function(chart, series, options, points) {
@@ -55,6 +58,7 @@
                 yVal = points[1].concat(series.processedYData || []), // #22
                 yValLen = yVal ? yVal.length : 0,
                 EMA = Indicator.prototype.ema,
+                decimals = params.decimals,
                 //EMApercent = (2 / (period + 1)),
                 //calEMAGain = 0,
                 //calEMALoss = 0,
@@ -74,7 +78,7 @@
            
            // accumulate first N-points
            while(range < period + 1){
-           	 	change = toFixed(yVal[range][index] - yVal[range - 1][index], 2);
+           	 	change = toFixed(yVal[range][index] - yVal[range - 1][index], decimals);
            	 	gain.push(change > 0 ? change : 0);
            	 	loss.push(change < 0 ? Math.abs(change) : 0);
            	 	range ++;
@@ -92,22 +96,22 @@
            	   	 		gain.shift();
            	   	 	  loss.shift();
            	   	 	  // calculate new change
-									  change = toFixed(yVal[i][index] - yVal[i - 1][index], 2);
+									  change = toFixed(yVal[i][index] - yVal[i - 1][index], decimals);
 									  // add to array
 									  gain.push(change > 0 ? change : 0);
 									  loss.push(change < 0 ? Math.abs(change) : 0);
            	   }
            	   
            	   // calculate averages, RS, RSI values:
-							 avgGain = toFixed(utils.sumArray(gain) / period, 2);
-							 avgLoss = toFixed(utils.sumArray(loss) / period, 2);	
+							 avgGain = toFixed(utils.sumArray(gain) / period, decimals);
+							 avgLoss = toFixed(utils.sumArray(loss) / period, decimals);	
            	 	 
 							 if(avgLoss === 0) {
 							 	 	RS = 100;
 							 } else {
-							 	  RS = toFixed(avgGain / avgLoss, 2);
+							 	  RS = toFixed(avgGain / avgLoss, decimals);
 							 }
-							 RSIPoint = toFixed(100 - (100 / (1 + RS)), 2);
+							 RSIPoint = toFixed(100 - (100 / (1 + RS)), decimals);
 							 RSI.push([xVal[i], RSIPoint]);
 							 xData.push(xVal[i]);
 							 yData.push(RSIPoint);	
