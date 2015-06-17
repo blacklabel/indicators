@@ -117,11 +117,14 @@
 		*/
 		HC.wrap(HC.Series.prototype, 'remove', function(proceed, redraw, animation) {
 				var s = this,
+						len;
+				if(s.indicators) {
 					len = s.indicators.length;
-						while(len--) { // #21
-							s.indicators[len].destroy();
-						};
-						s.indicators = null;
+					while(len--) { // #21
+						s.indicators[len].destroy();
+					};
+					s.indicators = null;
+				}
 						
 				proceed.call(this, redraw, animation);
 		});
@@ -205,7 +208,7 @@
 										indMax = Math.max(indMax, ind.options.yAxisMax);
 								}
 						});
-						if(hasData) {
+						if(hasData && indMax !== Infinity && indMin !== -Infinity ) {
 								this.isDirty = true;
 								this.isDirtyExtremes = true;
 								this.userMax = indMax;
@@ -531,11 +534,9 @@
 						this.xData = arrayValues.xData;
 						this.yData = arrayValues.yData;
 						this.groupPoints(series);
-						
 						this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 						
 						if(graph) {
-
 							var len = graph.length,
 								i;
 
@@ -613,7 +614,6 @@
 					i;
 						
 				if(graph) {
-
 						for(i = 0; i < len ;i++) {
 								graph[i].destroy();
 						}
@@ -621,18 +621,15 @@
 				ind.graph = Indicator.prototype[ind.options.type].getGraph(ind.chart, ind.series, ind.options, ind.values);
 		
 				if(ind.graph) {
-
-							for(i = 0; i < len ;i++) {
-								ind.graph[i].add(ind.group);
-							} 
-
-							ind.clipPath.attr({
-									x: ind.options.Axis.left,
-									y: ind.options.Axis.top,
-									width: ind.options.Axis.width,
-									height: ind.options.Axis.height
-							});   
-						
+						ind.clipPath.attr({
+								x: ind.options.Axis.left,
+								y: ind.options.Axis.top,
+								width: ind.options.Axis.width,
+								height: ind.options.Axis.height
+						});   
+						for(i = 0; i < len ;i++) {
+							ind.graph[i].add(ind.group);
+						} 
 				}
 			},
 			
@@ -799,7 +796,7 @@
 						values = indicator.values,
 						vLen = values.length,
 						points = indicator.series.points,
-						pLen = points.length,
+						pLen = points ? points.length : 0,
 						diff = pLen - vLen,
 						point,
 						i;
