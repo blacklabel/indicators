@@ -37,7 +37,7 @@
             return {
                 period: 14,
                 index: 0,
-                approximation: "average"
+								approximation: "average"
             };
         },
         getValues: function(chart, series, options, extraPoints) {

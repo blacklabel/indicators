@@ -36,7 +36,7 @@
         getDefaultOptions: function(){
             return {
                 period: 14,
-                approximation: "average"
+								approximation: "average"
             };
         },
         getValues: function(chart, series, options, extraPoints) {

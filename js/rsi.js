@@ -169,12 +169,14 @@
 					 
            userOptions = merge(defaultOptions, options.yAxis);
 
-
            if(options.Axis === UNDEFINED) {
              index = addAxisPane(chart,userOptions); 
              options.Axis = chart.yAxis[index];
            } else {
-					   //options.Axis.render();
+					   Highcharts.each(options.Axis.plotLinesAndBands, function(p, i) {
+					   		p.options = merge(p.options, userOptions.plotLines[i]);
+					   		p.render();
+					   });
            }
 
            yAxis = options.Axis;

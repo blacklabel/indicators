@@ -303,7 +303,7 @@
 
 			// Insert options for valueDecimals, valuePrefix, and valueSuffix
 			var series = this.series,
-				indicators 	   = series.chart.indicators.allItems,
+				indicators 	   = series.indicators,
 				seriesTooltipOptions = series.tooltipOptions,
 				tooltipOptions = series.chart.tooltip.options,
 				valueDecimals = HC.pick(seriesTooltipOptions.valueDecimals, ''),
@@ -998,12 +998,12 @@
 				redrawIndicators: function () {
 						var chart = this;
 						
-						each(this.indicators.allItems, function (indicator) {
+						each(chart.indicators.allItems, function (indicator) {
 									indicator.redraw();
 						});
 						// we need two loops - one to calculate values and register extremes
 						// and second to draw paths with proper extremes on yAxis
-						each(this.yAxis, function (axis) {
+						each(chart.yAxis, function (axis) {
 									axis.render();
 						});
 						
@@ -1095,6 +1095,7 @@
 						//add new axis
 						chart.preventIndicators = true;
 						chart.addAxis(options, false, true, false);
+						chart.preventIndicators = false;
 						return chart.yAxis.length - 1;
 				},
 				
