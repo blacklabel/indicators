@@ -197,6 +197,7 @@
     *  Set flag for hasData when indicator has own axis
     */
     HC.wrap(HC.Axis.prototype, 'render', function(p) {
+    		var oldHasData;
     		function manageIndicators() {
     				var hasData = false,
     						indMin = Infinity,
@@ -221,13 +222,14 @@
     		}
 				if(this.indicators && !this.hasVisibleSeries) {
 						// case 1: axis doesn't have series
-						this.hasData = manageIndicators.call(this);
+						oldHasData = manageIndicators.call(this);
+						this.hasData = typeof this.hasData == "function" ? function() { return oldHasData; } : oldHasData; // version 4.1.6 vs 4.1.7
 						
-						if(this.hasData) {
+						if((typeof this.hasData == "function" && this.hasData()) || (typeof this.hasData !== "function" && this.hasData)) { // version 4.1.6 vs 4.1.7
 								this.setScale();
 								this.setTickPositions(true);  
 		
-								this.chart.getMargins();
+								//this.chart.getMargins();
 								HC.each(this.indicators, function(ind, e) {
 									ind.drawGraph();
 								});
@@ -254,7 +256,7 @@
 						
 								this.chart.getMargins();
 						}
-						this.hasData = hasData;
+						this.hasData = typeof this.hasData == "function" ? function() { return hasData } : hasData; // version 4.1.6 vs 4.1.7
 						
 						HC.each(this.indicators, function(ind, e) {
 							ind.drawGraph();
@@ -804,7 +806,7 @@
 				for(i = diff; i < pLen; i++){
 					point = points[i];
 					if(point) {
-						point.indicators[indicator.options.type] = values[i - diff][1];
+						point.indicators[indicator.options.type] = values[i - diff];
 					}
 				}
 			},
