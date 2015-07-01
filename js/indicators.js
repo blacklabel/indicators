@@ -872,6 +872,13 @@
 					indicator.group.destroy();
 					indicator.group = null;
 				}
+				
+				// remove points from tooltip #29
+				each(indicator.series.points, function(p) {
+					if(p && p.indicators && p.indicators[indicator.options.type]){ 
+						delete p.indicators[indicator.options.type];
+					}
+        });
 				indicator = null;
 				chart.redraw(redraw);
 			},
@@ -993,6 +1000,7 @@
 					indicators.push(item);
 					item.render(redraw);
 					chart.redraw(redraw);
+					return item;
 				},
 				/*
 				 * Redraw all indicators, method used in chart events

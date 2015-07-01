@@ -197,6 +197,11 @@ tooltip:{
     <tr><td align="left">params.index (SMA/EMA)</td><td>Number</td><td align="left">y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to <code>0</code>.</td></tr>
     <tr><td align="left">params.overbought (RSI)</td><td>Number</td><td align="left">overbought value between 0-100. Defaults to <code>70</code>.</td></tr>
     <tr><td align="left">params.oversold (RSI)</td><td>Number</td><td align="left">oversold value between 0-100. Defaults to <code>30</code>.</td></tr>
+		<tr>
+			<td align="left">tooltip.pointFormat</td>
+			<td align="left"> String </td>
+			<td align="left"> <code>point.color</code> and <code>point.y</code> return values from indicator. Disabled by default.</td>
+		</tr>
   </tbody>
 </table>
 
