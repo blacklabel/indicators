@@ -84,7 +84,17 @@
 		Wrappers:
 		
 		***/
-		
+		/*
+		*	Upadte height when height is changed:
+		*/ 
+		HC.wrap(HC.Chart.prototype, 'setSize', function(p, w, h, a) {
+				p.call(this, w, h, false);
+				if(this.alignAxes) {
+						// #30
+						this.updateHeightAxes(20, false, false);
+						this.redraw(a);
+				}
+		});
 		
 		/*
 		*  Remove corresponding indicators for series
