@@ -1049,7 +1049,7 @@
             // #17 - we need to consider navigator (disabled vs enabled) when calculating height in advance
             if(!add && chart.options.navigator.enabled) { 
             	calcLen--; 
-            } else if(!chart.options.navigator.enabled){
+            } else if(add && !chart.options.navigator.enabled){
             	calcLen++;
             }
             
