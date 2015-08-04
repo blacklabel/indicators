@@ -191,7 +191,7 @@
 		*  Force redraw for indicator with new point options, like value
 		*/
 		HC.wrap(HC.Point.prototype, 'update', function(proceed, options, redraw) {
-				forceRedraw(this);
+				forceRedraw(this.series);
 				proceed.call(this, options, redraw);
 		});
 		
