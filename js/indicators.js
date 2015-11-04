@@ -239,7 +239,7 @@
 								this.setScale();
 								this.setTickPositions(true);  
 		
-								//this.chart.getMargins();
+								this.chart.getMargins(); // #38
 								HC.each(this.indicators, function(ind, e) {
 									ind.drawGraph();
 								});
