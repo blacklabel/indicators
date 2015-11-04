@@ -193,7 +193,7 @@ tooltip:{
     <tr><td align="left">yAxis (ATR/RSI)</td><td>Object</td><td align="left">yAxis object like in Highcharts, options for additional yAxis</td></tr>
     <tr><td align="left">params</td><td>Object</td><td align="left">config options for indicator</td></tr>    
     <tr><td align="left">params.approximation (SMA/EMA/ATR/RSI)</td><td>String/Function</td><td align="left">The same property as in <code>dataGrouping.approximation</code> for Highstock. Supported since version <b>2.0.0</b>. Defaults to <code>"average"</code>.</td></tr>
-    <tr><td align="left">params.period (SMA/EMA/ATR/RSI)</td><td>Number</td><td align="left">base perdiod for indicator (it's number of points to be calculated). Defaults to <code>14</code>.</td></tr>
+    <tr><td align="left">params.period (SMA/EMA/ATR/RSI)</td><td>Number</td><td align="left">base period for indicator (it's number of points to be calculated). Defaults to <code>14</code>.</td></tr>
     <tr><td align="left">params.index (SMA/EMA)</td><td>Number</td><td align="left">y-value index. Useful when using candlestick/ohlc/range series to determine which value (open/high/low/close) should be used in indicator. Defaults to <code>0</code>.</td></tr>
     <tr><td align="left">params.overbought (RSI)</td><td>Number</td><td align="left">overbought value between 0-100. Defaults to <code>70</code>.</td></tr>
     <tr><td align="left">params.oversold (RSI)</td><td>Number</td><td align="left">oversold value between 0-100. Defaults to <code>30</code>.</td></tr>
