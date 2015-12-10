@@ -1,6 +1,3 @@
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="http://code.highcharts.com/highcharts.js"></script>
-<script src="./bubble-dragAdrop.js"></script>
 
 # Indicators - Highstock module
 
@@ -13,83 +10,6 @@ You may also want to check our other demo here: http://demo.blacklabel.pl.
 
 Go to project page to see this module in action: [http://blacklabel.github.io/indicators/](http://blacklabel.github.io/indicators/)
 
-
-<div id="chart" style="height: 300px"></div>
-<script>
-$.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.json&callback=?', function(data) {
-    window.chart = new Highcharts.Chart('StockChart',{
-        chart:{
-            type: 'candlestick'
-        },
-        indicators: [{
-            id: 'AAPL',
-            type: 'sma',
-            params: {
-                period: 5,
-            }
-        }, {
-            id: 'AAPL',
-            type: 'ema',
-            params: {
-                period: 5,
-                index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
-            },
-            styles: {
-                strokeWidth: 2,
-                stroke: 'green',
-                dashstyle: 'solid'
-            }
-        }, {
-            id: 'AAPL',
-            type: 'atr',
-            params: {
-                period: 14,
-            },
-            styles: {
-                strokeWidth: 2,
-                stroke: 'orange',
-                dashstyle: 'solid'
-            },
-            yAxis: {
-                lineWidth:2,
-                title: {
-                    text:'My ATR title'
-                }
-            }   
-        }, {
-            id: 'AAPL',
-            type: 'rsi',
-            params: {
-                period: 14,
-                overbought: 70,
-                oversold: 30
-            },
-            styles: {
-                strokeWidth: 2,
-                stroke: 'black',
-                dashstyle: 'solid'
-            },
-            yAxis: {
-                lineWidth:2,
-                title: {
-                    text:'My RSI title'
-                }
-            }   
-        }],
-        tooltip:{
-            enabledIndicators: true
-        },
-        series: [{
-            cropThreshold: 0,
-            id: 'AAPL',
-            name: 'AAPL',
-            data: data,
-            tooltip: {
-                valueDecimals: 2
-            }
-        }]
-});
-</script>
 
 ### Requirements
 
@@ -271,7 +191,3 @@ tooltip:{
 		</tr>
 	</tbody>
 </table>
-
-### Demo
-
-Demos are available at project's github page: [http://blacklabel.github.io/indicators/](http://blacklabel.github.io/indicators/)
