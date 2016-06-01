@@ -1178,7 +1178,7 @@
         
         for(i = 0; i < optionsLen; i++) {
         		chart.addIndicator(options[i], false);
-        		if((chart.get(options[i].id).data.length - 1) <= options[i].params.period) // SPLAT?
+        		if((chart.get(options[i].id).points.length - 1) <= options[i].params.period) // SPLAT?
         			exportingFlag = false;
         }
         
