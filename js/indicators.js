@@ -1,5 +1,11 @@
-(function (HC) {
-	/* global Highcharts window:true */
+/* global Highcharts window module:true */
+(function (factory) {
+	if (typeof module === 'object' && module.exports) {
+		module.exports = factory;
+	} else {
+		factory(Highcharts);
+	}
+}(function (HC) {
 	'use strict';
 	/**
 	*	Each indicator requires methods:
@@ -30,6 +36,10 @@
 		splat = HC.splat,
 		NUMBER = 'number',
 		Indicator;
+
+	if (!window) {
+		window = HC.win;
+	}
 	
 	function error(name) {
 		if (window.console) {
@@ -456,7 +466,7 @@
 	* Indicator Class:
 	**/
 			
-	window.Indicator = Indicator = function () {
+	HC.Indicator = Indicator = function () {
 		this.init.apply(this, arguments);
 	};
 	
@@ -1194,4 +1204,4 @@
 			return UNDEFINED;
 		}
 	};
-})(Highcharts);
+}));

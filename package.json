@@ -1,6 +1,6 @@
 {
   "name": "highcharts-indicators",
-  "version": "2.0.5",
+  "version": "2.1.0",
   "description": "Highstock plugin to add technical indicators to charts.",
   "main": "js/indicators.js",
   "repository": {
@@ -24,7 +24,11 @@
   },
   "homepage": "https://github.com/blacklabel/indicators#readme",
   "files": [
-    "js/*.js"
+    "js/indicators.js",
+    "js/sma.js",
+    "js/ema.js",
+    "js/atr.js",
+    "js/rsi.js"
   ],
   "devDependencies": {
     "gulp": "^3.9.1",

@@ -1,5 +1,11 @@
-(function (HC, Indicator) {
-	/* global Highcharts Indicator:true */
+/* global Highcharts module:true */
+(function (factory) {
+	if (typeof module === 'object' && module.exports) {
+		module.exports = factory;
+	} else {
+		factory(Highcharts);
+	}
+}(function (HC) {
 	'use strict';
 	/**
 	
@@ -22,7 +28,7 @@
 		isArray = HC.isArray,
 		addAxisPane = HC.Axis.prototype.addAxisPane;
 	
-	Indicator.prototype.rsi = {
+	HC.Indicator.prototype.rsi = {
 		getDefaultOptions: function () {
 			return {
 				period: 14,
@@ -39,7 +45,7 @@
 				xVal = points[0].concat(series.processedXData || []), // #22
 				yVal = points[1].concat(series.processedYData || []), // #22
 				yValLen = yVal ? yVal.length : 0,
-				EMA = Indicator.prototype.ema,
+				EMA = HC.Indicator.prototype.ema,
 				decimals = params.decimals,
 				// EMApercent = (2 / (period + 1)),
 				// calEMAGain = 0,
@@ -186,4 +192,4 @@
 			}
 		}
 	};
-})(Highcharts, Indicator);
+}));

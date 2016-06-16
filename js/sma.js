@@ -1,5 +1,11 @@
-(function (HC, Indicator) {
-	/* global Highcharts Indicator:true */
+/* global Highcharts module:true */
+(function (factory) {
+	if (typeof module === 'object' && module.exports) {
+		module.exports = factory;
+	} else {
+		factory(Highcharts);
+	}
+}(function (HC) {
 	'use strict';
 	/**
 	
@@ -18,7 +24,7 @@
 		maxInArray = HC.Axis.prototype.maxInArray,
 		isArray = HC.isArray;
 	
-	Indicator.prototype.sma = {
+	HC.Indicator.prototype.sma = {
 		getDefaultOptions: function () {
 			return {
 				period: 14,
@@ -143,4 +149,4 @@
 			}
 		}
 	};
-})(Highcharts, Indicator);
+}));
