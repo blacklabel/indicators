@@ -16,7 +16,7 @@
 	"demo": [
 		"http://jsfiddle.net/BlackLabel/RE7sS/"
 	],
-	"description": "Plugin that allows add indicators (SMA, EMA, RSI, ATR) for Highstock.",
+	"description": "Highstock plugin to add technical indicators to charts.",
 	"keywords": [
 		"indicators",
 		"sma",
@@ -31,6 +31,10 @@
 	},{
 		"name": "Paweł Fus",
 		"email": "pawel@blacklabel.pl",
+		"url": "http://www.blacklabel.pl"
+	},{
+		"name": "Kacper Madej",
+		"email": "kacper@blacklabel.pl",
 		"url": "http://www.blacklabel.pl"
 	}],
   "homepage": "http://blacklabel.github.io/indicators/",        

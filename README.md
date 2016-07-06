@@ -37,6 +37,12 @@ require('rsi')(Highcharts);
 require('atr')(Highcharts);
 ```
 
+* For BOWER users:
+
+```
+bower install highcharts-indicators
+```
+
 ### Code
 
 The latest code is available on github: [https://github.com/blacklabel/indicators/](https://github.com/blacklabel/indicators/)
