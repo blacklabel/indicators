@@ -79,6 +79,20 @@
 			followPointer: true
 		}
 	});
+	
+	// Pass correct series.yData to getValues() before render()
+	function properYData(series) {
+		if (HC.isArray(series.yData) && (series.yData.length >0) && HC.isArray(series.yData[0]) && (series.yData[0].length === 4)) {
+			return series.yData;
+		}
+		else {
+			var arr = [];
+			series.options.data.forEach(function(value) {
+				arr.push([value[0], value[1], value[2], value[3]])
+			});
+			return arr;
+		}
+	}
 
 	
 	/**
@@ -519,7 +533,7 @@
 				error('Series not found');
 				return;
 			} else if (!graph) {
-				arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, series.yData]);
+				arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, properYData(series)]);
 				if (!arrayValues) { // #6 - create dummy data
 					arrayValues = {
 						values: [[]],
