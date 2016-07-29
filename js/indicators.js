@@ -81,16 +81,21 @@
 	});
 	
 	// Pass correct series.yData to getValues() before render()
-	function properYData(series) {
-		if (HC.isArray(series.yData) && (series.yData.length >0) && HC.isArray(series.yData[0]) && (series.yData[0].length === 4)) {
-			return series.yData;
+	function properYData(series, type) {
+		if (type === 'rsi' || type === 'atr') {
+			if (HC.isArray(series.yData) && (series.yData.length >0) && HC.isArray(series.yData[0]) && (series.yData[0].length === 4)) {
+				return series.yData;
+			}
+			else {
+				var arr = [];
+				series.options.data.forEach(function(value) {
+					arr.push([value[0], value[1], value[2], value[3]])
+				});
+				return arr;
+			}
 		}
 		else {
-			var arr = [];
-			series.options.data.forEach(function(value) {
-				arr.push([value[0], value[1], value[2], value[3]])
-			});
-			return arr;
+			return series.yData;
 		}
 	}
 
@@ -533,7 +538,7 @@
 				error('Series not found');
 				return;
 			} else if (!graph) {
-				arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, properYData(series)]);
+				arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, properYData(series, indicator.name)]);
 				if (!arrayValues) { // #6 - create dummy data
 					arrayValues = {
 						values: [[]],
