@@ -38,7 +38,7 @@
 		Indicator;
 
 	if (!window) {
-		window = HC.win; // eslint-disable-line
+		window = HC.win;
 	}
 	
 	function error(name) {
@@ -362,11 +362,8 @@
 						} else {
 							// Default format
 							graphLen = (ind.options.names || ind.graph).length;
-
 							for (k = 0; k < graphLen; k++) {
-								if (ind.graph[k] !== UNDEFINED) {
-									pointFormat += '<span style="font-weight:bold;color:' + ind.graph[k].element.attributes.stroke.value + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val[k + 1], 3) + '<br/>';
-								}
+								pointFormat += '<span style="font-weight:bold;color:' + ind.graph[k].element.attributes.stroke.value + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val[k + 1], 3) + '<br/>';
 							}
 						}
 					}
@@ -523,7 +520,6 @@
 				return;
 			} else if (!graph) {
 				arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, series.yData]);
-				
 				if (!arrayValues) { // #6 - create dummy data
 					arrayValues = {
 						values: [[]],
@@ -535,7 +531,6 @@
 				this.xData = arrayValues.xData;
 				this.yData = arrayValues.yData;
 				this.groupPoints(series);
-
 				this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 				
 				if (graph) {
@@ -683,7 +678,6 @@
 		* Mechanism for goruping points into grouped positions
 		*/
 		groupData: function (xData, yData, groupPositions, approximation) {
-
 			var groupedXData = [],
 				groupedYData = [],
 				groupedY,
@@ -735,7 +729,6 @@
 				}
 	
 				pointY = yData[i];
-
 				if (pointY === null) {
 					values[0].hasNulls = true;
 				} else if (typeof pointY === NUMBER) {
@@ -871,8 +864,10 @@
 		setVisible: function (vis) {
 			var indicator = this,
 				oldVis = indicator.visible,
+				legend = indicator.chart.legend,
 				newVis,
 				method;
+
 			
 			if (vis === UNDEFINED) {
 				newVis = oldVis ? false : true;
@@ -882,8 +877,8 @@
 				method = vis ? 'show' : 'hide';
 			}
 			
-			if (this.options.showInLegend) {
-				this.chart.legend.colorizeItem(this, newVis);
+			if (legend.options.enabled && this.options.showInLegend) {
+				legend.colorizeItem(this, newVis);
 			}
 			this.visible = newVis;
 			
