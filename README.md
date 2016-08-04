@@ -30,6 +30,10 @@ Go to project page to see this module in action: [http://blacklabel.github.io/in
 ```
 var Highcharts = require('highcharts/highstock');
     require('indicators')(Highcharts);
+    require('sma')(Highcharts);
+    require('ema')(Highcharts);
+    require('rsi')(Highcharts);
+    require('atr')(Highcharts);
 ```
 
 * For BOWER users:
