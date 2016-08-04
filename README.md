@@ -26,16 +26,6 @@ Go to project page to see this module in action: [http://blacklabel.github.io/in
 
 * Like any other Highcharts module (e.g. exporting), add `<script>` tag pointing to `indicators.js` below Highcharts script tag. Then attach all required indicators (like `ema.js`, `rsi.js`).
 
-* For NPM users: 
-```
-var Highcharts = require('highcharts/highstock');
-
-require('indicators')(Highcharts);
-require('sma')(Highcharts);
-require('ema')(Highcharts);
-require('rsi')(Highcharts);
-require('atr')(Highcharts);
-```
 
 * For BOWER users:
 
