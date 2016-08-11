@@ -38,7 +38,7 @@
 		Indicator;
 
 	if (!window) {
-		window = HC.win;
+		window = HC.win; // eslint-disable-line
 	}
 	
 	function error(name) {
@@ -60,6 +60,23 @@
 				el.render();
 			});
 		}
+	}
+
+	// copy od object
+	function clone(obj) {
+		if (obj === null || typeof obj !== 'object') {
+			return obj;
+		}
+		
+		var copy = obj.constructor();
+		
+		for (var attr in obj) {
+			if (obj.hasOwnProperty(attr)) {
+				copy[attr] = obj[attr];
+			}
+		}
+
+		return copy;
 	}
 
 	HC.isArray = function (obj) {
@@ -284,6 +301,10 @@
 	*/
 	wrap(HC.Tooltip.prototype, 'defaultFormatter', function (proceed, tooltip) {
 		var items = this.points || splat(this),
+			tooltipOptions = items[0].series.chart.tooltip.options,
+			indicatorTooltip = '',
+			indicators,
+			ind,
 			s;
 
 		// build the header
@@ -292,89 +313,36 @@
 		// build the values
 		s = s.concat(tooltip.bodyFormatter(items));
 
+		// add indicator info
+		each(items, function (item) {
+
+			indicators = item.indicators;
+
+			if (indicators === UNDEFINED || !tooltipOptions.enabledIndicators) {
+				return;
+			}
+
+			for (var type in indicators) {
+
+				ind = indicators[type];
+
+				if (ind.values === UNDEFINED || ind.visible === false || ((ind.options && ind.options.params) && ind.options.params.allowTooltip === false)) {
+					return;
+				}
+					
+				// mulitple lines
+				each(ind.values, function (val, k) {
+					indicatorTooltip += '<span style="font-weight:bold;color:' + val.color + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val.y, 3) + '<br/>';
+				});
+			}
+		});
+
+		s.push(indicatorTooltip);
+
 		// footer
 		s.push(tooltip.tooltipFooterHeaderFormatter(items[0], true)); // #3397: abstraction to enable formatting of footer and header
 
 		return s.join('');
-	});
-
-	wrap(HC.Tooltip.prototype, 'bodyFormatter', function (proceed, items) {
-		return HC.map(items, function (item) {
-			var tooltipOptions = item.series.tooltipOptions;
-			return (tooltipOptions.pointFormatter || item.point.tooltipFormatter).call(item.point, tooltipOptions.pointFormat);
-		});
-	});
-
-	/*
-	*	Tooltip pointFormat
-	*/
-	wrap(HC.Point.prototype, 'tooltipFormatter', function (proceed, pointFormat) {
-		// Insert options for valueDecimals, valuePrefix, and valueSuffix
-		var series = this.series,
-			indicators 	   = series.indicators,
-			seriesTooltipOptions = series.tooltipOptions,
-			tooltipOptions = series.chart.tooltip.options,
-			valueDecimals = HC.pick(seriesTooltipOptions.valueDecimals, ''),
-			valuePrefix = seriesTooltipOptions.valuePrefix || '',
-			valueSuffix = seriesTooltipOptions.valueSuffix || '',
-			x = this.x,
-			graphLen = 0,
-			indLen = 0,
-			indTooltip,
-			indPointFormat,
-			k;
-		
-		// Loop over the point array map and replace unformatted values with sprintf formatting markup
-		each(series.pointArrayMap || ['y'], function (key) {
-			key = '{point.' + key; // without the closing bracket
-			if (valuePrefix || valueSuffix) {
-				pointFormat = pointFormat.replace(key + '}', valuePrefix + key + '}' + valueSuffix);
-			}
-			pointFormat = pointFormat.replace(key + '}', key + ':,.' + valueDecimals + 'f}');
-		});
-
-		if (indicators && indicators !== UNDEFINED && tooltipOptions.enabledIndicators) {
-			
-			// build the values of indicators
-			each(indicators, function (ind) {
-				if (typeof ind.values === 'undefined' || ind.visible === false || ind.options.params.allowTooltip === false) {
-					return;
-				}
-
-				each(ind.values, function (val) {
-					if (val[0] === x) {
-						if (ind.options.tooltip) {
-							indLen = val.length;
-							indTooltip = ind.options.tooltip;
-							indPointFormat = indTooltip.pointFormat;
-							pointFormat += HC.format(indPointFormat, {
-								point: {
-									bottomColor: indLen > 3 ? ind.graph[2].element.attributes.stroke.value : '',
-									bottomLine: HC.numberFormat(val[3], 3),
-									x: val[0],
-									y: indLen > 3 ? HC.numberFormat(val[2], 3) : HC.numberFormat(val[1], 3),
-									color: indLen > 3 ? ind.graph[1].element.attributes.stroke.value : ind.graph[0].element.attributes.stroke.value,
-									topLine: HC.numberFormat(val[1], 3),
-									topColor: ind.graph[0].element.attributes.stroke.value
-								},
-								series: ind
-							});
-						} else {
-							// Default format
-							graphLen = (ind.options.names || ind.graph).length;
-							for (k = 0; k < graphLen; k++) {
-								pointFormat += '<span style="font-weight:bold;color:' + ind.graph[k].element.attributes.stroke.value + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val[k + 1], 3) + '<br/>';
-							}
-						}
-					}
-				});
-			});
-		}
-
-		return HC.format(pointFormat, {
-			point: this,
-			series: this.series
-		});
 	});
 
 	/**
@@ -520,6 +488,7 @@
 				return;
 			} else if (!graph) {
 				arrayValues = Indicator.prototype[options.type].getValues(chart, { points: [] }, options, [series.xData, series.yData]);
+				
 				if (!arrayValues) { // #6 - create dummy data
 					arrayValues = {
 						values: [[]],
@@ -531,6 +500,7 @@
 				this.xData = arrayValues.xData;
 				this.yData = arrayValues.yData;
 				this.groupPoints(series);
+
 				this.graph = graph = Indicator.prototype[options.type].getGraph(chart, series, options, this.values);
 				
 				if (graph) {
@@ -678,6 +648,7 @@
 		* Mechanism for goruping points into grouped positions
 		*/
 		groupData: function (xData, yData, groupPositions, approximation) {
+
 			var groupedXData = [],
 				groupedYData = [],
 				groupedY,
@@ -729,6 +700,7 @@
 				}
 	
 				pointY = yData[i];
+
 				if (pointY === null) {
 					values[0].hasNulls = true;
 				} else if (typeof pointY === NUMBER) {
@@ -746,26 +718,47 @@
 		/*
 		* Apply indicator's value to the grouped, corresponding points
 		*/
+
 		applyTooltipPoints: function () {
 			var indicator = this,
+				type = indicator.options.type,
 				values = indicator.values,
 				vLen = values.length,
 				points = indicator.series.points,
 				pLen = points ? points.length : 0,
 				diff = pLen - vLen,
+				graphLen,
+				k,
 				point,
 				i;
 					
 			for (i = diff; i < pLen; i++) {
+				
 				point = points[i];
+				
 				if (point) {
-					point.indicators[indicator.options.type] = values[i - diff];
+					point.indicators[type] = clone(indicator);
+					point.indicators[type].x = values[i - diff][0]; // x value
+					point.indicators[type].values = [];
+
+					graphLen = values[i - diff].length - 1;
+
+					for (k = 0; k < graphLen; k++) {
+						
+						point.indicators[type].values.push({
+							y: values[i - diff][k + 1],
+							color: indicator.graph && indicator.graph[k].stroke
+						});
+
+					}
 				}
 			}
 		},
+
 		/*
 		* Get right edge of the data actually displayed on the chart. cropStart is stored, but cropEnd we need to find
 		*/
+
 		getCropEnd: function (start, max, data) {
 			var len = data.length,
 				i = start;
@@ -777,9 +770,7 @@
 			}
 			return i + 1;
 		},
-		/*
-		*
-		*/
+
 		getCropStart: function (min, data) {
 			var len = data.length,
 				i = 0;
@@ -864,10 +855,8 @@
 		setVisible: function (vis) {
 			var indicator = this,
 				oldVis = indicator.visible,
-				legend = indicator.chart.legend,
 				newVis,
 				method;
-
 			
 			if (vis === UNDEFINED) {
 				newVis = oldVis ? false : true;
@@ -877,8 +866,8 @@
 				method = vis ? 'show' : 'hide';
 			}
 			
-			if (legend.options.enabled && this.options.showInLegend) {
-				legend.colorizeItem(this, newVis);
+			if (this.options.showInLegend) {
+				this.chart.legend.colorizeItem(this, newVis);
 			}
 			this.visible = newVis;
 			
