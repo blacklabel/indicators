@@ -1,6 +1,6 @@
 {
   "name": "highcharts-indicators",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Highstock plugin to add technical indicators to charts.",
   "main": "js/indicators.js",
   "repository": {
