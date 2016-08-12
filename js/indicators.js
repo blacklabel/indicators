@@ -472,6 +472,7 @@
 				group = this.group,
 				options = this.options,
 				series = this.series,
+				optionsAxis,
 				arrayValues,
 				len, i;
 
@@ -510,17 +511,19 @@
 					}
 				}
 				// indicator has connection to the specific Axis, like RSI or ATR
-				if (indicator.options.Axis) {
-					indicator.options.Axis.indicators = indicator.options.Axis.indicators || [];
-					indicator.options.Axis.indicators.push(indicator);
+				optionsAxis = indicator.options.Axis;
+
+				if (optionsAxis) {
+					optionsAxis.indicators = optionsAxis.indicators || [];
+					optionsAxis.indicators.push(indicator);
 					if (indicator.clipPath) {
 						indicator.clipPath.destroy();
 					}
 					indicator.clipPath = renderer.clipRect({
-						x: indicator.options.Axis.left,
-						y: indicator.options.Axis.top,
-						width: indicator.options.Axis.width,
-						height: indicator.options.Axis.height
+						x: optionsAxis.left,
+						y: optionsAxis.top,
+						width: optionsAxis.width,
+						height: optionsAxis.height
 					});
 					group.clip(indicator.clipPath);
 				}
@@ -721,13 +724,13 @@
 
 		applyTooltipPoints: function () {
 			var indicator = this,
-				type = indicator.options.type,
 				values = indicator.values,
 				vLen = values.length,
 				points = indicator.series.points,
 				pLen = points ? points.length : 0,
 				diff = pLen - vLen,
 				graphLen,
+				lastInd,
 				k,
 				point,
 				i;
@@ -737,15 +740,18 @@
 				point = points[i];
 				
 				if (point) {
-					point.indicators[type] = clone(indicator);
-					point.indicators[type].x = values[i - diff][0]; // x value
-					point.indicators[type].values = [];
+					if (!HC.isArray(point.indicators)) {
+						point.indicators = [];
+					}
 
+					lastInd = point.indicators.push(clone(indicator));
+					point.indicators[lastInd - 1].values = [];
+					point.indicators[lastInd - 1].x = values[i - diff][0];
 					graphLen = values[i - diff].length - 1;
 
 					for (k = 0; k < graphLen; k++) {
 						
-						point.indicators[type].values.push({
+						point.indicators[lastInd - 1].values.push({
 							y: values[i - diff][k + 1],
 							color: indicator.graph && indicator.graph[k].stroke
 						});
