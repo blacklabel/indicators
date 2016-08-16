@@ -326,14 +326,13 @@
 
 				ind = indicators[type];
 
-				if (ind.values === UNDEFINED || ind.visible === false || ((ind.options && ind.options.params) && ind.options.params.allowTooltip === false)) {
-					return;
-				}
+				if (ind.values !== UNDEFINED && ind.visible !== false && ((ind.options && ind.options.params) && ind.options.params.allowTooltip !== false)) {
 					
-				// mulitple lines
-				each(ind.values, function (val, k) {
-					indicatorTooltip += '<span style="font-weight:bold;color:' + val.color + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val.y, 3) + '<br/>';
-				});
+					// multiple lines
+					each(ind.values, function (val, k) {
+						indicatorTooltip += '<span style="font-weight:bold;color:' + val.color + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val.y, 3) + '<br/>';
+					});
+				}
 			}
 		});
 
@@ -454,6 +453,7 @@
 			this.series = chart.get(options.id);
 			this.name = options.name === UNDEFINED ? options.type : options.name;
 			this.visible = options.visible === UNDEFINED ? true : options.visible;
+			this.tooltipKey = this.name + '_' + +new Date(); // #49
 
 			if (!this.series.indicators) {
 				this.series.indicators = [];
@@ -646,9 +646,10 @@
 			this.options.yAxisMax = Math.max.apply(null, Array.prototype.concat.apply([], this.processedYData)); // new extremes
 			this.values = currentData;
 			this.applyTooltipPoints();
+		
 		},
 		/*
-		* Mechanism for goruping points into grouped positions
+		* Mechanism for grouping points into grouped positions
 		*/
 		groupData: function (xData, yData, groupPositions, approximation) {
 
@@ -721,41 +722,37 @@
 		/*
 		* Apply indicator's value to the grouped, corresponding points
 		*/
-
 		applyTooltipPoints: function () {
 			var indicator = this,
+				type = this.tooltipKey, // #49
 				values = indicator.values,
 				vLen = values.length,
 				points = indicator.series.points,
 				pLen = points ? points.length : 0,
 				diff = pLen - vLen,
 				graphLen,
-				lastInd,
-				k,
 				point,
+				k,
 				i;
-					
+
 			for (i = diff; i < pLen; i++) {
 				
-				point = points[i];
+				point = points && points[i]; // #50
 				
 				if (point) {
-					if (!HC.isArray(point.indicators)) {
-						point.indicators = [];
-					}
 
-					lastInd = point.indicators.push(clone(indicator));
-					point.indicators[lastInd - 1].values = [];
-					point.indicators[lastInd - 1].x = values[i - diff][0];
+					point.indicators[type] = clone(indicator);
+					point.indicators[type].x = values[i - diff][0]; // x value
+					point.indicators[type].values = [];
+
 					graphLen = values[i - diff].length - 1;
 
 					for (k = 0; k < graphLen; k++) {
 						
-						point.indicators[lastInd - 1].values.push({
+						point.indicators[type].values.push({
 							y: values[i - diff][k + 1],
 							color: indicator.graph && indicator.graph[k].stroke
 						});
-
 					}
 				}
 			}
