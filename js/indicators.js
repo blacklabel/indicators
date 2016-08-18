@@ -34,6 +34,7 @@
 		merge = HC.merge,
 		wrap = HC.wrap,
 		splat = HC.splat,
+		isNaN = HC.isNumber,
 		NUMBER = 'number',
 		Indicator;
 
@@ -330,7 +331,9 @@
 					
 					// multiple lines
 					each(ind.values, function (val, k) {
-						indicatorTooltip += '<span style="font-weight:bold;color:' + val.color + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val.y, 3) + '<br/>';
+						if (isNaN(val.y)) { // #31
+							indicatorTooltip += '<span style="font-weight:bold;color:' + val.color + ';">' + splat(ind.options.names || ind.name)[k] + '</span>: ' + HC.numberFormat(val.y, 3) + '<br/>';
+						}
 					});
 				}
 			}
@@ -724,38 +727,53 @@
 		*/
 		applyTooltipPoints: function () {
 			var indicator = this,
+				params = indicator.options.params,
+				allowTooltip = params && params.tooltip,
+				series = this.series,
+				cropStart = series.cropStart,
 				type = this.tooltipKey, // #49
 				values = indicator.values,
 				vLen = values.length,
 				points = indicator.series.points,
 				pLen = points ? points.length : 0,
-				diff = pLen - vLen,
+				index = series.processedXData.indexOf(indicator.processedXData[0]),
+				diff = index === -1 ? (indicator.options.params && indicator.options.params.period) || 0 : index,
+				i = cropStart === 0 ? diff : 0,
+				currentIndex,
+				indValues,
 				graphLen,
 				point,
-				k,
-				i;
+				k;
 
-			for (i = diff; i < pLen; i++) {
+			if (allowTooltip === false) {
+				return false;
+			}
+
+			for (i; i < pLen; i++) {
 				
+				currentIndex = cropStart === 0 ? i - diff : i;
 				point = points && points[i]; // #50
+				indValues = values && values[currentIndex];
 				
-				if (point) {
+				if (point && indValues) {
 
 					point.indicators[type] = clone(indicator);
-					point.indicators[type].x = values[i - diff][0]; // x value
+					point.indicators[type].x = indValues[0]; // x value
 					point.indicators[type].values = [];
 
-					graphLen = values[i - diff].length - 1;
+					graphLen = indValues.length - 1;
 
 					for (k = 0; k < graphLen; k++) {
-						
+							
 						point.indicators[type].values.push({
-							y: values[i - diff][k + 1],
+							y: indValues[k + 1],
 							color: indicator.graph && indicator.graph[k].stroke
 						});
+
 					}
 				}
 			}
+
 		},
 
 		/*
