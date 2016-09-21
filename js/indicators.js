@@ -80,11 +80,11 @@
 		return copy;
 	}
 
-	HC.isArray = function (obj) {
+	HC.isArray = HC.isArray || function (obj) {
 		return Object.prototype.toString.call(obj) === '[object Array]';
 	};
 
-	HC.isObject = function (obj) {
+	HC.isObject = HC.isObject || function (obj) {
 		return typeof obj === 'object';
 	};
 
@@ -733,7 +733,6 @@
 				cropStart = series.cropStart,
 				type = this.tooltipKey, // #49
 				values = indicator.values,
-				vLen = values.length,
 				points = indicator.series.points,
 				pLen = points ? points.length : 0,
 				index = series.processedXData.indexOf(indicator.processedXData[0]),
@@ -773,7 +772,7 @@
 					}
 				}
 			}
-
+			return true;
 		},
 
 		/*
