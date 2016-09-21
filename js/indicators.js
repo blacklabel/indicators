@@ -875,6 +875,7 @@
 		setVisible: function (vis) {
 			var indicator = this,
 				oldVis = indicator.visible,
+				legend = indicator.chart.legend,
 				newVis,
 				method;
 			
@@ -886,8 +887,8 @@
 				method = vis ? 'show' : 'hide';
 			}
 			
-			if (this.options.showInLegend) {
-				this.chart.legend.colorizeItem(this, newVis);
+			if (legend.options.enabled && this.options.showInLegend) {
+				legend.colorizeItem(this, newVis);
 			}
 			this.visible = newVis;
 			
