@@ -1002,6 +1002,7 @@
 				i = 0,
 				sum = chart.chartHeight - chart.plotTop - chart.marginBottom, // Workaround until chart.plotHeight will return real value
 				indexWithoutNav = 0,
+				currentIndicators,
 				newHeight,
 				top;
 
@@ -1027,10 +1028,12 @@
 					top = chart.plotTop + indexWithoutNav * (topDiff + newHeight);
 
 					if (yAxis.top !== top || yAxis.height !== newHeight) {
+						currentIndicators = chYxis[i].indicators;
 						chYxis[i].update({
 							top: top,
 							height: newHeight
 						}, false);
+						chYxis[i].indicators = currentIndicators;
 					}
 					indexWithoutNav++;
 				}
