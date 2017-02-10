@@ -3,7 +3,7 @@
 <head>
 	<title>Indicators demo</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script type="text/javascript" src="https://code.highcharts.com/stock/highstock.src.js"></script>
+	<script type="text/javascript" src="http://code.highcharts.com/stock/js/highstock.src.js"></script>
 	<script type="text/javascript" src="js/indicators.js"></script>
 	<script type="text/javascript" src="js/sma.js"></script>
 	<script type="text/javascript" src="js/ema.js"></script>
@@ -11,16 +11,17 @@
 	<script type="text/javascript" src="js/rsi.js"></script>
 	<script type="text/javascript" src="js/demo.js"></script>
 
-	<link rel="stylesheet" charset="utf-8" type="text/css" href="css/styles.css"/>
+	<link rel="stylesheet" charset="utf-8" type="text/css" href="./css/styles.css"/>
 
 </head>
 <body>
+<div id="main-content">
 <h1>Indicators - Highstock module</h1>
 <p> Indicators available in this plugin: <b>SMA, EMA, ATR, RSI</b>. You can use these indicators for free. </p>
 <p> <div class="info"> We also have other indicators available: <b>Bollinger Bands, MACD, Momentum, CCI, Stochastic, Rate of Change (ROC), Accumulation / distribution (AD), Pivot Points, ZigZag, Weighted Moving Average (WMA), Price Envelopes.</b>. <br>  If you're are interested in purchasing them, developing new indicators or any other tools, please contact us at: <a href="mailto:start@blacklabel.pl"> start@blacklabel.pl </a> 
 You may also want to check our other demo here: <a href="http://demo.blacklabel.pl">http://demo.blacklabel.pl</a>.</div> </p>
 
-  <div id="container-advanced" class="chart"></div>
+  <div id="chart-advanced" class="chart"></div>
 
 <h3>Requirements</h3>
 
@@ -221,5 +222,6 @@ tooltip:{
 <h3>Demo</h3>
 
 <p>Demos are available at project's github page: <a href="http://blacklabel.github.io/indicators/">(http://blacklabel.github.io/indicators/)</a></p>
+</div>
 </body>
 </html>
