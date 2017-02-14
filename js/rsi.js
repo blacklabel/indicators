@@ -45,7 +45,7 @@
 				xVal = points[0].concat(series.processedXData || []), // #22
 				yVal = points[1].concat(series.processedYData || []), // #22
 				yValLen = yVal ? yVal.length : 0,
-				EMA = HC.Indicator.prototype.ema,
+				//EMA = HC.Indicator.prototype.ema,
 				decimals = params.decimals,
 				// EMApercent = (2 / (period + 1)),
 				// calEMAGain = 0,
@@ -60,7 +60,7 @@
 				RSIPoint, change, RS, avgGain, avgLoss, i;
 
 			// atr requires close value
-			if ((xVal.length <= period) || !isArray(yVal[0]) || yVal[0].length !== 4 || EMA === UNDEFINED) {
+			if ((xVal.length <= period) || !isArray(yVal[0]) || yVal[0].length !== 4 /*|| EMA === UNDEFINED*/) {
 				return false;
 			}
 
