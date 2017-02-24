@@ -750,12 +750,12 @@
 
 			for (i; i < pLen; i++) {
 				
-				currentIndex = cropStart === 0 ? i - diff : i;
+				currentIndex = cropStart === 0 ? i - diff : i + (index < 0 ? 1 : 0); // #55
+
 				point = points && points[i]; // #50
 				indValues = values && values[currentIndex];
 				
 				if (point && indValues) {
-
 					point.indicators[type] = clone(indicator);
 					point.indicators[type].x = indValues[0]; // x value
 					point.indicators[type].values = [];
