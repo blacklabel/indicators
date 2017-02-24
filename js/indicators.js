@@ -854,8 +854,8 @@
 			
 			// Remove points from tooltip #29
 			each(indicator.series.points, function (p) {
-				if (p && p.indicators && p.indicators[indicator.options.type]) {
-					delete p.indicators[indicator.options.type];
+				if (p && p.indicators && p.indicators[indicator.tooltipKey]) {
+					delete p.indicators[indicator.tooltipKey];
 				}
 			});
 			indicator = null;
