@@ -14,7 +14,7 @@
 		"highstock": "2.1.5+"
 	},
 	"demo": [
-		"http://jsfiddle.net/BlackLabel/RE7sS/"
+		"https://jsfiddle.net/BlackLabel/RE7sS/"
 	],
 	"description": "Highstock plugin to add technical indicators to charts.",
 	"keywords": [
