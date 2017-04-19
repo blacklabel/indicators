@@ -201,10 +201,25 @@
 					series[key][showOrHide]();
 				}
 			});
+			series.legendVisibility = newVis;
 			series.visible = true;
 		} else {
+			delete series.legendVisibility;
 			proceed.call(series, newVis, true);
 		}
+	});
+
+	/*
+	* Since Highstock 4.2.0, visibility is used by plotGroup when updating too.
+	* Set it according to the original state, since series.visible is modified by indicator.
+	*/
+	wrap(HC.Series.prototype, 'plotGroup', function (proceed) {
+
+		if (defined(this.legendVisibility)) {
+			arguments[3] = this.legendVisibility ? 'inherit' : 'hidden';
+		}
+
+		return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
 	});
 	
 	/*
