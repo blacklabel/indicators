@@ -1,9 +1,11 @@
 
+### ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) We encourage you to use Highstock 6+ as it has a vast range of technical analysis indicators build in. This plugin was build for older versions of Highstock
+
 # Indicators - Highstock module
 
 Indicators available in this plugin: **SMA, EMA, ATR, RSI**. You can use these indicators for free.
 
-We also have other indicators available: **Bollinger Bands, MACD, Momentum, CCI, Stochastic, Rate of Change (ROC), Accumulation / distribution (AD), Pivot Points, ZigZag, Weighted Moving Average (WMA), Price Envelopes.** <br>
+We also have other indicators available: **Bollinger Bands, MACD, Momentum, CCI, Stochastic, Rate of Change (ROC), Accumulation / distribution (AD), Pivot Points, ZigZag, Weighted Moving Average (WMA), PSAR, MFI, Price Envelopes.** <br>
 If you're are interested in purchasing them, developing new indicators or any other tools, please contact us at: <a href="mailto:start@blacklabel.pl"> start@blacklabel.pl </a>
 
 You may also want to check our other demo here: http://demo.blacklabel.pl.
