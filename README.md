@@ -1,4 +1,6 @@
 
+### ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) We encourage you to use Highstock 6+ as it has a vast range of technical analysis indicators build in. This plugin was build for older versions of Highstock
+
 # Indicators - Highstock module
 
 Indicators available in this plugin: **SMA, EMA, ATR, RSI**. You can use these indicators for free.
