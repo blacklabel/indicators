@@ -1,6 +1,6 @@
 {
   "name": "highcharts-indicators",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "homepage": "http://blacklabel.github.io/indicators/",
   "authors": [
     "Sebastian Bochan <sebastian@blacklabel.pl>",
@@ -14,7 +14,10 @@
     "sma",
     "ema",
     "atr",
-    "rsi"
+    "rsi",
+    "highcharts",
+    "highstock",
+    "highcharts-addon"
   ],
   "license": "Creative Commons Attribution (CC)",
   "ignore": [

@@ -1,6 +1,6 @@
 {
 	"name": "Indicators",
-	"version": "2.1.5",
+	"version": "2.1.6",
 	"title": "Indicators",
 	"author": {
 		"name": "Black Label",
@@ -22,7 +22,10 @@
 		"sma",
 		"ema",
 		"atr",
-		"rsi"
+		"rsi",
+	    "highcharts",
+	    "highstock",
+	    "highcharts-addon"
 	],
 	"maintainers": [{
 		"name": "Sebastian Bochan",

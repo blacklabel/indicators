@@ -1,6 +1,6 @@
 {
   "name": "highcharts-indicators",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Highstock plugin to add technical indicators to charts.",
   "main": "js/indicators.js",
   "repository": {
@@ -15,7 +15,7 @@
     "ema",
     "rsi",
     "atr",
-    "indicators"
+    "highcharts-addon"
   ],
   "author": "Black Label <start@blacklabel.pl> (http://blacklabel.pl)",
   "license": "SEE LICENSE IN license.txt",
